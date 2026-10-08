@@ -70,11 +70,11 @@ export const ChatArea = ({
         <div className="flex items-center gap-3">
           <div>
             <h2 className="text-base font-serif-luxury font-medium tracking-tight text-stone-900 dark:text-stone-100 flex items-center gap-2">
-              Персональный AI-Стилист
+              Персональный стилист
             </h2>
             <div className="flex items-center gap-1.5 text-[11px] text-stone-500 dark:text-stone-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>RAG-подбор по гардеробу</span>
+              <span>Подбор по вашей одежде</span>
             </div>
           </div>
         </div>
@@ -190,7 +190,7 @@ export const ChatArea = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               disabled={isLoading}
-              placeholder="Спросите стилиста (например: «Что надеть в офис на защиту проекта?»)..."
+              placeholder="Спросите стилиста (например: «Что надеть в офис на деловую встречу?»)..."
               className="w-full rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 focus:border-stone-500 dark:focus:border-stone-500 px-4 py-3.5 pr-14 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
             />
             <button
@@ -203,7 +203,7 @@ export const ChatArea = ({
           </form>
 
           <p className="text-center text-[11px] text-stone-400 dark:text-stone-500">
-            ИИ подбирает комплекты только из оцифрованных вещей вашего личного гардероба
+            ИИ подбирает комплекты только из вещей вашего личного гардероба
           </p>
         </div>
       </div>

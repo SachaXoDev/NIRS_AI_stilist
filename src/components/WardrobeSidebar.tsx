@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ClothingCategory, WardrobeItem } from '../types';
-import { Search, Plus, Trash2, Info } from 'lucide-react';
+import { Search, Plus, Trash2, CheckCircle } from 'lucide-react';
 
 interface WardrobeSidebarProps {
   wardrobe: WardrobeItem[];
@@ -43,10 +43,10 @@ export const WardrobeSidebar = ({
       <div className="p-4 sm:p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
         <div>
           <span className="text-[10px] uppercase tracking-widest font-semibold text-stone-400 dark:text-stone-500">
-            База знаний RAG
+            Персональная капсула
           </span>
           <h2 className="text-base sm:text-lg font-serif-luxury font-medium text-stone-900 dark:text-stone-100">
-            Гардероб <span className="text-xs font-sans text-stone-400 font-normal">({wardrobe.length})</span>
+            Ваш гардероб <span className="text-xs font-sans text-stone-400 font-normal">({wardrobe.length})</span>
           </h2>
         </div>
 
@@ -150,10 +150,10 @@ export const WardrobeSidebar = ({
         )}
       </div>
 
-      {/* RAG Footer notice */}
+      {/* Footer notice */}
       <div className="p-3 border-t border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-950/40 text-[11px] text-stone-500 dark:text-stone-400 flex items-center gap-2">
-        <Info className="w-3.5 h-3.5 shrink-0 text-stone-400" />
-        <span className="truncate">Вещи индексируются для семантического поиска</span>
+        <CheckCircle className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
+        <span className="truncate">Вещи готовы для составления образов</span>
       </div>
     </aside>
   );

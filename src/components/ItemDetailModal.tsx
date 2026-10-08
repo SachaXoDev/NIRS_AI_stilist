@@ -1,5 +1,5 @@
 import type { WardrobeItem } from '../types';
-import { X, Sparkles, ShieldCheck } from 'lucide-react';
+import { X, Sparkles } from 'lucide-react';
 
 interface ItemDetailModalProps {
   item: WardrobeItem | null;
@@ -62,18 +62,6 @@ export const ItemDetailModal = ({
               <span className="text-stone-400">Сезонность:</span>
               <span className="font-medium text-stone-800 dark:text-stone-200">{item.season}</span>
             </div>
-
-            {item.embeddingSnippet && (
-              <div className="rounded-xl bg-stone-50 dark:bg-stone-950/60 p-3 border border-stone-200/80 dark:border-stone-800 text-xs">
-                <div className="text-stone-500 dark:text-stone-400 font-medium mb-1 flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-stone-500" />
-                  RAG-индексация описания:
-                </div>
-                <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
-                  {item.embeddingSnippet}
-                </p>
-              </div>
-            )}
           </div>
 
           <div className="flex flex-wrap gap-1.5 mb-6">

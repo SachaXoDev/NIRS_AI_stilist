@@ -67,10 +67,10 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
         </button>
 
         <h3 className="text-xl font-serif-luxury font-medium text-stone-900 dark:text-stone-100 mb-1">
-          Добавить предмет гардероба
+          Добавить в гардероб
         </h3>
         <p className="text-xs text-stone-500 dark:text-stone-400 mb-6">
-          Вещь будет автоматически оцифрована и добавлена в контекст RAG-модели
+          Загрузите фотографию и укажите характеристики вещи
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -81,7 +81,7 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
             <input
               type="text"
               required
-              placeholder="Например: Оливковый льняной блейзер"
+              placeholder="Например: Льняная оливковая рубашка"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
@@ -98,11 +98,11 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
                 onChange={(e) => setCategory(e.target.value as ClothingCategory)}
                 className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3 py-2.5 text-sm text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-500 transition-colors"
               >
-                <option value="tops">Верх (рубашки, топы)</option>
-                <option value="bottoms">Низ (брюки, деним)</option>
-                <option value="outerwear">Верхняя одежда</option>
+                <option value="tops">Верх (рубашки, топы, джемперы)</option>
+                <option value="bottoms">Низ (брюки, джинсы, юбки)</option>
+                <option value="outerwear">Верхняя одежда (пальто, жакеты)</option>
                 <option value="shoes">Обувь</option>
-                <option value="accessories">Аксессуары</option>
+                <option value="accessories">Аксессуары (сумки, шарфы)</option>
               </select>
             </div>
 
@@ -127,7 +127,7 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
               </label>
               <input
                 type="text"
-                placeholder="Massimo Dutti, COS..."
+                placeholder="Massimo Dutti, COS, Zara..."
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
                 className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
@@ -155,7 +155,7 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="URL фотографии или выберите файл"
+                placeholder="URL фотографии или загрузите файл"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 className="flex-1 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
@@ -180,7 +180,7 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
                 alt="Превью"
                 className="w-12 h-14 object-cover rounded-lg border border-stone-200 dark:border-stone-800"
               />
-              <span className="text-xs text-stone-500 dark:text-stone-400">Фото загружено и готово</span>
+              <span className="text-xs text-stone-500 dark:text-stone-400">Фото успешно добавлено</span>
             </div>
           )}
 
@@ -196,7 +196,7 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
               type="submit"
               className="px-5 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-xs font-medium text-white dark:text-stone-900 shadow-sm transition-all"
             >
-              Сохранить в гардероб
+              Сохранить вещь
             </button>
           </div>
         </form>

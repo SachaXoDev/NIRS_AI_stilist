@@ -29,9 +29,9 @@ function MainApp() {
       id: 'welcome-msg',
       sender: 'assistant',
       timestamp: 'Сегодня',
-      text: 'Добро пожаловать в персональный гардеробный сервис.\n\nВ вашей оцифрованной капсуле сейчас ' +
+      text: 'Добро пожаловать в персональный гардеробный сервис.\n\nВ вашей капсуле сейчас ' +
         INITIAL_WARDROBE.length +
-        ' предметов. Напишите, какой образ вы хотите составить: укажите повод, погоду или выберите вещь из гардероба — и я предложу выверенную комбинацию с детальным разбором стилистики.',
+        ' предметов. Напишите, какой образ вы хотите составить: укажите повод, погоду или выберите конкретную вещь из гардероба — и я предложу гармоничный аутфит с советами по стайлингу.',
     },
   ]);
 
@@ -109,12 +109,12 @@ function MainApp() {
     <div className="flex flex-col h-screen w-screen bg-[#FAF9F6] dark:bg-stone-950 text-stone-900 dark:text-stone-100 overflow-hidden font-sans transition-colors duration-200">
       {/* Top Navbar */}
       <header className="h-14 border-b border-stone-200/90 dark:border-stone-800 bg-white/70 dark:bg-stone-900/60 backdrop-blur-md px-5 sm:px-8 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <span className="font-serif-luxury text-xl tracking-wider font-semibold text-stone-900 dark:text-stone-100">
             L'ARMOIRE
           </span>
           <span className="text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700">
-            RAG STYLIST
+            AI STYLIST
           </span>
         </div>
 
@@ -144,8 +144,9 @@ function MainApp() {
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-3 text-xs text-stone-400 dark:text-stone-500">
-          <span>Спецификация SDD / Контрольная точка 1</span>
+        <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 dark:text-stone-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span>Гардероб оцифрован</span>
         </div>
       </header>
 

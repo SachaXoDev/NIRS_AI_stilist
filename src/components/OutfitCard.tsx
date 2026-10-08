@@ -47,7 +47,7 @@ export const OutfitCard = ({ outfit, onSelectItem }: OutfitCardProps) => {
           <div className="flex items-center gap-2 mb-1.5">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wide uppercase bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
               <Sparkles className="w-2.5 h-2.5 text-stone-500" />
-              RAG Match {outfit.matchScore}%
+              Совпадение {outfit.matchScore}%
             </span>
             <span className="text-xs text-stone-400 dark:text-stone-500">
               • {outfit.occasion}
@@ -85,10 +85,10 @@ export const OutfitCard = ({ outfit, onSelectItem }: OutfitCardProps) => {
       <div className="my-5">
         <div className="flex items-center justify-between mb-3">
           <span className="text-[11px] font-semibold tracking-wider text-stone-400 dark:text-stone-500 uppercase">
-            Предметы гардероба в аутфите ({outfit.items.length})
+            Вещи из вашего гардероба в этом образе ({outfit.items.length})
           </span>
           <span className="text-[11px] text-stone-400 dark:text-stone-500">
-            Нажмите на карточку для деталей
+            Нажмите на вещь для деталей
           </span>
         </div>
 
