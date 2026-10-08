@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fafaf9" />
+      <stop offset="100%" stop-color="#f5f5f4" />
+    </linearGradient>
+    <filter id="shadow6" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-opacity="0.1" />
+    </filter>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg6)" />
+  <g filter="url(#shadow6)" transform="translate(105, 75)">
+    <!-- Beige Trench Coat -->
+    <path d="M 45 30 L 95 65 L 145 30 L 190 90 L 160 115 L 145 100 L 155 310 L 35 310 L 45 100 L 30 115 L 0 90 Z" fill="#d6c7b2" stroke="#b8a892" stroke-width="2" />
+    <!-- Storm flap & collar -->
+    <path d="M 45 30 L 80 120 L 95 120 L 60 30 Z" fill="#c4b39b" />
+    <path d="M 145 30 L 110 120 L 95 120 L 130 30 Z" fill="#c4b39b" />
+    <!-- Belt with buckle -->
+    <rect x="38" y="170" width="114" height="16" rx="2" fill="#ab987e" />
+    <rect x="85" y="166" width="20" height="24" rx="3" fill="none" stroke="#78664f" stroke-width="3" />
+    <!-- Double breasted buttons -->
+    <circle cx="75" cy="135" r="4" fill="#574937" />
+    <circle cx="115" cy="135" r="4" fill="#574937" />
+    <circle cx="75" cy="215" r="4" fill="#574937" />
+    <circle cx="115" cy="215" r="4" fill="#574937" />
+  </g>
+  <text x="200" y="420" font-family="'Inter', sans-serif" font-size="13" font-weight="500" fill="#78716c" text-anchor="middle" letter-spacing="1">BURBERRY INSP.</text>
+  <text x="200" y="440" font-family="'Cormorant Garamond', Georgia, serif" font-size="16" font-style="italic" fill="#a8a29e" text-anchor="middle">Classic Gabardine Trench</text>
+</svg>

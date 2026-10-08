@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb" />
+      <stop offset="100%" stop-color="#fef3c7" stop-opacity="0.5"/>
+    </linearGradient>
+    <filter id="shadow5" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.08" />
+    </filter>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg5)" />
+  <g filter="url(#shadow5)" transform="translate(100, 110)">
+    <!-- Cashmere Cream Sweater -->
+    <path d="M 60 40 Q 100 65 140 40 L 195 95 L 165 125 L 145 105 L 145 250 L 55 250 L 55 105 L 35 125 L 5 95 Z" fill="#fef08a" stroke="#fde047" stroke-width="1.5" />
+    <path d="M 60 40 Q 100 65 140 40" fill="none" stroke="#ca8a04" stroke-width="3" />
+    <!-- Knit ribbing -->
+    <line x1="55" y1="242" x2="145" y2="242" stroke="#eab308" stroke-width="2" stroke-dasharray="2 3" />
+    <line x1="55" y1="248" x2="145" y2="248" stroke="#eab308" stroke-width="2" stroke-dasharray="2 3" />
+  </g>
+  <text x="200" y="420" font-family="'Inter', sans-serif" font-size="13" font-weight="500" fill="#78716c" text-anchor="middle" letter-spacing="1">UNIQLO</text>
+  <text x="200" y="440" font-family="'Cormorant Garamond', Georgia, serif" font-size="16" font-style="italic" fill="#a8a29e" text-anchor="middle">Cashmere Crewneck Knit</text>
+</svg>

@@ -9,14 +9,16 @@ import { ItemDetailModal } from './components/ItemDetailModal';
 import { ThemeProvider } from './context/ThemeContext';
 import { MessageSquare, Shirt } from 'lucide-react';
 
-const STORAGE_KEY = 'closet_wardrobe_v2';
+// Versioned key to guarantee new vector illustrations load
+const STORAGE_KEY = 'closet_wardrobe_v3_illustrations';
 
 function MainApp() {
   const [wardrobe, setWardrobe] = useState<WardrobeItem[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {
         console.error('Failed to parse wardrobe', e);
       }
