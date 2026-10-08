@@ -1,19 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { ChatMessage, WardrobeItem } from '../types';
 import { OutfitCard } from './OutfitCard';
 import {
   Send,
-  Sparkles,
-  Bot,
-  User,
-  Compass,
-  CloudSun,
-  Briefcase,
-  Coffee,
-  Heart,
   RotateCcw,
-  CheckCircle,
+  Sun,
+  Moon,
+  ArrowUpRight,
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface ChatAreaProps {
   messages: ChatMessage[];
@@ -25,36 +20,33 @@ interface ChatAreaProps {
 
 const QUICK_PROMPTS = [
   {
-    icon: <Briefcase className="w-3.5 h-3.5 text-blue-400" />,
-    label: 'Деловая встреча',
+    title: 'Деловая встреча',
     text: 'Подбери элегантный и строгий образ для важной деловой встречи в офисе.',
   },
   {
-    icon: <CloudSun className="w-3.5 h-3.5 text-amber-400" />,
-    label: 'Дождь и +12°C',
+    title: 'Дождь и +12°C',
     text: 'Что надеть сегодня? На улице ветрено, дождь и около +12 градусов.',
   },
   {
-    icon: <Coffee className="w-3.5 h-3.5 text-rose-400" />,
-    label: 'Повседневный casual',
+    title: 'Городской casual',
     text: 'Собери расслабленный стильный лук на прогулку по городу и в кофейню с друзьями.',
   },
   {
-    icon: <Heart className="w-3.5 h-3.5 text-pink-400" />,
-    label: 'Свидание вечером',
+    title: 'Вечерний выход',
     text: 'Посоветуй привлекательный образ на романтический ужин в ресторан.',
   },
 ];
 
-export const ChatArea: React.FC<ChatAreaProps> = ({
+export const ChatArea = ({
   messages,
   isLoading,
   onSendMessage,
   onResetChat,
   onSelectItem,
-}) => {
+}: ChatAreaProps) => {
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { theme, toggleTheme } = useTheme();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -72,103 +64,96 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-neutral-950 overflow-hidden relative">
-      {/* Top Chat Header */}
-      <div className="h-14 border-b border-neutral-800 px-6 flex items-center justify-between shrink-0 bg-neutral-950/80 backdrop-blur-md z-10">
+    <div className="flex-1 flex flex-col h-full bg-[#FAF9F6] dark:bg-stone-950 overflow-hidden relative transition-colors duration-200">
+      {/* Top Header */}
+      <div className="h-14 border-b border-stone-200/90 dark:border-stone-800 px-5 sm:px-8 flex items-center justify-between shrink-0 bg-[#FAF9F6]/90 dark:bg-stone-950/90 backdrop-blur-md z-10">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 p-0.5 flex items-center justify-center">
-            <div className="w-full h-full bg-neutral-900 rounded-full flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-rose-400" />
-            </div>
-          </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-white tracking-tight">AI Fashion Stylist</h2>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <h2 className="text-base font-serif-luxury font-medium tracking-tight text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              Персональный AI-Стилист
+            </h2>
+            <div className="flex items-center gap-1.5 text-[11px] text-stone-500 dark:text-stone-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>RAG-подбор по гардеробу</span>
             </div>
-            <p className="text-[11px] text-neutral-400">RAG-powered персональный подбор луков</p>
           </div>
         </div>
 
-        <button
-          onClick={onResetChat}
-          title="Начать новый диалог"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-neutral-400 hover:text-white bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 transition-colors"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Новый диалог</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Theme Switcher */}
+          <button
+            onClick={toggleTheme}
+            title={theme === 'light' ? 'Переключить на темную тему' : 'Переключить на светлую тему'}
+            className="p-2 rounded-xl text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200/60 dark:hover:bg-stone-850 transition-colors"
+          >
+            {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </button>
+
+          <button
+            onClick={onResetChat}
+            title="Очистить и начать заново"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Новый диалог</span>
+          </button>
+        </div>
       </div>
 
-      {/* Messages Scrollable Container */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+      {/* Messages Scroll View */}
+      <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 space-y-6">
         {messages.map((message) => {
           const isUser = message.sender === 'user';
           return (
             <div
               key={message.id}
-              className={`flex gap-3 sm:gap-4 max-w-4xl mx-auto ${
-                isUser ? 'flex-row-reverse' : 'flex-row'
+              className={`flex gap-3 sm:gap-4 max-w-3xl mx-auto ${
+                isUser ? 'justify-end' : 'justify-start'
               }`}
             >
-              {/* Avatar */}
               <div
-                className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold ${
-                  isUser
-                    ? 'bg-rose-500 text-white'
-                    : 'bg-neutral-850 text-rose-400 border border-neutral-700'
+                className={`flex flex-col max-w-2xl ${
+                  isUser ? 'items-end' : 'items-start'
                 }`}
               >
-                {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-              </div>
-
-              {/* Message Content Bubble */}
-              <div
-                className={`flex-1 rounded-2xl p-4 sm:p-5 transition-all ${
-                  isUser
-                    ? 'bg-gradient-to-r from-rose-600 to-rose-700 text-white max-w-xl ml-auto rounded-tr-none'
-                    : 'bg-neutral-900/90 text-neutral-100 border border-neutral-800 rounded-tl-none shadow-lg'
-                }`}
-              >
-                <div className="text-sm sm:text-base leading-relaxed whitespace-pre-line">
-                  {message.text}
-                </div>
-
-                {/* Outfit card if assistant recommended one */}
-                {message.suggestedOutfit && (
-                  <OutfitCard
-                    outfit={message.suggestedOutfit}
-                    onSelectItem={onSelectItem}
-                  />
-                )}
-
+                {/* Bubble */}
                 <div
-                  className={`text-[10px] mt-2 flex items-center gap-1.5 ${
-                    isUser ? 'text-rose-200 justify-end' : 'text-neutral-500'
+                  className={`rounded-2xl p-4 sm:p-5 transition-all leading-relaxed ${
+                    isUser
+                      ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-br-none text-sm sm:text-base font-normal shadow-sm'
+                      : 'bg-white dark:bg-stone-900 text-stone-800 dark:text-stone-200 rounded-bl-none text-sm sm:text-base border border-stone-200/90 dark:border-stone-800 shadow-xs'
                   }`}
                 >
-                  <span>{message.timestamp}</span>
-                  {isUser && <CheckCircle className="w-3 h-3" />}
+                  <p className="whitespace-pre-line">{message.text}</p>
+
+                  {/* Generated Outfit */}
+                  {message.suggestedOutfit && (
+                    <OutfitCard
+                      outfit={message.suggestedOutfit}
+                      onSelectItem={onSelectItem}
+                    />
+                  )}
                 </div>
+
+                <span className="text-[10px] text-stone-400 dark:text-stone-500 mt-1.5 px-1">
+                  {message.timestamp}
+                </span>
               </div>
             </div>
           );
         })}
 
-        {/* Thinking Indicator */}
+        {/* Loading Indicator */}
         {isLoading && (
-          <div className="flex gap-4 max-w-4xl mx-auto">
-            <div className="w-8 h-8 rounded-full bg-neutral-850 text-rose-400 border border-neutral-700 flex items-center justify-center">
-              <Bot className="w-4 h-4" />
-            </div>
-            <div className="rounded-2xl rounded-tl-none bg-neutral-900 border border-neutral-800 p-4 text-sm text-neutral-400 flex items-center gap-3">
+          <div className="flex max-w-3xl mx-auto justify-start">
+            <div className="rounded-2xl rounded-bl-none bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 p-4 text-xs text-stone-600 dark:text-stone-400 flex items-center gap-3 shadow-xs">
               <div className="flex space-x-1">
-                <div className="w-2 h-2 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 rounded-full bg-rose-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
-              <span className="text-xs text-neutral-300">
-                ИИ-Стилист ищет подходящие вещи в вашем гардеробе через RAG...
+              <span className="font-serif-luxury text-sm italic">
+                Стилист подбирает гармоничный образ из вашего гардероба...
               </span>
             </div>
           </div>
@@ -177,24 +162,23 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Bottom Sticky Area: Quick chips + Input Bar */}
-      <div className="p-4 sm:p-5 border-t border-neutral-850 bg-neutral-950/95 backdrop-blur-md">
-        <div className="max-w-4xl mx-auto space-y-3">
-          {/* Quick Prompts */}
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
-            <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider flex items-center gap-1 shrink-0">
-              <Compass className="w-3.5 h-3.5 text-neutral-400" />
-              Идеи:
+      {/* Input area */}
+      <div className="p-4 sm:p-6 border-t border-stone-200/90 dark:border-stone-800 bg-[#FAF9F6]/95 dark:bg-stone-950/95 backdrop-blur-md">
+        <div className="max-w-3xl mx-auto space-y-3">
+          {/* Quick Ideas */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5">
+            <span className="text-[10px] font-semibold tracking-wider text-stone-400 dark:text-stone-500 uppercase shrink-0">
+              Поводы:
             </span>
             {QUICK_PROMPTS.map((p, idx) => (
               <button
                 key={idx}
                 disabled={isLoading}
                 onClick={() => onSendMessage(p.text)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 hover:border-neutral-700 text-xs text-neutral-300 hover:text-white transition-all shrink-0 cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-850 border border-stone-200/90 dark:border-stone-800 text-xs text-stone-700 dark:text-stone-300 transition-colors shrink-0 disabled:opacity-40"
               >
-                {p.icon}
-                <span>{p.label}</span>
+                <span>{p.title}</span>
+                <ArrowUpRight className="w-3 h-3 text-stone-400" />
               </button>
             ))}
           </div>
@@ -206,20 +190,21 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               disabled={isLoading}
-              placeholder="Спросите стилиста (например: «Что надеть на собеседование в IT-компанию?»)..."
-              className="w-full rounded-2xl bg-neutral-900/90 border border-neutral-800 focus:border-rose-500/80 px-4 py-3.5 pr-14 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none transition-all shadow-inner"
+              placeholder="Спросите стилиста (например: «Что надеть в офис на защиту проекта?»)..."
+              className="w-full rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/90 dark:border-stone-800 focus:border-stone-500 dark:focus:border-stone-500 px-4 py-3.5 pr-14 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
             />
             <button
               type="submit"
               disabled={!inputText.trim() || isLoading}
-              className="absolute right-2 p-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:from-rose-600 hover:to-pink-600 transition-all shadow-md shadow-rose-500/20"
+              className="absolute right-2 p-2 rounded-xl bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-stone-800 dark:hover:bg-white transition-all shadow-sm"
             >
               <Send className="w-4 h-4" />
             </button>
           </form>
-          <div className="text-center text-[10px] text-neutral-500">
-            ИИ подбирает сочетания исключительно из загруженных в гардероб вещей на основе семантического сходства
-          </div>
+
+          <p className="text-center text-[11px] text-stone-400 dark:text-stone-500">
+            ИИ подбирает комплекты только из оцифрованных вещей вашего личного гардероба
+          </p>
         </div>
       </div>
     </div>

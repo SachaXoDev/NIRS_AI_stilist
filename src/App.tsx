@@ -6,18 +6,19 @@ import { WardrobeSidebar } from './components/WardrobeSidebar';
 import { ChatArea } from './components/ChatArea';
 import { AddItemModal } from './components/AddItemModal';
 import { ItemDetailModal } from './components/ItemDetailModal';
-import { Shirt, MessageSquare, BookOpen } from 'lucide-react';
+import { ThemeProvider } from './context/ThemeContext';
+import { MessageSquare, Shirt } from 'lucide-react';
 
-const STORAGE_KEY = 'ai_stylist_wardrobe_v1';
+const STORAGE_KEY = 'closet_wardrobe_v2';
 
-export function App() {
+function MainApp() {
   const [wardrobe, setWardrobe] = useState<WardrobeItem[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         return JSON.parse(saved);
       } catch (e) {
-        console.error('Failed to parse saved wardrobe', e);
+        console.error('Failed to parse wardrobe', e);
       }
     }
     return INITIAL_WARDROBE;
@@ -27,10 +28,10 @@ export function App() {
     {
       id: 'welcome-msg',
       sender: 'assistant',
-      timestamp: 'Только что',
-      text: 'Здравствуйте! Я ваш персональный **AI-стилист** на основе RAG.\n\nЯ проанализировал ваш цифровой гардероб (в нем сейчас ' +
+      timestamp: 'Сегодня',
+      text: 'Добро пожаловать в персональный гардеробный сервис.\n\nВ вашей оцифрованной капсуле сейчас ' +
         INITIAL_WARDROBE.length +
-        ' предметов). Спросите меня о чем угодно: подбор аутфита на свидание, погоду, деловую встречу или покажите конкретную вещь, к которой нужен гармоничный комплект!',
+        ' предметов. Напишите, какой образ вы хотите составить: укажите повод, погоду или выберите вещь из гардероба — и я предложу выверенную комбинацию с детальным разбором стилистики.',
     },
   ]);
 
@@ -71,7 +72,7 @@ export function App() {
         id: `error-${Date.now()}`,
         sender: 'assistant',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: 'Произошла ошибка при обращении к модели стилиста. Пожалуйста, попробуйте еще раз.',
+        text: 'Не удалось получить ответ стилиста. Пожалуйста, повторите запрос.',
       };
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
@@ -93,43 +94,38 @@ export function App() {
         id: `welcome-${Date.now()}`,
         sender: 'assistant',
         timestamp: 'Только что',
-        text: 'Диалог начат заново. Чем могу помочь сегодня? Подберем что-то стильное из гардероба?',
+        text: 'Готов собрать новый аутфит. Для какого случая или настроения подбираем образ?',
       },
     ]);
   };
 
   const handleAskAboutItem = (item: WardrobeItem) => {
-    const prompt = `Подбери стильный завершенный аутфит вокруг этой вещи: "${item.title}". С чем из моего гардероба её лучше всего надеть?`;
+    const prompt = `Подбери законченный стильный образ с вещью «${item.title}». С чем из моего гардероба она смотрится гармоничнее всего?`;
     setMobileTab('chat');
     handleSendMessage(prompt);
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-neutral-950 text-neutral-100 overflow-hidden font-sans">
-      {/* Top Main Navigation Bar */}
-      <header className="h-14 border-b border-neutral-800 bg-neutral-900/50 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center font-black text-white shadow-md shadow-rose-500/20">
-            👗
-          </div>
-          <div>
-            <h1 className="text-sm font-bold text-white tracking-wide flex items-center gap-1.5 m-0 p-0">
-              CLOSET.AI
-              <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                RAG Edition
-              </span>
-            </h1>
-          </div>
+    <div className="flex flex-col h-screen w-screen bg-[#FAF9F6] dark:bg-stone-950 text-stone-900 dark:text-stone-100 overflow-hidden font-sans transition-colors duration-200">
+      {/* Top Navbar */}
+      <header className="h-14 border-b border-stone-200/90 dark:border-stone-800 bg-white/70 dark:bg-stone-900/60 backdrop-blur-md px-5 sm:px-8 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-4">
+          <span className="font-serif-luxury text-xl tracking-wider font-semibold text-stone-900 dark:text-stone-100">
+            L'ARMOIRE
+          </span>
+          <span className="text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700">
+            RAG STYLIST
+          </span>
         </div>
 
-        {/* Mobile View Toggle */}
-        <div className="flex lg:hidden bg-neutral-800 p-0.5 rounded-xl border border-neutral-700">
+        {/* Mobile Tab Switcher */}
+        <div className="flex lg:hidden bg-stone-150 dark:bg-stone-800 p-0.5 rounded-xl border border-stone-200 dark:border-stone-700">
           <button
             onClick={() => setMobileTab('chat')}
             className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
               mobileTab === 'chat'
-                ? 'bg-rose-500 text-white'
-                : 'text-neutral-400 hover:text-white'
+                ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-xs'
+                : 'text-stone-500 hover:text-stone-900 dark:text-stone-400'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -139,8 +135,8 @@ export function App() {
             onClick={() => setMobileTab('wardrobe')}
             className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
               mobileTab === 'wardrobe'
-                ? 'bg-rose-500 text-white'
-                : 'text-neutral-400 hover:text-white'
+                ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-xs'
+                : 'text-stone-500 hover:text-stone-900 dark:text-stone-400'
             }`}
           >
             <Shirt className="w-3.5 h-3.5" />
@@ -148,30 +144,14 @@ export function App() {
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-4 text-xs text-neutral-400">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            База знаний активна
-          </span>
-          <a
-            href="#docs"
-            onClick={(e) => {
-              e.preventDefault();
-              alert(
-                'SDD Документация проекта доступна в каталогах /spec/product/ и /spec/tech/ текущего репозитория.'
-              );
-            }}
-            className="hover:text-neutral-200 transition-colors flex items-center gap-1"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>SDD Спецификация</span>
-          </a>
+        <div className="hidden sm:flex items-center gap-3 text-xs text-stone-400 dark:text-stone-500">
+          <span>Спецификация SDD / Контрольная точка 1</span>
         </div>
       </header>
 
-      {/* Main App Layout */}
+      {/* Main Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Wardrobe Sidebar (Desktop or when tab is active on Mobile) */}
+        {/* Sidebar */}
         <div
           className={`${
             mobileTab === 'wardrobe' ? 'flex' : 'hidden'
@@ -185,7 +165,7 @@ export function App() {
           />
         </div>
 
-        {/* Chat Main Area (Desktop or when tab is active on Mobile) */}
+        {/* Chat Area */}
         <div
           className={`${
             mobileTab === 'chat' ? 'flex' : 'hidden'
@@ -214,6 +194,14 @@ export function App() {
         onAskAboutItem={handleAskAboutItem}
       />
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <MainApp />
+    </ThemeProvider>
   );
 }
 

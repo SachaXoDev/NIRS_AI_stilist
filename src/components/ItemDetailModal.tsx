@@ -1,4 +1,3 @@
-import React from 'react';
 import type { WardrobeItem } from '../types';
 import { X, Sparkles, ShieldCheck } from 'lucide-react';
 
@@ -8,66 +7,71 @@ interface ItemDetailModalProps {
   onAskAboutItem: (item: WardrobeItem) => void;
 }
 
-export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
+export const ItemDetailModal = ({
   item,
   onClose,
   onAskAboutItem,
-}) => {
+}: ItemDetailModalProps) => {
   if (!item) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-      <div className="relative w-full max-w-lg rounded-2xl bg-neutral-900 border border-neutral-800 overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 dark:bg-black/75 backdrop-blur-xs">
+      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 overflow-hidden shadow-2xl transition-all">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-neutral-950/70 text-neutral-300 hover:text-white transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 dark:bg-stone-950/80 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white backdrop-blur-xs transition-colors shadow-xs"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="aspect-video w-full overflow-hidden bg-neutral-950 relative">
+        <div className="aspect-[4/3] w-full overflow-hidden bg-stone-100 dark:bg-stone-950 relative">
           <img
             src={item.imageUrl}
             alt={item.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-stone-900 via-transparent to-transparent" />
         </div>
 
         <div className="p-6 -mt-6 relative">
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-              {item.category.toUpperCase()}
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-semibold bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+              {item.category}
             </span>
             {item.brand && (
-              <span className="text-xs text-neutral-400">Бренд: {item.brand}</span>
+              <span className="text-xs text-stone-500 dark:text-stone-400">• {item.brand}</span>
             )}
           </div>
 
-          <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
+          <h3 className="text-xl font-serif-luxury font-medium text-stone-900 dark:text-stone-100 mb-3">
+            {item.title}
+          </h3>
 
-          <div className="space-y-3 my-4 text-xs sm:text-sm text-neutral-300">
+          <div className="space-y-2.5 my-4 text-xs sm:text-sm text-stone-600 dark:text-stone-300">
             {item.material && (
-              <div className="flex justify-between border-b border-neutral-800 pb-2">
-                <span className="text-neutral-400">Материал:</span>
-                <span className="font-medium text-neutral-200">{item.material}</span>
+              <div className="flex justify-between border-b border-stone-100 dark:border-stone-800 pb-2">
+                <span className="text-stone-400">Материал:</span>
+                <span className="font-medium text-stone-800 dark:text-stone-200">{item.material}</span>
               </div>
             )}
-            <div className="flex justify-between border-b border-neutral-800 pb-2">
-              <span className="text-neutral-400">Цвет:</span>
-              <span className="font-medium text-neutral-200">{item.color}</span>
+            <div className="flex justify-between border-b border-stone-100 dark:border-stone-800 pb-2">
+              <span className="text-stone-400">Цвет:</span>
+              <span className="font-medium text-stone-800 dark:text-stone-200">{item.color}</span>
             </div>
-            <div className="flex justify-between border-b border-neutral-800 pb-2">
-              <span className="text-neutral-400">Сезонность:</span>
-              <span className="font-medium text-neutral-200">{item.season}</span>
+            <div className="flex justify-between border-b border-stone-100 dark:border-stone-800 pb-2">
+              <span className="text-stone-400">Сезонность:</span>
+              <span className="font-medium text-stone-800 dark:text-stone-200">{item.season}</span>
             </div>
+
             {item.embeddingSnippet && (
-              <div className="rounded-xl bg-neutral-950/70 p-3 border border-neutral-800 text-xs">
-                <div className="text-neutral-400 font-medium mb-1 flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  RAG Векторное описание вещи:
+              <div className="rounded-xl bg-stone-50 dark:bg-stone-950/60 p-3 border border-stone-200/80 dark:border-stone-800 text-xs">
+                <div className="text-stone-500 dark:text-stone-400 font-medium mb-1 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-stone-500" />
+                  RAG-индексация описания:
                 </div>
-                <p className="text-neutral-300">{item.embeddingSnippet}</p>
+                <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-sans">
+                  {item.embeddingSnippet}
+                </p>
               </div>
             )}
           </div>
@@ -76,25 +80,23 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             {item.tags.map((tag, idx) => (
               <span
                 key={idx}
-                className="px-2 py-1 rounded-lg text-xs bg-neutral-800 text-neutral-300 border border-neutral-700/60"
+                className="px-2 py-0.5 rounded-lg text-xs bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200/60 dark:border-stone-700"
               >
                 #{tag}
               </span>
             ))}
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => {
-                onAskAboutItem(item);
-                onClose();
-              }}
-              className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 font-semibold text-xs sm:text-sm text-white flex items-center justify-center gap-2 shadow-lg shadow-rose-500/20 transition-all"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Подобрать образ с этой вещью</span>
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              onAskAboutItem(item);
+              onClose();
+            }}
+            className="w-full py-3 px-4 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-xs sm:text-sm font-medium text-white dark:text-stone-900 flex items-center justify-center gap-2 shadow-sm transition-all"
+          >
+            <Sparkles className="w-4 h-4 text-stone-400" />
+            <span>Собрать аутфит вокруг этой вещи</span>
+          </button>
         </div>
       </div>
     </div>

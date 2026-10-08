@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { ClothingCategory, WardrobeItem } from '../types';
-import { Plus, X, UploadCloud } from 'lucide-react';
+import { X, UploadCloud } from 'lucide-react';
 
 interface AddItemModalProps {
   isOpen: boolean;
@@ -8,7 +8,7 @@ interface AddItemModalProps {
   onAdd: (item: WardrobeItem) => void;
 }
 
-export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAdd }) => {
+export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<ClothingCategory>('tops');
   const [color, setColor] = useState('');
@@ -57,111 +57,110 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onA
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-lg rounded-2xl bg-neutral-900 border border-neutral-800 p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity">
+      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 sm:p-7 shadow-2xl transition-all">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-neutral-400 hover:text-white transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <h3 className="text-xl font-bold text-white mb-1 flex items-center gap-2">
-          <UploadCloud className="w-6 h-6 text-rose-500" />
-          Добавить вещь в гардероб
+        <h3 className="text-xl font-serif-luxury font-medium text-stone-900 dark:text-stone-100 mb-1">
+          Добавить предмет гардероба
         </h3>
-        <p className="text-xs text-neutral-400 mb-5">
-          Загрузите фотографию и укажите характеристики. Векторные эмбеддинги будут вычислены для RAG-поиска.
+        <p className="text-xs text-stone-500 dark:text-stone-400 mb-6">
+          Вещь будет автоматически оцифрована и добавлена в контекст RAG-модели
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-neutral-300 mb-1">
+            <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
               Название вещи *
             </label>
             <input
               type="text"
               required
-              placeholder="Например: Оливковый льняной пиджак"
+              placeholder="Например: Оливковый льняной блейзер"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-xl bg-neutral-800 border border-neutral-700 px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-rose-500 transition-colors"
+              className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                Категория *
+              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+                Категория
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ClothingCategory)}
-                className="w-full rounded-xl bg-neutral-800 border border-neutral-700 px-3 py-2.5 text-sm text-white focus:outline-none focus:border-rose-500 transition-colors"
+                className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3 py-2.5 text-sm text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-500 transition-colors"
               >
-                <option value="tops">Верх (рубашки, топы, свитера)</option>
-                <option value="bottoms">Низ (брюки, джинсы, юбки)</option>
-                <option value="outerwear">Верхняя одежда (жакеты, куртки)</option>
+                <option value="tops">Верх (рубашки, топы)</option>
+                <option value="bottoms">Низ (брюки, деним)</option>
+                <option value="outerwear">Верхняя одежда</option>
                 <option value="shoes">Обувь</option>
-                <option value="accessories">Аксессуары (сумки, платки)</option>
+                <option value="accessories">Аксессуары</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">
+              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
                 Цвет
               </label>
               <input
                 type="text"
-                placeholder="Бежевый, графит..."
+                placeholder="Слоновая кость, шоколад..."
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-full rounded-xl bg-neutral-800 border border-neutral-700 px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-rose-500 transition-colors"
+                className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                Бренд (опционально)
+              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+                Бренд
               </label>
               <input
                 type="text"
-                placeholder="Zara, Massimo Dutti, Lime..."
+                placeholder="Massimo Dutti, COS..."
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                className="w-full rounded-xl bg-neutral-800 border border-neutral-700 px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-rose-500 transition-colors"
+                className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-300 mb-1">
-                Теги через запятую
+              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+                Теги стиля
               </label>
               <input
                 type="text"
-                placeholder="оверсайз, лен, лето"
+                placeholder="лен, оверсайз, лето"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                className="w-full rounded-xl bg-neutral-800 border border-neutral-700 px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-rose-500 transition-colors"
+                className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-neutral-300 mb-1">
-              Фотография вещи
+            <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+              Изображение
             </label>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="URL ссылка на фото или загрузите с устройства"
+                placeholder="URL фотографии или выберите файл"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                className="flex-1 rounded-xl bg-neutral-800 border border-neutral-700 px-3.5 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-rose-500 transition-colors"
+                className="flex-1 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
               />
-              <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-xs text-neutral-200 font-medium whitespace-nowrap transition-colors flex items-center gap-1.5">
+              <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-750 text-xs text-stone-700 dark:text-stone-300 font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 border border-stone-200 dark:border-stone-700">
                 <UploadCloud className="w-3.5 h-3.5" />
                 <span>Файл</span>
                 <input
@@ -175,30 +174,29 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onA
           </div>
 
           {imageUrl && (
-            <div className="flex items-center gap-3 p-2 rounded-xl bg-neutral-800/50 border border-neutral-700">
+            <div className="flex items-center gap-3 p-2 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
               <img
                 src={imageUrl}
-                alt="Предпросмотр"
-                className="w-14 h-14 object-cover rounded-lg border border-neutral-700"
+                alt="Превью"
+                className="w-12 h-14 object-cover rounded-lg border border-stone-200 dark:border-stone-800"
               />
-              <span className="text-xs text-neutral-400">Превью изображения готово к индексации</span>
+              <span className="text-xs text-stone-500 dark:text-stone-400">Фото загружено и готово</span>
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-neutral-800">
+          <div className="flex justify-end gap-3 pt-3 border-t border-stone-100 dark:border-stone-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-sm font-medium text-neutral-300 transition-colors"
+              className="px-4 py-2.5 rounded-xl text-xs font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
             >
               Отмена
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-sm font-semibold text-white shadow-lg shadow-rose-500/20 transition-all flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-xs font-medium text-white dark:text-stone-900 shadow-sm transition-all"
             >
-              <Plus className="w-4 h-4" />
-              Добавить в гардероб
+              Сохранить в гардероб
             </button>
           </div>
         </form>
