@@ -7,7 +7,7 @@ import { ChatArea } from './components/ChatArea';
 import { AddItemModal } from './components/AddItemModal';
 import { ItemDetailModal } from './components/ItemDetailModal';
 import { ThemeProvider } from './context/ThemeContext';
-import { MessageSquare, Shirt } from 'lucide-react';
+import { MessageSquare, Shirt, Sparkles } from 'lucide-react';
 
 // Versioned key to guarantee new vector illustrations load
 const STORAGE_KEY = 'closet_wardrobe_v3_illustrations';
@@ -108,26 +108,29 @@ function MainApp() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[#FAF9F6] dark:bg-stone-950 text-stone-900 dark:text-stone-100 overflow-hidden font-sans transition-colors duration-200">
+    <div className="flex flex-col h-screen w-screen bg-gradient-to-br from-rose-50/60 via-amber-50/40 to-violet-50/50 dark:from-stone-950 dark:via-stone-900 dark:to-stone-950 text-stone-900 dark:text-stone-100 overflow-hidden font-sans transition-colors duration-200">
       {/* Top Navbar */}
-      <header className="h-14 border-b border-stone-200/90 dark:border-stone-800 bg-white/70 dark:bg-stone-900/60 backdrop-blur-md px-5 sm:px-8 flex items-center justify-between shrink-0">
+      <header className="h-14 border-b border-rose-200/60 dark:border-stone-800 bg-white/80 dark:bg-stone-900/75 backdrop-blur-md px-5 sm:px-8 flex items-center justify-between shrink-0 shadow-2xs">
         <div className="flex items-center gap-3">
-          <span className="font-serif-luxury text-xl tracking-wider font-semibold text-stone-900 dark:text-stone-100">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-700 to-amber-700 flex items-center justify-center text-white shadow-xs">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <span className="font-serif-luxury text-xl tracking-wider font-semibold bg-gradient-to-r from-stone-900 via-rose-900 to-amber-900 dark:from-stone-100 dark:via-rose-200 dark:to-amber-200 bg-clip-text text-transparent">
             L'ARMOIRE
           </span>
-          <span className="text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700">
+          <span className="text-[10px] tracking-widest uppercase font-semibold px-2.5 py-0.5 rounded-full bg-rose-100/80 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60">
             AI STYLIST
           </span>
         </div>
 
         {/* Mobile Tab Switcher */}
-        <div className="flex lg:hidden bg-stone-150 dark:bg-stone-800 p-0.5 rounded-xl border border-stone-200 dark:border-stone-700">
+        <div className="flex lg:hidden bg-rose-50/80 dark:bg-stone-800 p-0.5 rounded-xl border border-rose-200/70 dark:border-stone-700">
           <button
             onClick={() => setMobileTab('chat')}
             className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
               mobileTab === 'chat'
-                ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-xs'
-                : 'text-stone-500 hover:text-stone-900 dark:text-stone-400'
+                ? 'bg-gradient-to-r from-rose-700 to-amber-700 text-white shadow-xs'
+                : 'text-stone-600 hover:text-stone-900 dark:text-stone-400'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -137,8 +140,8 @@ function MainApp() {
             onClick={() => setMobileTab('wardrobe')}
             className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
               mobileTab === 'wardrobe'
-                ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-xs'
-                : 'text-stone-500 hover:text-stone-900 dark:text-stone-400'
+                ? 'bg-gradient-to-r from-rose-700 to-amber-700 text-white shadow-xs'
+                : 'text-stone-600 hover:text-stone-900 dark:text-stone-400'
             }`}
           >
             <Shirt className="w-3.5 h-3.5" />
@@ -146,9 +149,9 @@ function MainApp() {
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400 dark:text-stone-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>Гардероб оцифрован</span>
+        <div className="hidden sm:flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/50">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Гардероб активен ({wardrobe.length})</span>
         </div>
       </header>
 
