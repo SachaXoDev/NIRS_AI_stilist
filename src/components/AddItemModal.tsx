@@ -12,7 +12,7 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<ClothingCategory>('tops');
   const [color, setColor] = useState('');
-  const [brand, setBrand] = useState('');
+  const [brand, setBrand] = useState('12 STOREEZ');
   const [imageUrl, setImageUrl] = useState('');
   const [tagsInput, setTagsInput] = useState('');
 
@@ -26,12 +26,12 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
       id: `custom-${Date.now()}`,
       title: title.trim(),
       category,
-      color: color.trim() || 'Базовый',
+      color: color.trim() || 'Песочный',
       season: 'all',
       style: ['casual'],
       tags: tagsInput.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean),
-      imageUrl: imageUrl.trim() || 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=600&auto=format&fit=crop&q=80',
-      brand: brand.trim() || 'Личный гардероб',
+      imageUrl: imageUrl.trim() || '/clothes/shirt.svg',
+      brand: brand.trim() || '12 STOREEZ',
       embeddingSnippet: `${title.trim()}. Категория: ${category}. Цвет: ${color}. Теги: ${tagsInput}`,
       uploadedAt: new Date().toISOString().split('T')[0],
     };
@@ -40,7 +40,7 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
     onClose();
     setTitle('');
     setColor('');
-    setBrand('');
+    setBrand('12 STOREEZ');
     setImageUrl('');
     setTagsInput('');
   };
@@ -57,110 +57,110 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 dark:bg-black/70 backdrop-blur-xs transition-opacity">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 sm:p-7 shadow-2xl transition-all">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1A18]/60 backdrop-blur-xs transition-opacity">
+      <div className="relative w-full max-w-lg bg-[#FAF7F2] dark:bg-[#1C1A18] border border-[#DDD3C4] dark:border-[#38332E] p-8 shadow-2xl transition-all">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+          className="absolute top-6 right-6 p-1 text-[#8A7F73] hover:text-[#2C2926] dark:hover:text-[#F3EEE5] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <h3 className="text-xl font-serif-luxury font-medium text-stone-900 dark:text-stone-100 mb-1">
-          Добавить в гардероб
+        <h3 className="text-2xl font-serif-luxury font-light tracking-wide text-[#2C2926] dark:text-[#F3EEE5] uppercase mb-1">
+          Добавить в капсулу
         </h3>
-        <p className="text-xs text-stone-500 dark:text-stone-400 mb-6">
-          Загрузите фотографию и укажите характеристики вещи
+        <p className="text-[11px] tracking-[0.14em] uppercase text-[#8A7F73] dark:text-[#A89C8F] mb-8 font-light">
+          Параметры изделия и ткани
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
-              Название вещи *
+            <label className="block text-[11px] uppercase tracking-[0.14em] font-medium text-[#6E6357] dark:text-[#B5A99B] mb-2">
+              Наименование изделия *
             </label>
             <input
               type="text"
               required
-              placeholder="Например: Льняная оливковая рубашка"
+              placeholder="Например: Двубортный жакет из шерсти"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
+              className="w-full bg-[#FFFFFF] dark:bg-[#25221F] border border-[#DDD3C4] dark:border-[#38332E] px-4 py-3 text-xs text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none focus:border-[#2C2926] transition-colors"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+              <label className="block text-[11px] uppercase tracking-[0.14em] font-medium text-[#6E6357] dark:text-[#B5A99B] mb-2">
                 Категория
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ClothingCategory)}
-                className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3 py-2.5 text-sm text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-500 transition-colors"
+                className="w-full bg-[#FFFFFF] dark:bg-[#25221F] border border-[#DDD3C4] dark:border-[#38332E] px-3 py-3 text-xs text-[#2C2926] dark:text-[#EAE6DF] focus:outline-none focus:border-[#2C2926] transition-colors"
               >
-                <option value="tops">Верх (рубашки, топы, джемперы)</option>
-                <option value="bottoms">Низ (брюки, джинсы, юбки)</option>
-                <option value="outerwear">Верхняя одежда (пальто, жакеты)</option>
+                <option value="tops">Верх (рубашки, свитера)</option>
+                <option value="bottoms">Низ (брюки, юбки)</option>
+                <option value="outerwear">Пальто и тренчи</option>
                 <option value="shoes">Обувь</option>
-                <option value="accessories">Аксессуары (сумки, шарфы)</option>
+                <option value="accessories">Аксессуары</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
-                Цвет
+              <label className="block text-[11px] uppercase tracking-[0.14em] font-medium text-[#6E6357] dark:text-[#B5A99B] mb-2">
+                Оттенок
               </label>
               <input
                 type="text"
-                placeholder="Слоновая кость, шоколад..."
+                placeholder="Кэмел, графит, экрю..."
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
+                className="w-full bg-[#FFFFFF] dark:bg-[#25221F] border border-[#DDD3C4] dark:border-[#38332E] px-4 py-3 text-xs text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none focus:border-[#2C2926] transition-colors"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+              <label className="block text-[11px] uppercase tracking-[0.14em] font-medium text-[#6E6357] dark:text-[#B5A99B] mb-2">
                 Бренд
               </label>
               <input
                 type="text"
-                placeholder="Massimo Dutti, COS, Zara..."
+                placeholder="12 STOREEZ, COS..."
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
+                className="w-full bg-[#FFFFFF] dark:bg-[#25221F] border border-[#DDD3C4] dark:border-[#38332E] px-4 py-3 text-xs text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none focus:border-[#2C2926] transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
-                Теги стиля
+              <label className="block text-[11px] uppercase tracking-[0.14em] font-medium text-[#6E6357] dark:text-[#B5A99B] mb-2">
+                Особенности
               </label>
               <input
                 type="text"
-                placeholder="лен, оверсайз, лето"
+                placeholder="кашемир, оверсайз..."
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                className="w-full rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2.5 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
+                className="w-full bg-[#FFFFFF] dark:bg-[#25221F] border border-[#DDD3C4] dark:border-[#38332E] px-4 py-3 text-xs text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none focus:border-[#2C2926] transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
-              Изображение
+            <label className="block text-[11px] uppercase tracking-[0.14em] font-medium text-[#6E6357] dark:text-[#B5A99B] mb-2">
+              Фотография
             </label>
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="URL фотографии или загрузите файл"
+                placeholder="Ссылка на фото"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                className="flex-1 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 px-3.5 py-2 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-stone-500 transition-colors"
+                className="flex-1 bg-[#FFFFFF] dark:bg-[#25221F] border border-[#DDD3C4] dark:border-[#38332E] px-4 py-2.5 text-xs text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none focus:border-[#2C2926] transition-colors"
               />
-              <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-750 text-xs text-stone-700 dark:text-stone-300 font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 border border-stone-200 dark:border-stone-700">
+              <label className="cursor-pointer px-4 py-2.5 bg-[#EDE6DC] dark:bg-[#2A2723] hover:bg-[#E2D9CC] text-[11px] uppercase tracking-[0.12em] font-medium text-[#4A433A] dark:text-[#C5BCB1] whitespace-nowrap transition-colors flex items-center gap-1.5 border border-[#DDD3C4] dark:border-[#38332E]">
                 <UploadCloud className="w-3.5 h-3.5" />
                 <span>Файл</span>
                 <input
@@ -173,30 +173,19 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
             </div>
           </div>
 
-          {imageUrl && (
-            <div className="flex items-center gap-3 p-2 rounded-xl bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800">
-              <img
-                src={imageUrl}
-                alt="Превью"
-                className="w-12 h-14 object-cover rounded-lg border border-stone-200 dark:border-stone-800"
-              />
-              <span className="text-xs text-stone-500 dark:text-stone-400">Фото успешно добавлено</span>
-            </div>
-          )}
-
-          <div className="flex justify-end gap-3 pt-3 border-t border-stone-100 dark:border-stone-800">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[#E3DCD1] dark:border-[#2F2C28]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl text-xs font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+              className="px-5 py-2.5 text-[11px] uppercase tracking-[0.14em] text-[#8A7F73] hover:text-[#2C2926] dark:hover:text-[#EAE6DF] transition-colors"
             >
               Отмена
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white text-xs font-medium text-white dark:text-stone-900 shadow-sm transition-all"
+              className="px-7 py-2.5 bg-[#2C2926] hover:bg-[#423D38] dark:bg-[#EAE6DF] dark:hover:bg-[#FFFFFF] text-white dark:text-[#1C1A18] text-[11px] font-medium uppercase tracking-[0.14em] transition-all"
             >
-              Сохранить вещь
+              Сохранить
             </button>
           </div>
         </form>

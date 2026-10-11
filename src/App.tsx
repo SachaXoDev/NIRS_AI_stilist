@@ -7,10 +7,9 @@ import { ChatArea } from './components/ChatArea';
 import { AddItemModal } from './components/AddItemModal';
 import { ItemDetailModal } from './components/ItemDetailModal';
 import { ThemeProvider } from './context/ThemeContext';
-import { MessageSquare, Shirt, Sparkles } from 'lucide-react';
+import { MessageSquare, Shirt } from 'lucide-react';
 
-// Versioned key to guarantee new vector illustrations load
-const STORAGE_KEY = 'closet_wardrobe_v3_illustrations';
+const STORAGE_KEY = 'closet_wardrobe_v4_12storeez';
 
 function MainApp() {
   const [wardrobe, setWardrobe] = useState<WardrobeItem[]>(() => {
@@ -31,9 +30,9 @@ function MainApp() {
       id: 'welcome-msg',
       sender: 'assistant',
       timestamp: 'Сегодня',
-      text: 'Добро пожаловать в персональный гардеробный сервис.\n\nВ вашей капсуле сейчас ' +
+      text: 'Добро пожаловать в персональный сервис капсульного гардероба.\n\nВ вашей коллекции сейчас ' +
         INITIAL_WARDROBE.length +
-        ' предметов. Напишите, какой образ вы хотите составить: укажите повод, погоду или выберите конкретную вещь из гардероба — и я предложу гармоничный аутфит с советами по стайлингу.',
+        ' продуманных вещей. Опишите повод, погоду или выберите вещь, вокруг которой хотите выстроить образ — я предложу законченный аутфит с точными рекомендациями по слоям и деталям.',
     },
   ]);
 
@@ -96,62 +95,60 @@ function MainApp() {
         id: `welcome-${Date.now()}`,
         sender: 'assistant',
         timestamp: 'Только что',
-        text: 'Готов собрать новый аутфит. Для какого случая или настроения подбираем образ?',
+        text: 'Готов собрать новый образ. Для какого случая или настроения подбираем комплект?',
       },
     ]);
   };
 
   const handleAskAboutItem = (item: WardrobeItem) => {
-    const prompt = `Подбери законченный стильный образ с вещью «${item.title}». С чем из моего гардероба она смотрится гармоничнее всего?`;
+    const prompt = `Подбери законченный образ в эстетике 12 STOREEZ с вещью «${item.title}». С чем из моей капсулы она комбинируется гармоничнее всего?`;
     setMobileTab('chat');
     handleSendMessage(prompt);
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-gradient-to-br from-rose-50/60 via-amber-50/40 to-violet-50/50 dark:from-stone-950 dark:via-stone-900 dark:to-stone-950 text-stone-900 dark:text-stone-100 overflow-hidden font-sans transition-colors duration-200">
-      {/* Top Navbar */}
-      <header className="h-14 border-b border-rose-200/60 dark:border-stone-800 bg-white/80 dark:bg-stone-900/75 backdrop-blur-md px-5 sm:px-8 flex items-center justify-between shrink-0 shadow-2xs">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-700 to-amber-700 flex items-center justify-center text-white shadow-xs">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <span className="font-serif-luxury text-xl tracking-wider font-semibold bg-gradient-to-r from-stone-900 via-rose-900 to-amber-900 dark:from-stone-100 dark:via-rose-200 dark:to-amber-200 bg-clip-text text-transparent">
-            L'ARMOIRE
+    <div className="flex flex-col h-screen w-screen bg-[#F7F4EE] dark:bg-[#1C1A18] text-[#2C2926] dark:text-[#EAE6DF] overflow-hidden font-sans transition-colors duration-300">
+      {/* Top Navbar in 12 STOREEZ style */}
+      <header className="h-16 border-b border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE]/90 dark:bg-[#1C1A18]/90 backdrop-blur-md px-6 sm:px-10 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-4">
+          <span className="font-serif-luxury text-2xl tracking-[0.18em] font-light text-[#2C2926] dark:text-[#F3EEE5] uppercase">
+            12 STOREEZ
           </span>
-          <span className="text-[10px] tracking-widest uppercase font-semibold px-2.5 py-0.5 rounded-full bg-rose-100/80 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60">
-            AI STYLIST
+          <span className="hidden sm:inline-block w-px h-4 bg-[#D6CDC0] dark:bg-[#3D3833]" />
+          <span className="text-[11px] tracking-[0.2em] uppercase font-light text-[#8A7F73] dark:text-[#A89C8F]">
+            AI ATELIER
           </span>
         </div>
 
         {/* Mobile Tab Switcher */}
-        <div className="flex lg:hidden bg-rose-50/80 dark:bg-stone-800 p-0.5 rounded-xl border border-rose-200/70 dark:border-stone-700">
+        <div className="flex lg:hidden bg-[#ECE6DC] dark:bg-[#282522] p-0.5 rounded-lg border border-[#DCD3C5] dark:border-[#38332E]">
           <button
             onClick={() => setMobileTab('chat')}
-            className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs tracking-wider uppercase font-medium rounded-md transition-all flex items-center gap-1.5 ${
               mobileTab === 'chat'
-                ? 'bg-gradient-to-r from-rose-700 to-amber-700 text-white shadow-xs'
-                : 'text-stone-600 hover:text-stone-900 dark:text-stone-400'
+                ? 'bg-[#2C2926] dark:bg-[#EAE6DF] text-white dark:text-[#1C1A18] shadow-xs'
+                : 'text-[#8A7F73] hover:text-[#2C2926] dark:text-[#A89C8F]'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>Чат</span>
+            <span>Стилист</span>
           </button>
           <button
             onClick={() => setMobileTab('wardrobe')}
-            className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs tracking-wider uppercase font-medium rounded-md transition-all flex items-center gap-1.5 ${
               mobileTab === 'wardrobe'
-                ? 'bg-gradient-to-r from-rose-700 to-amber-700 text-white shadow-xs'
-                : 'text-stone-600 hover:text-stone-900 dark:text-stone-400'
+                ? 'bg-[#2C2926] dark:bg-[#EAE6DF] text-white dark:text-[#1C1A18] shadow-xs'
+                : 'text-[#8A7F73] hover:text-[#2C2926] dark:text-[#A89C8F]'
             }`}
           >
             <Shirt className="w-3.5 h-3.5" />
-            <span>Гардероб ({wardrobe.length})</span>
+            <span>Капсула ({wardrobe.length})</span>
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/50">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Гардероб активен ({wardrobe.length})</span>
+        <div className="hidden sm:flex items-center gap-2.5 text-xs tracking-wider font-light text-[#8A7F73] dark:text-[#A89C8F]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#B29377]" />
+          <span className="uppercase tracking-[0.14em] text-[10px]">Личная капсула ({wardrobe.length} позиций)</span>
         </div>
       </header>
 
@@ -161,7 +158,7 @@ function MainApp() {
         <div
           className={`${
             mobileTab === 'wardrobe' ? 'flex' : 'hidden'
-          } lg:flex w-full lg:w-96 shrink-0 h-full overflow-hidden`}
+          } lg:flex w-full lg:w-[410px] shrink-0 h-full overflow-hidden`}
         >
           <WardrobeSidebar
             wardrobe={wardrobe}

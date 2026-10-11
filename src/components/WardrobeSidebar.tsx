@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ClothingCategory, WardrobeItem } from '../types';
-import { Plus, Trash2, Search, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Search } from 'lucide-react';
 
 interface WardrobeSidebarProps {
   wardrobe: WardrobeItem[];
@@ -9,13 +9,13 @@ interface WardrobeSidebarProps {
   onItemClick: (item: WardrobeItem) => void;
 }
 
-const CATEGORIES: { id: ClothingCategory | 'all'; label: string; badgeColor: string }[] = [
-  { id: 'all', label: 'Все', badgeColor: 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200' },
-  { id: 'tops', label: 'Верх', badgeColor: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200' },
-  { id: 'bottoms', label: 'Низ', badgeColor: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-200' },
-  { id: 'outerwear', label: 'Верхняя', badgeColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200' },
-  { id: 'shoes', label: 'Обувь', badgeColor: 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-200' },
-  { id: 'accessories', label: 'Аксессуары', badgeColor: 'bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950 dark:text-fuchsia-200' },
+const CATEGORIES: { id: ClothingCategory | 'all'; label: string }[] = [
+  { id: 'all', label: 'Все' },
+  { id: 'tops', label: 'Верх' },
+  { id: 'bottoms', label: 'Низ' },
+  { id: 'outerwear', label: 'Пальто и жакеты' },
+  { id: 'shoes', label: 'Обувь' },
+  { id: 'accessories', label: 'Аксессуары' },
 ];
 
 export const WardrobeSidebar = ({
@@ -38,40 +38,37 @@ export const WardrobeSidebar = ({
   });
 
   return (
-    <aside className="w-full h-full flex flex-col bg-stone-50/90 dark:bg-stone-900/90 border-r border-rose-200/50 dark:border-stone-800 select-none">
+    <aside className="w-full h-full flex flex-col bg-[#F7F4EE] dark:bg-[#1E1B19] border-r border-[#E3DCD1] dark:border-[#2F2C28] select-none">
       {/* Top Header */}
-      <div className="p-4 sm:p-5 border-b border-rose-200/50 dark:border-stone-800 flex items-center justify-between">
+      <div className="p-6 border-b border-[#E3DCD1] dark:border-[#2F2C28] flex items-center justify-between">
         <div>
-          <h2 className="text-base font-serif-luxury font-medium tracking-wide text-stone-900 dark:text-stone-100 flex items-center gap-2">
-            <span>Ваш гардероб</span>
-            <span className="px-2 py-0.5 rounded-full text-xs font-sans font-bold bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-xs">
-              {wardrobe.length}
-            </span>
+          <h2 className="text-xl font-serif-luxury font-light tracking-[0.06em] text-[#2C2926] dark:text-[#F3EEE5] uppercase">
+            Ваша капсула
           </h2>
-          <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
-            Персональная капсула
+          <p className="text-[11px] uppercase tracking-[0.15em] text-[#8A7F73] dark:text-[#A89C8F] mt-1 font-light">
+            {wardrobe.length} предметов гардероба
           </p>
         </div>
 
         <button
           onClick={onOpenAddModal}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-700 to-amber-700 hover:from-rose-800 hover:to-amber-800 text-white text-xs font-medium shadow-sm transition-all hover:scale-105 active:scale-95"
+          className="flex items-center gap-2 px-4 py-2 rounded-none bg-[#2C2926] hover:bg-[#423D38] dark:bg-[#EAE6DF] dark:hover:bg-[#FFFFFF] text-white dark:text-[#1C1A18] text-[11px] font-medium tracking-[0.12em] uppercase transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Добавить</span>
         </button>
       </div>
 
-      {/* Categories Filter */}
-      <div className="flex gap-1.5 px-3 pt-3 pb-1 overflow-x-auto scrollbar-none">
+      {/* Categories Filter in 12 STOREEZ minimal tabs */}
+      <div className="flex gap-2 px-6 pt-4 pb-2 overflow-x-auto scrollbar-none border-b border-[#ECE5D9] dark:border-[#2A2723]">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all ${
+            className={`pb-2.5 text-[11px] uppercase tracking-[0.14em] font-medium whitespace-nowrap transition-all border-b-2 ${
               selectedCategory === cat.id
-                ? 'bg-gradient-to-r from-stone-900 to-rose-950 dark:from-stone-100 dark:to-rose-100 text-white dark:text-stone-900 font-medium shadow-xs'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:bg-rose-50/80 dark:hover:bg-stone-800'
+                ? 'border-[#2C2926] dark:border-[#EAE6DF] text-[#2C2926] dark:text-[#EAE6DF]'
+                : 'border-transparent text-[#8A7F73] dark:text-[#807568] hover:text-[#2C2926] dark:hover:text-[#D5CCC0]'
             }`}
           >
             {cat.label}
@@ -80,26 +77,26 @@ export const WardrobeSidebar = ({
       </div>
 
       {/* Search Bar */}
-      <div className="p-3">
+      <div className="px-6 py-3.5">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-rose-700/60 dark:text-rose-400/60" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8A7F73]" />
           <input
             type="text"
-            placeholder="Поиск по названию, цвету, бренду..."
+            placeholder="Поиск по крою, ткани, цвету..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-white dark:bg-stone-950/70 border border-rose-200/60 dark:border-stone-800 text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:border-rose-400 dark:focus:border-rose-600 transition-colors shadow-2xs"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-none bg-[#EDE7DC]/70 dark:bg-[#262320] border border-[#DCD3C5] dark:border-[#38332E] text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none focus:border-[#8A7F73] transition-colors"
           />
         </div>
       </div>
 
       {/* Wardrobe Items List */}
-      <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-2">
+      <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-3">
         {filteredItems.length === 0 ? (
-          <div className="text-center py-12 px-4">
-            <p className="text-xs text-stone-500 dark:text-stone-400">Вещи не найдены</p>
-            <p className="text-[11px] text-stone-400 dark:text-stone-500 mt-1">
-              Измените поисковый запрос или фильтр категории
+          <div className="text-center py-16 px-4">
+            <p className="font-serif-luxury text-lg text-[#8A7F73] italic">В этой категории пока нет вещей</p>
+            <p className="text-[11px] uppercase tracking-[0.1em] text-[#A69B8E] mt-1">
+              Нажмите «Добавить», чтобы оцифровать одежду
             </p>
           </div>
         ) : (
@@ -107,33 +104,26 @@ export const WardrobeSidebar = ({
             <div
               key={item.id}
               onClick={() => onItemClick(item)}
-              className="group relative flex items-center gap-3 p-2.5 rounded-xl bg-white dark:bg-stone-900/60 hover:bg-rose-50/50 dark:hover:bg-stone-850 border border-stone-200/80 dark:border-stone-800/80 hover:border-rose-300 dark:hover:border-stone-700 cursor-pointer transition-all duration-200 shadow-2xs hover:shadow-xs"
+              className="group relative flex items-center gap-4 p-3 rounded-none bg-[#EFE9DF]/80 dark:bg-[#25221F] hover:bg-[#EAE2D5] dark:hover:bg-[#2C2925] border border-[#DDD4C6] dark:border-[#35302B] hover:border-[#B29377] dark:hover:border-[#8F7761] cursor-pointer transition-all duration-200"
             >
-              <div className="w-14 h-16 rounded-lg overflow-hidden bg-stone-100 dark:bg-stone-950 shrink-0 border border-stone-200/60 dark:border-stone-800">
+              <div className="w-16 h-20 overflow-hidden bg-[#ECE5DB] dark:bg-[#1A1816] shrink-0 border border-[#D5CBC0] dark:border-[#2D2A26]">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
 
               <div className="flex-1 min-w-0 pr-6">
-                <h4 className="text-xs font-medium text-stone-900 dark:text-stone-100 truncate">
+                <span className="text-[10px] tracking-[0.14em] uppercase text-[#8A7F73] dark:text-[#9E9283] block mb-0.5">
+                  {item.brand || '12 STOREEZ'}
+                </span>
+                <h4 className="text-xs font-medium text-[#2C2926] dark:text-[#EAE6DF] truncate tracking-tight">
                   {item.title}
                 </h4>
-                <div className="flex items-center gap-1.5 mt-0.5 text-[11px] text-stone-500 dark:text-stone-400">
-                  <span className="font-medium text-stone-700 dark:text-stone-300">{item.color}</span>
-                  {item.brand && <span>• {item.brand}</span>}
-                </div>
-                <div className="flex flex-wrap gap-1 mt-1.5">
-                  {item.tags.slice(0, 2).map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="px-1.5 py-0.2 rounded-md text-[9px] bg-rose-100/70 dark:bg-rose-950/50 text-rose-900 dark:text-rose-300 font-medium"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
+                <div className="flex items-center gap-2 mt-1 text-[11px] text-[#7A6F63] dark:text-[#ABA092]">
+                  <span className="font-light">{item.color}</span>
+                  {item.material && <span>• {item.material}</span>}
                 </div>
               </div>
 
@@ -143,8 +133,8 @@ export const WardrobeSidebar = ({
                   e.stopPropagation();
                   onDeleteItem(item.id);
                 }}
-                title="Удалить вещь"
-                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all"
+                title="Убрать из капсулы"
+                className="opacity-0 group-hover:opacity-100 p-2 text-[#8A7F73] hover:text-[#991B1B] transition-all"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -154,11 +144,10 @@ export const WardrobeSidebar = ({
       </div>
 
       {/* Bottom Footer Notice */}
-      <div className="p-3 border-t border-rose-200/50 dark:border-stone-800 bg-white/70 dark:bg-stone-900/60 text-center">
-        <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-rose-800 dark:text-rose-300">
-          <Sparkles className="w-3 h-3 text-amber-500" />
-          <span>Вещи готовы для составления образов</span>
-        </div>
+      <div className="p-3 border-t border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F1ECE2] dark:bg-[#221F1C] text-center">
+        <p className="text-[10px] uppercase tracking-[0.16em] text-[#8A7F73] dark:text-[#A89C8F]">
+          Премиальные ткани • Натуральные оттенки
+        </p>
       </div>
     </aside>
   );
