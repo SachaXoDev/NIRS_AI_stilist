@@ -6,10 +6,44 @@ import { WardrobeSidebar } from './components/WardrobeSidebar';
 import { ChatArea } from './components/ChatArea';
 import { AddItemModal } from './components/AddItemModal';
 import { ItemDetailModal } from './components/ItemDetailModal';
-import { ThemeProvider } from './context/ThemeContext';
-import { MessageSquare, Shirt } from 'lucide-react';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { MessageSquare, Shirt, Sun, Moon } from 'lucide-react';
 
 const STORAGE_KEY = 'closet_wardrobe_v4_12storeez';
+
+function HeaderContent({ wardrobeCount }: { wardrobeCount: number }) {
+  const { theme, toggleTheme } = useTheme();
+
+  return (
+    <header className="h-14 sm:h-16 border-b border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE]/95 dark:bg-[#1C1A18]/95 backdrop-blur-md px-4 sm:px-10 flex items-center justify-between shrink-0 z-20">
+      <div className="flex items-center gap-3 sm:gap-4">
+        <span className="font-serif-luxury text-xl sm:text-2xl tracking-[0.16em] sm:tracking-[0.18em] font-light text-[#2C2926] dark:text-[#F3EEE5] uppercase">
+          12 STOREEZ
+        </span>
+        <span className="w-px h-3.5 sm:h-4 bg-[#D6CDC0] dark:bg-[#3D3833]" />
+        <span className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase font-light text-[#8A7F73] dark:text-[#A89C8F]">
+          AI ATELIER
+        </span>
+      </div>
+
+      <div className="flex items-center gap-2 sm:gap-4">
+        <div className="hidden sm:flex items-center gap-2 text-xs tracking-wider font-light text-[#8A7F73] dark:text-[#A89C8F]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#B29377]" />
+          <span className="uppercase tracking-[0.14em] text-[10px]">Личная капсула ({wardrobeCount})</span>
+        </div>
+
+        {/* Theme button in header for quick mobile access */}
+        <button
+          onClick={toggleTheme}
+          title={theme === 'light' ? 'Включить вечерний режим' : 'Включить дневной режим'}
+          className="p-2 text-[#8A7F73] hover:text-[#2C2926] dark:hover:text-[#F3EEE5] transition-colors"
+        >
+          {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+        </button>
+      </div>
+    </header>
+  );
+}
 
 function MainApp() {
   const [wardrobe, setWardrobe] = useState<WardrobeItem[]>(() => {
@@ -107,54 +141,13 @@ function MainApp() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[#F7F4EE] dark:bg-[#1C1A18] text-[#2C2926] dark:text-[#EAE6DF] overflow-hidden font-sans transition-colors duration-300">
-      {/* Top Navbar in 12 STOREEZ style */}
-      <header className="h-16 border-b border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE]/90 dark:bg-[#1C1A18]/90 backdrop-blur-md px-6 sm:px-10 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <span className="font-serif-luxury text-2xl tracking-[0.18em] font-light text-[#2C2926] dark:text-[#F3EEE5] uppercase">
-            12 STOREEZ
-          </span>
-          <span className="hidden sm:inline-block w-px h-4 bg-[#D6CDC0] dark:bg-[#3D3833]" />
-          <span className="text-[11px] tracking-[0.2em] uppercase font-light text-[#8A7F73] dark:text-[#A89C8F]">
-            AI ATELIER
-          </span>
-        </div>
+    <div className="flex flex-col h-[100dvh] w-screen bg-[#F7F4EE] dark:bg-[#1C1A18] text-[#2C2926] dark:text-[#EAE6DF] overflow-hidden font-sans transition-colors duration-300">
+      {/* Top Navbar */}
+      <HeaderContent wardrobeCount={wardrobe.length} />
 
-        {/* Mobile Tab Switcher */}
-        <div className="flex lg:hidden bg-[#ECE6DC] dark:bg-[#282522] p-0.5 rounded-lg border border-[#DCD3C5] dark:border-[#38332E]">
-          <button
-            onClick={() => setMobileTab('chat')}
-            className={`px-3 py-1.5 text-xs tracking-wider uppercase font-medium rounded-md transition-all flex items-center gap-1.5 ${
-              mobileTab === 'chat'
-                ? 'bg-[#2C2926] dark:bg-[#EAE6DF] text-white dark:text-[#1C1A18] shadow-xs'
-                : 'text-[#8A7F73] hover:text-[#2C2926] dark:text-[#A89C8F]'
-            }`}
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Стилист</span>
-          </button>
-          <button
-            onClick={() => setMobileTab('wardrobe')}
-            className={`px-3 py-1.5 text-xs tracking-wider uppercase font-medium rounded-md transition-all flex items-center gap-1.5 ${
-              mobileTab === 'wardrobe'
-                ? 'bg-[#2C2926] dark:bg-[#EAE6DF] text-white dark:text-[#1C1A18] shadow-xs'
-                : 'text-[#8A7F73] hover:text-[#2C2926] dark:text-[#A89C8F]'
-            }`}
-          >
-            <Shirt className="w-3.5 h-3.5" />
-            <span>Капсула ({wardrobe.length})</span>
-          </button>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-2.5 text-xs tracking-wider font-light text-[#8A7F73] dark:text-[#A89C8F]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#B29377]" />
-          <span className="uppercase tracking-[0.14em] text-[10px]">Личная капсула ({wardrobe.length} позиций)</span>
-        </div>
-      </header>
-
-      {/* Main Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
+      {/* Main Layout Area */}
+      <div className="flex-1 flex overflow-hidden pb-14 lg:pb-0">
+        {/* Wardrobe Sidebar */}
         <div
           className={`${
             mobileTab === 'wardrobe' ? 'flex' : 'hidden'
@@ -183,6 +176,35 @@ function MainApp() {
           />
         </div>
       </div>
+
+      {/* Mobile Native-Style Bottom Navigation Bar */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-[#F7F4EE]/95 dark:bg-[#1C1A18]/95 backdrop-blur-md border-t border-[#E3DCD1] dark:border-[#2F2C28] flex items-center justify-around px-4 z-30 pb-safe">
+        <button
+          onClick={() => setMobileTab('chat')}
+          className={`flex flex-col items-center justify-center flex-1 h-full py-1 transition-all ${
+            mobileTab === 'chat'
+              ? 'text-[#2C2926] dark:text-[#F3EEE5] font-medium'
+              : 'text-[#8A7F73] dark:text-[#6F665C]'
+          }`}
+        >
+          <MessageSquare className="w-4 h-4 mb-1" />
+          <span className="text-[10px] tracking-[0.14em] uppercase">Стилист</span>
+        </button>
+
+        <button
+          onClick={() => setMobileTab('wardrobe')}
+          className={`flex flex-col items-center justify-center flex-1 h-full py-1 transition-all ${
+            mobileTab === 'wardrobe'
+              ? 'text-[#2C2926] dark:text-[#F3EEE5] font-medium'
+              : 'text-[#8A7F73] dark:text-[#6F665C]'
+          }`}
+        >
+          <Shirt className="w-4 h-4 mb-1" />
+          <span className="text-[10px] tracking-[0.14em] uppercase">
+            Капсула ({wardrobe.length})
+          </span>
+        </button>
+      </nav>
 
       {/* Modals */}
       <AddItemModal
