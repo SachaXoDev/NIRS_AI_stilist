@@ -83,12 +83,9 @@ export const ChatArea = ({
           )}
 
           <div className="min-w-0">
-            <h2 className="text-xs sm:text-sm font-semibold text-[#111111] dark:text-[#FFFFFF] truncate tracking-tight">
+            <h2 className="text-sm sm:text-base font-semibold text-[#111111] dark:text-[#FFFFFF] truncate tracking-tight">
               {chatTitle}
             </h2>
-            <p className="text-[9px] sm:text-[10px] tracking-[0.14em] uppercase text-[#6E6457] dark:text-[#B5AAA0] font-medium truncate">
-              {messages.length} сообщений в переписке
-            </p>
           </div>
         </div>
 
