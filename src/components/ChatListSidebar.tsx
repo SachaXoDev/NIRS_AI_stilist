@@ -29,11 +29,11 @@ export const ChatListSidebar = ({
       {/* Header */}
       <div className="p-4 sm:p-5 border-b border-[#D8CFC2] dark:border-[#2D2A26] flex items-center justify-between">
         <div>
-          <span className="text-[10px] tracking-[0.18em] uppercase text-[#6B6154] dark:text-[#B5AAA0] font-semibold">
-            История стилиста
+          <span className="text-[10px] tracking-[0.2em] uppercase text-[#6B6154] dark:text-[#B5AAA0] font-semibold">
+            Консультации
           </span>
           <h3 className="text-sm font-semibold tracking-wide text-[#111111] dark:text-[#FFFFFF] uppercase">
-            {threads.length} диалогов
+            История диалогов
           </h3>
         </div>
 
@@ -43,7 +43,7 @@ export const ChatListSidebar = ({
           className="flex items-center gap-1.5 px-3 py-1.5 bg-[#111111] hover:bg-[#2E2E2E] dark:bg-[#FFFFFF] dark:hover:bg-[#EAEAEA] text-white dark:text-[#111111] text-[10px] uppercase tracking-[0.14em] font-semibold transition-all shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>Новый</span>
+          <span>Новый чат</span>
         </button>
       </div>
 
@@ -53,7 +53,7 @@ export const ChatListSidebar = ({
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#574D41] dark:text-[#A89C8F]" />
           <input
             type="text"
-            placeholder="Поиск по чатам..."
+            placeholder="Поиск по диалогам..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-[#25221E] border border-[#C5BBAE] dark:border-[#3E3830] text-[#111111] dark:text-[#FFFFFF] placeholder-[#7D7366] font-medium focus:outline-none focus:border-[#111111] dark:focus:border-[#FFFFFF] transition-colors"

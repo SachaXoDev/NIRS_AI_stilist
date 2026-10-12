@@ -20,12 +20,10 @@ function HeaderContent({
   activeTab,
   onTabChange,
   wardrobeCount,
-  threadsCount,
 }: {
   activeTab: ActiveTab;
   onTabChange: (tab: ActiveTab) => void;
   wardrobeCount: number;
-  threadsCount: number;
 }) {
   const { theme, toggleTheme } = useTheme();
 
@@ -33,11 +31,11 @@ function HeaderContent({
     <header className="h-14 sm:h-16 border-b border-[#D8CFC2] dark:border-[#2D2A26] bg-[#FAF7F2]/95 dark:bg-[#161412]/95 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between shrink-0 z-20">
       {/* Brand Logo */}
       <div className="flex items-center gap-3 sm:gap-4">
-        <span className="font-serif-luxury text-xl sm:text-2xl tracking-[0.16em] sm:tracking-[0.18em] font-medium text-[#111111] dark:text-[#FFFFFF] uppercase select-none">
+        <span className="font-serif-luxury text-xl sm:text-2xl tracking-[0.18em] sm:tracking-[0.2em] font-medium text-[#111111] dark:text-[#FFFFFF] uppercase select-none">
           12 STOREEZ
         </span>
         <span className="w-px h-3.5 sm:h-4 bg-[#B5A898] dark:border-[#423C34]" />
-        <span className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase font-semibold text-[#544B3F] dark:text-[#C5BBAE]">
+        <span className="text-[10px] sm:text-[11px] tracking-[0.24em] uppercase font-medium text-[#544B3F] dark:text-[#C5BBAE]">
           AI ATELIER
         </span>
       </div>
@@ -47,7 +45,7 @@ function HeaderContent({
         <nav className="flex items-center border border-[#C5BBAE] dark:border-[#3E3830] p-1 bg-[#EFE9DF]/80 dark:bg-[#221F1C]">
           <button
             onClick={() => onTabChange('chat')}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-semibold transition-all ${
+            className={`flex items-center gap-2 px-3 sm:px-5 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.16em] font-medium transition-all ${
               activeTab === 'chat'
                 ? 'bg-[#111111] dark:bg-[#FFFFFF] text-white dark:text-[#111111] shadow-xs'
                 : 'text-[#4A4135] dark:text-[#D5CCC0] hover:text-[#111111] dark:hover:text-[#FFFFFF]'
@@ -55,12 +53,11 @@ function HeaderContent({
           >
             <MessageSquare className="w-3.5 h-3.5" />
             <span>Стилист</span>
-            <span className="text-[9px] opacity-80">({threadsCount})</span>
           </button>
 
           <button
             onClick={() => onTabChange('wardrobe')}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-semibold transition-all ${
+            className={`flex items-center gap-2 px-3 sm:px-5 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.16em] font-medium transition-all ${
               activeTab === 'wardrobe'
                 ? 'bg-[#111111] dark:bg-[#FFFFFF] text-white dark:text-[#111111] shadow-xs'
                 : 'text-[#4A4135] dark:text-[#D5CCC0] hover:text-[#111111] dark:hover:text-[#FFFFFF]'
@@ -68,7 +65,7 @@ function HeaderContent({
           >
             <Shirt className="w-3.5 h-3.5" />
             <span>Капсула</span>
-            <span className="text-[9px] opacity-80">({wardrobeCount})</span>
+            <span className="text-[9px] opacity-80 font-normal">({wardrobeCount})</span>
           </button>
         </nav>
 
@@ -269,7 +266,6 @@ function MainApp() {
           setMobileViewingList(false);
         }}
         wardrobeCount={wardrobe.length}
-        threadsCount={threads.length}
       />
 
       {/* Main Workspace */}
