@@ -3,16 +3,21 @@ import type { ChatMessage, WardrobeItem } from '../types';
 import { OutfitCard } from './OutfitCard';
 import {
   Send,
-  RotateCcw,
+  Plus,
   ArrowUpRight,
+  ChevronLeft,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 interface ChatAreaProps {
+  chatTitle: string;
   messages: ChatMessage[];
   isLoading: boolean;
   onSendMessage: (text: string) => void;
-  onResetChat: () => void;
+  onCreateNewChat: () => void;
   onSelectItem: (item: WardrobeItem) => void;
+  onOpenChatListModal?: () => void; // for mobile / tablet back button
+  showBackButton?: boolean;
 }
 
 const QUICK_PROMPTS = [
@@ -35,11 +40,14 @@ const QUICK_PROMPTS = [
 ];
 
 export const ChatArea = ({
+  chatTitle,
   messages,
   isLoading,
   onSendMessage,
-  onResetChat,
+  onCreateNewChat,
   onSelectItem,
+  onOpenChatListModal,
+  showBackButton = false,
 }: ChatAreaProps) => {
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -62,28 +70,55 @@ export const ChatArea = ({
   return (
     <div className="flex-1 flex flex-col h-full bg-[#FAF7F2] dark:bg-[#191715] overflow-hidden relative transition-colors duration-300">
       {/* Top Header */}
-      <div className="h-14 sm:h-16 border-b border-[#E3DCD1] dark:border-[#2F2C28] px-4 sm:px-10 flex items-center justify-between shrink-0 bg-[#FAF7F2]/90 dark:bg-[#191715]/90 backdrop-blur-md z-10">
-        <div>
-          <h2 className="text-sm sm:text-base font-serif-luxury tracking-wide text-[#2C2926] dark:text-[#EAE6DF] font-light uppercase">
-            Диалог со стилистом
-          </h2>
-          <p className="text-[9px] sm:text-[10px] tracking-[0.16em] uppercase text-[#8A7F73] dark:text-[#9E9283]">
-            Капсульные сочетания
-          </p>
+      <div className="h-14 sm:h-16 border-b border-[#E3DCD1] dark:border-[#2F2C28] px-4 sm:px-8 flex items-center justify-between shrink-0 bg-[#FAF7F2]/90 dark:bg-[#191715]/90 backdrop-blur-md z-10">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {/* Back button (Mobile & Tablet) to see Telegram-style chat list */}
+          {showBackButton && (
+            <button
+              onClick={onOpenChatListModal}
+              title="Все диалоги"
+              className="p-1.5 -ml-1 text-[#2C2926] dark:text-[#EAE6DF] hover:bg-[#EDE5D8] dark:hover:bg-[#282420] transition-colors flex items-center gap-1"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              <span className="text-[11px] uppercase tracking-wider font-medium hidden xs:inline">Чаты</span>
+            </button>
+          )}
+
+          <div className="min-w-0">
+            <h2 className="text-xs sm:text-sm font-medium text-[#2C2926] dark:text-[#EAE6DF] truncate tracking-tight">
+              {chatTitle}
+            </h2>
+            <p className="text-[9px] sm:text-[10px] tracking-[0.14em] uppercase text-[#8A7F73] dark:text-[#9E9283] truncate">
+              {messages.length} реплик в диалоге
+            </p>
+          </div>
         </div>
 
-        <button
-          onClick={onResetChat}
-          title="Очистить диалог"
-          className="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 border border-[#D5CBC0] dark:border-[#38332E] text-[10px] sm:text-[11px] uppercase tracking-[0.12em] text-[#6E6357] dark:text-[#A89C8F] hover:border-[#2C2926] dark:hover:border-[#EAE6DF] transition-colors"
-        >
-          <RotateCcw className="w-3 h-3" />
-          <span className="hidden sm:inline">Новый запрос</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Button to open chats list drawer on desktop if hidden */}
+          {onOpenChatListModal && !showBackButton && (
+            <button
+              onClick={onOpenChatListModal}
+              title="Открыть список диалогов"
+              className="lg:hidden p-2 text-[#8A7F73] hover:text-[#2C2926] dark:hover:text-[#EAE6DF]"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
+          )}
+
+          <button
+            onClick={onCreateNewChat}
+            title="Создать новый чат"
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-[#D5CBC0] dark:border-[#38332E] text-[10px] sm:text-[11px] uppercase tracking-[0.12em] text-[#6E6357] dark:text-[#A89C8F] hover:border-[#2C2926] dark:hover:border-[#EAE6DF] transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Новый диалог</span>
+          </button>
+        </div>
       </div>
 
       {/* Messages Scroll View */}
-      <div className="flex-1 overflow-y-auto px-3.5 sm:px-12 py-4 sm:py-8 space-y-4 sm:space-y-8">
+      <div className="flex-1 overflow-y-auto px-3.5 sm:px-10 py-4 sm:py-8 space-y-4 sm:space-y-8">
         {messages.map((message) => {
           const isUser = message.sender === 'user';
           return (
@@ -141,7 +176,7 @@ export const ChatArea = ({
       </div>
 
       {/* Input area */}
-      <div className="p-3.5 sm:p-8 border-t border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE]/95 dark:bg-[#191715]/95 backdrop-blur-md">
+      <div className="p-3.5 sm:p-6 border-t border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE]/95 dark:bg-[#191715]/95 backdrop-blur-md">
         <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
           {/* Quick Ideas */}
           <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none pb-0.5">
@@ -169,12 +204,12 @@ export const ChatArea = ({
               onChange={(e) => setInputText(e.target.value)}
               disabled={isLoading}
               placeholder="Спросите стилиста (например: «С чем носить бежевый тренч?»)..."
-              className="w-full bg-[#FFFFFF] dark:bg-[#23201D] border border-[#DDD3C4] dark:border-[#38332E] focus:border-[#2C2926] dark:focus:border-[#EAE6DF] px-3.5 py-3 sm:px-5 sm:py-4 pr-12 text-xs sm:text-sm text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none transition-colors"
+              className="w-full bg-[#FFFFFF] dark:bg-[#23201D] border border-[#DDD3C4] dark:border-[#38332E] focus:border-[#2C2926] dark:focus:border-[#EAE6DF] px-3.5 py-3 sm:px-5 sm:py-3.5 pr-12 text-xs sm:text-sm text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none transition-colors"
             />
             <button
               type="submit"
               disabled={!inputText.trim() || isLoading}
-              className="absolute right-1.5 sm:right-2.5 p-2 sm:p-2.5 bg-[#2C2926] hover:bg-[#423D38] dark:bg-[#EAE6DF] dark:hover:bg-[#FFFFFF] text-white dark:text-[#1C1A18] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="absolute right-1.5 sm:right-2 p-2 sm:p-2 bg-[#2C2926] hover:bg-[#423D38] dark:bg-[#EAE6DF] dark:hover:bg-[#FFFFFF] text-white dark:text-[#1C1A18] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>

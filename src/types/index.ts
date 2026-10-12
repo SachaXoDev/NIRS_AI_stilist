@@ -16,7 +16,7 @@ export interface WardrobeItem {
   imageUrl: string;
   brand?: string;
   material?: string;
-  embeddingSnippet?: string; // Text representation used for RAG
+  embeddingSnippet?: string;
   uploadedAt: string;
 }
 
@@ -27,7 +27,7 @@ export interface OutfitLook {
   occasion: string;
   items: WardrobeItem[];
   stylistReasoning: string;
-  matchScore: number; // percentage match with request
+  matchScore: number;
   confidenceTips: string[];
 }
 
@@ -39,6 +39,14 @@ export interface ChatMessage {
   suggestedOutfit?: OutfitLook;
   referencedItemIds?: string[];
   isThinking?: boolean;
+}
+
+export interface ChatThread {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  messages: ChatMessage[];
 }
 
 export interface UserPreferences {
