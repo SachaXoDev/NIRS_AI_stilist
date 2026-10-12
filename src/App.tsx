@@ -14,19 +14,26 @@ import { MessageSquare, Shirt, Sun, Moon } from 'lucide-react';
 const WARDROBE_STORAGE_KEY = 'closet_wardrobe_v4_12storeez';
 const THREADS_STORAGE_KEY = 'closet_threads_v1_tg';
 
+export type ActiveTab = 'chat' | 'wardrobe';
+
 function HeaderContent({
+  activeTab,
+  onTabChange,
   wardrobeCount,
-  activeThreadTitle,
+  threadsCount,
 }: {
+  activeTab: ActiveTab;
+  onTabChange: (tab: ActiveTab) => void;
   wardrobeCount: number;
-  activeThreadTitle?: string;
+  threadsCount: number;
 }) {
   const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="h-14 sm:h-16 border-b border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE]/95 dark:bg-[#1C1A18]/95 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between shrink-0 z-20">
+      {/* Brand Logo */}
       <div className="flex items-center gap-3 sm:gap-4">
-        <span className="font-serif-luxury text-xl sm:text-2xl tracking-[0.16em] sm:tracking-[0.18em] font-light text-[#2C2926] dark:text-[#F3EEE5] uppercase">
+        <span className="font-serif-luxury text-xl sm:text-2xl tracking-[0.16em] sm:tracking-[0.18em] font-light text-[#2C2926] dark:text-[#F3EEE5] uppercase select-none">
           12 STOREEZ
         </span>
         <span className="w-px h-3.5 sm:h-4 bg-[#D6CDC0] dark:bg-[#3D3833]" />
@@ -35,19 +42,37 @@ function HeaderContent({
         </span>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-4">
-        {activeThreadTitle && (
-          <div className="hidden md:flex items-center gap-2 text-xs text-[#8A7F73] dark:text-[#A89C8F]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#B29377]" />
-            <span className="truncate max-w-[200px] font-light">{activeThreadTitle}</span>
-          </div>
-        )}
+      {/* Clean Top Navigation (Only 2 Main Spaces: Stylist Chat OR Wardrobe) */}
+      <div className="flex items-center gap-2 sm:gap-6">
+        <nav className="flex items-center border border-[#DDD3C4] dark:border-[#38332E] p-0.5 bg-[#EFE9DF]/60 dark:bg-[#23201D]">
+          <button
+            onClick={() => onTabChange('chat')}
+            className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-medium transition-all ${
+              activeTab === 'chat'
+                ? 'bg-[#2C2926] dark:bg-[#EAE6DF] text-[#F7F4EE] dark:text-[#1C1A18] shadow-xs'
+                : 'text-[#8A7F73] dark:text-[#A89C8F] hover:text-[#2C2926] dark:hover:text-[#F3EEE5]'
+            }`}
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>Стилист</span>
+            <span className="text-[9px] opacity-70">({threadsCount})</span>
+          </button>
 
-        <div className="hidden sm:flex items-center gap-2 text-xs tracking-wider font-light text-[#8A7F73] dark:text-[#A89C8F]">
-          <span className="uppercase tracking-[0.14em] text-[10px]">Капсула ({wardrobeCount})</span>
-        </div>
+          <button
+            onClick={() => onTabChange('wardrobe')}
+            className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-medium transition-all ${
+              activeTab === 'wardrobe'
+                ? 'bg-[#2C2926] dark:bg-[#EAE6DF] text-[#F7F4EE] dark:text-[#1C1A18] shadow-xs'
+                : 'text-[#8A7F73] dark:text-[#A89C8F] hover:text-[#2C2926] dark:hover:text-[#F3EEE5]'
+            }`}
+          >
+            <Shirt className="w-3.5 h-3.5" />
+            <span>Капсула</span>
+            <span className="text-[9px] opacity-70">({wardrobeCount})</span>
+          </button>
+        </nav>
 
-        {/* Theme button */}
+        {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
           title={theme === 'light' ? 'Включить вечерний режим' : 'Включить дневной режим'}
@@ -61,6 +86,8 @@ function HeaderContent({
 }
 
 function MainApp() {
+  const [activeTab, setActiveTab] = useState<ActiveTab>('chat');
+
   const [wardrobe, setWardrobe] = useState<WardrobeItem[]>(() => {
     const saved = localStorage.getItem(WARDROBE_STORAGE_KEY);
     if (saved) {
@@ -95,13 +122,12 @@ function MainApp() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
 
-  // Mobile navigation views:
-  // 'chats' = list of all threads (Telegram style)
-  // 'chat'  = inside the selected conversation
-  // 'wardrobe' = personal clothing capsule
-  const [mobileView, setMobileView] = useState<'chats' | 'chat' | 'wardrobe'>('chats');
+  // Mobile state when inside "Стилист" tab:
+  // true = viewing the chat list
+  // false = viewing the chat messages
+  const [mobileViewingList, setMobileViewingList] = useState(false);
 
-  // Save changes to localStorage
+  // Sync with localStorage
   useEffect(() => {
     localStorage.setItem(WARDROBE_STORAGE_KEY, JSON.stringify(wardrobe));
   }, [wardrobe]);
@@ -131,7 +157,8 @@ function MainApp() {
 
     setThreads((prev) => [newThread, ...prev]);
     setActiveThreadId(newId);
-    setMobileView('chat');
+    setActiveTab('chat');
+    setMobileViewingList(false);
   };
 
   const handleDeleteThread = (threadId: string) => {
@@ -146,7 +173,7 @@ function MainApp() {
 
   const handleSelectThread = (threadId: string) => {
     setActiveThreadId(threadId);
-    setMobileView('chat');
+    setMobileViewingList(false);
   };
 
   const handleSendMessage = async (text: string) => {
@@ -236,102 +263,75 @@ function MainApp() {
 
   return (
     <div className="flex flex-col h-[100dvh] w-screen bg-[#F7F4EE] dark:bg-[#1C1A18] text-[#2C2926] dark:text-[#EAE6DF] overflow-hidden font-sans transition-colors duration-300">
-      {/* Top Navbar */}
-      <HeaderContent wardrobeCount={wardrobe.length} activeThreadTitle={activeThread?.title} />
+      {/* Top Header */}
+      <HeaderContent
+        activeTab={activeTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          setMobileViewingList(false);
+        }}
+        wardrobeCount={wardrobe.length}
+        threadsCount={threads.length}
+      />
 
-      {/* Main 3-Column Experience:
-          1. Wardrobe (Desktop left)
-          2. Telegram-style Chats List (Desktop middle)
-          3. Active Conversation (Desktop right)
-      */}
-      <div className="flex-1 flex overflow-hidden pb-14 lg:pb-0">
-        {/* Wardrobe (Left column on widescreen) */}
-        <div
-          className={`${
-            mobileView === 'wardrobe' ? 'flex' : 'hidden'
-          } lg:flex w-full lg:w-[360px] xl:w-[390px] shrink-0 h-full overflow-hidden`}
-        >
-          <WardrobeSidebar
-            wardrobe={wardrobe}
-            onOpenAddModal={() => setIsAddModalOpen(true)}
-            onDeleteItem={handleDeleteItem}
-            onItemClick={(item) => setSelectedItem(item)}
-          />
-        </div>
-
-        {/* Telegram-style Chats List (Middle column on desktop) */}
-        <div
-          className={`${
-            mobileView === 'chats' ? 'flex' : 'hidden'
-          } lg:flex w-full lg:w-[300px] xl:w-[330px] shrink-0 h-full overflow-hidden`}
-        >
-          <ChatListSidebar
-            threads={threads}
-            activeThreadId={activeThreadId}
-            onSelectThread={handleSelectThread}
-            onCreateThread={() => handleCreateNewThread()}
-            onDeleteThread={handleDeleteThread}
-          />
-        </div>
-
-        {/* Active Dialogue View (Right column on desktop) */}
-        <div
-          className={`${
-            mobileView === 'chat' ? 'flex' : 'hidden'
-          } lg:flex flex-1 h-full overflow-hidden`}
-        >
-          {activeThread ? (
-            <ChatArea
-              chatTitle={activeThread.title}
-              messages={activeThread.messages}
-              isLoading={isLoading}
-              onSendMessage={handleSendMessage}
-              onCreateNewChat={() => handleCreateNewThread()}
-              onSelectItem={(item) => setSelectedItem(item)}
-              showBackButton={mobileView === 'chat'}
-              onOpenChatListModal={() => setMobileView('chats')}
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center p-8 text-[#8A7F73]">
-              <p className="font-serif-luxury text-lg italic">Выберите диалог или создайте новый</p>
+      {/* Main Workspace: Clean 2-Pane Architecture (Telegram Style) */}
+      <main className="flex-1 flex overflow-hidden">
+        {/* VIEW 1: ЧАТ СО СТИЛИСТОМ */}
+        {activeTab === 'chat' && (
+          <div className="flex-1 flex w-full h-full overflow-hidden">
+            {/* Left Column: Telegram-style Chat List */}
+            <div
+              className={`${
+                mobileViewingList ? 'flex' : 'hidden md:flex'
+              } w-full md:w-[320px] lg:w-[360px] xl:w-[400px] shrink-0 h-full border-r border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE] dark:bg-[#1E1B19] overflow-hidden`}
+            >
+              <ChatListSidebar
+                threads={threads}
+                activeThreadId={activeThreadId}
+                onSelectThread={handleSelectThread}
+                onCreateThread={() => handleCreateNewThread()}
+                onDeleteThread={handleDeleteThread}
+              />
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Mobile Bottom Navigation Bar (Telegram / 12 STOREEZ style) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-[#F7F4EE]/95 dark:bg-[#1C1A18]/95 backdrop-blur-md border-t border-[#E3DCD1] dark:border-[#2F2C28] flex items-center justify-around px-4 z-30 pb-safe">
-        <button
-          onClick={() => setMobileView('chats')}
-          className={`flex flex-col items-center justify-center flex-1 h-full py-1 transition-all ${
-            mobileView === 'chats' || mobileView === 'chat'
-              ? 'text-[#2C2926] dark:text-[#F3EEE5] font-medium'
-              : 'text-[#8A7F73] dark:text-[#6F665C]'
-          }`}
-        >
-          <div className="relative">
-            <MessageSquare className="w-4 h-4 mb-0.5" />
-            <span className="absolute -top-1 -right-2 text-[8px] px-1 bg-[#2C2926] dark:bg-[#EAE6DF] text-white dark:text-[#1C1A18] font-bold">
-              {threads.length}
-            </span>
+            {/* Right Column: Active Conversation */}
+            <div
+              className={`${
+                mobileViewingList ? 'hidden md:flex' : 'flex'
+              } flex-1 h-full overflow-hidden`}
+            >
+              {activeThread ? (
+                <ChatArea
+                  chatTitle={activeThread.title}
+                  messages={activeThread.messages}
+                  isLoading={isLoading}
+                  onSendMessage={handleSendMessage}
+                  onCreateNewChat={() => handleCreateNewThread()}
+                  onSelectItem={(item) => setSelectedItem(item)}
+                  showBackButton={true}
+                  onOpenChatListModal={() => setMobileViewingList(true)}
+                />
+              ) : (
+                <div className="flex-1 flex items-center justify-center p-8 text-[#8A7F73]">
+                  <p className="font-serif-luxury text-lg italic">Выберите диалог или создайте новый</p>
+                </div>
+              )}
+            </div>
           </div>
-          <span className="text-[10px] tracking-[0.14em] uppercase">Диалоги</span>
-        </button>
+        )}
 
-        <button
-          onClick={() => setMobileView('wardrobe')}
-          className={`flex flex-col items-center justify-center flex-1 h-full py-1 transition-all ${
-            mobileView === 'wardrobe'
-              ? 'text-[#2C2926] dark:text-[#F3EEE5] font-medium'
-              : 'text-[#8A7F73] dark:text-[#6F665C]'
-          }`}
-        >
-          <Shirt className="w-4 h-4 mb-0.5" />
-          <span className="text-[10px] tracking-[0.14em] uppercase">
-            Капсула ({wardrobe.length})
-          </span>
-        </button>
-      </nav>
+        {/* VIEW 2: ВАША КАПСУЛА (Полноэкранный красивый гардероб) */}
+        {activeTab === 'wardrobe' && (
+          <div className="flex-1 flex flex-col w-full h-full max-w-6xl mx-auto overflow-hidden px-3 sm:px-6 py-2 sm:py-4">
+            <WardrobeSidebar
+              wardrobe={wardrobe}
+              onOpenAddModal={() => setIsAddModalOpen(true)}
+              onDeleteItem={handleDeleteItem}
+              onItemClick={(item) => setSelectedItem(item)}
+            />
+          </div>
+        )}
+      </main>
 
       {/* Modals */}
       <AddItemModal

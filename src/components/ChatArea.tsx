@@ -5,8 +5,7 @@ import {
   Send,
   Plus,
   ArrowUpRight,
-  ChevronLeft,
-  SlidersHorizontal,
+  Menu,
 } from 'lucide-react';
 
 interface ChatAreaProps {
@@ -16,7 +15,7 @@ interface ChatAreaProps {
   onSendMessage: (text: string) => void;
   onCreateNewChat: () => void;
   onSelectItem: (item: WardrobeItem) => void;
-  onOpenChatListModal?: () => void; // for mobile / tablet back button
+  onOpenChatListModal?: () => void;
   showBackButton?: boolean;
 }
 
@@ -47,7 +46,6 @@ export const ChatArea = ({
   onCreateNewChat,
   onSelectItem,
   onOpenChatListModal,
-  showBackButton = false,
 }: ChatAreaProps) => {
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -72,15 +70,15 @@ export const ChatArea = ({
       {/* Top Header */}
       <div className="h-14 sm:h-16 border-b border-[#E3DCD1] dark:border-[#2F2C28] px-4 sm:px-8 flex items-center justify-between shrink-0 bg-[#FAF7F2]/90 dark:bg-[#191715]/90 backdrop-blur-md z-10">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          {/* Back button (Mobile & Tablet) to see Telegram-style chat list */}
-          {showBackButton && (
+          {/* Mobile button to open Telegram-style chat sidebar */}
+          {onOpenChatListModal && (
             <button
               onClick={onOpenChatListModal}
-              title="Все диалоги"
-              className="p-1.5 -ml-1 text-[#2C2926] dark:text-[#EAE6DF] hover:bg-[#EDE5D8] dark:hover:bg-[#282420] transition-colors flex items-center gap-1"
+              title="Открыть список диалогов"
+              className="md:hidden p-1.5 -ml-1 text-[#2C2926] dark:text-[#EAE6DF] hover:bg-[#EDE5D8] dark:hover:bg-[#282420] transition-colors flex items-center gap-1.5"
             >
-              <ChevronLeft className="w-5 h-5" />
-              <span className="text-[11px] uppercase tracking-wider font-medium hidden xs:inline">Чаты</span>
+              <Menu className="w-5 h-5" />
+              <span className="text-[10px] uppercase tracking-wider font-medium">Чаты</span>
             </button>
           )}
 
@@ -89,23 +87,12 @@ export const ChatArea = ({
               {chatTitle}
             </h2>
             <p className="text-[9px] sm:text-[10px] tracking-[0.14em] uppercase text-[#8A7F73] dark:text-[#9E9283] truncate">
-              {messages.length} реплик в диалоге
+              {messages.length} сообщений
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Button to open chats list drawer on desktop if hidden */}
-          {onOpenChatListModal && !showBackButton && (
-            <button
-              onClick={onOpenChatListModal}
-              title="Открыть список диалогов"
-              className="lg:hidden p-2 text-[#8A7F73] hover:text-[#2C2926] dark:hover:text-[#EAE6DF]"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-            </button>
-          )}
-
           <button
             onClick={onCreateNewChat}
             title="Создать новый чат"

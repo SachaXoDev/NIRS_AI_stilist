@@ -25,16 +25,16 @@ export const ChatListSidebar = ({
   );
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#F7F4EE] dark:bg-[#1E1B19] border-r border-[#E3DCD1] dark:border-[#2F2C28] select-none">
+    <div className="w-full h-full flex flex-col select-none">
       {/* Header */}
       <div className="p-4 sm:p-5 border-b border-[#E3DCD1] dark:border-[#2F2C28] flex items-center justify-between">
         <div>
-          <h3 className="text-base sm:text-lg font-serif-luxury font-light tracking-[0.06em] text-[#2C2926] dark:text-[#F3EEE5] uppercase">
-            Диалоги
+          <span className="text-[10px] tracking-[0.16em] uppercase text-[#8A7F73] dark:text-[#A89C8F]">
+            История стилиста
+          </span>
+          <h3 className="text-sm font-medium tracking-wide text-[#2C2926] dark:text-[#F3EEE5] uppercase">
+            {threads.length} диалогов
           </h3>
-          <p className="text-[10px] tracking-[0.14em] uppercase text-[#8A7F73] dark:text-[#A89C8F]">
-            {threads.length} сохранено
-          </p>
         </div>
 
         <button
@@ -43,7 +43,7 @@ export const ChatListSidebar = ({
           className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2C2926] hover:bg-[#423D38] dark:bg-[#EAE6DF] dark:hover:bg-[#FFFFFF] text-white dark:text-[#1C1A18] text-[10px] uppercase tracking-[0.14em] font-medium transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>Новый чат</span>
+          <span>Новый</span>
         </button>
       </div>
 
