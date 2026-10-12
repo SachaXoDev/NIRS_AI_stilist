@@ -11,6 +11,7 @@
   body {
     font-family: var(--font-sans);
     letter-spacing: -0.01em;
+    color: #111111;
   }
 
   .font-serif-luxury {
@@ -21,22 +22,22 @@
 /* 12 STOREEZ Editorial Look */
 .editorial-title {
   font-family: var(--font-serif);
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.04em;
 }
 
-/* Custom minimal scrollbar */
+/* Custom crisp scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c8b8a6;
+  background: #B5A898;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a38f78;
+  background: #7D7061;
 }

@@ -30,45 +30,45 @@ function HeaderContent({
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="h-14 sm:h-16 border-b border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE]/95 dark:bg-[#1C1A18]/95 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between shrink-0 z-20">
+    <header className="h-14 sm:h-16 border-b border-[#D8CFC2] dark:border-[#2D2A26] bg-[#FAF7F2]/95 dark:bg-[#161412]/95 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between shrink-0 z-20">
       {/* Brand Logo */}
       <div className="flex items-center gap-3 sm:gap-4">
-        <span className="font-serif-luxury text-xl sm:text-2xl tracking-[0.16em] sm:tracking-[0.18em] font-light text-[#2C2926] dark:text-[#F3EEE5] uppercase select-none">
+        <span className="font-serif-luxury text-xl sm:text-2xl tracking-[0.16em] sm:tracking-[0.18em] font-medium text-[#111111] dark:text-[#FFFFFF] uppercase select-none">
           12 STOREEZ
         </span>
-        <span className="w-px h-3.5 sm:h-4 bg-[#D6CDC0] dark:bg-[#3D3833]" />
-        <span className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase font-light text-[#8A7F73] dark:text-[#A89C8F]">
+        <span className="w-px h-3.5 sm:h-4 bg-[#B5A898] dark:border-[#423C34]" />
+        <span className="text-[10px] sm:text-[11px] tracking-[0.2em] uppercase font-semibold text-[#544B3F] dark:text-[#C5BBAE]">
           AI ATELIER
         </span>
       </div>
 
-      {/* Clean Top Navigation (Only 2 Main Spaces: Stylist Chat OR Wardrobe) */}
+      {/* Clean Top Navigation */}
       <div className="flex items-center gap-2 sm:gap-6">
-        <nav className="flex items-center border border-[#DDD3C4] dark:border-[#38332E] p-0.5 bg-[#EFE9DF]/60 dark:bg-[#23201D]">
+        <nav className="flex items-center border border-[#C5BBAE] dark:border-[#3E3830] p-1 bg-[#EFE9DF]/80 dark:bg-[#221F1C]">
           <button
             onClick={() => onTabChange('chat')}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-medium transition-all ${
+            className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-semibold transition-all ${
               activeTab === 'chat'
-                ? 'bg-[#2C2926] dark:bg-[#EAE6DF] text-[#F7F4EE] dark:text-[#1C1A18] shadow-xs'
-                : 'text-[#8A7F73] dark:text-[#A89C8F] hover:text-[#2C2926] dark:hover:text-[#F3EEE5]'
+                ? 'bg-[#111111] dark:bg-[#FFFFFF] text-white dark:text-[#111111] shadow-xs'
+                : 'text-[#4A4135] dark:text-[#D5CCC0] hover:text-[#111111] dark:hover:text-[#FFFFFF]'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
             <span>Стилист</span>
-            <span className="text-[9px] opacity-70">({threadsCount})</span>
+            <span className="text-[9px] opacity-80">({threadsCount})</span>
           </button>
 
           <button
             onClick={() => onTabChange('wardrobe')}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-medium transition-all ${
+            className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-semibold transition-all ${
               activeTab === 'wardrobe'
-                ? 'bg-[#2C2926] dark:bg-[#EAE6DF] text-[#F7F4EE] dark:text-[#1C1A18] shadow-xs'
-                : 'text-[#8A7F73] dark:text-[#A89C8F] hover:text-[#2C2926] dark:hover:text-[#F3EEE5]'
+                ? 'bg-[#111111] dark:bg-[#FFFFFF] text-white dark:text-[#111111] shadow-xs'
+                : 'text-[#4A4135] dark:text-[#D5CCC0] hover:text-[#111111] dark:hover:text-[#FFFFFF]'
             }`}
           >
             <Shirt className="w-3.5 h-3.5" />
             <span>Капсула</span>
-            <span className="text-[9px] opacity-70">({wardrobeCount})</span>
+            <span className="text-[9px] opacity-80">({wardrobeCount})</span>
           </button>
         </nav>
 
@@ -76,9 +76,9 @@ function HeaderContent({
         <button
           onClick={toggleTheme}
           title={theme === 'light' ? 'Включить вечерний режим' : 'Включить дневной режим'}
-          className="p-2 text-[#8A7F73] hover:text-[#2C2926] dark:hover:text-[#F3EEE5] transition-colors"
+          className="p-2 text-[#4A4135] hover:text-[#111111] dark:text-[#D5CCC0] dark:hover:text-[#FFFFFF] transition-colors"
         >
-          {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          {theme === 'light' ? <Moon className="w-4 h-4 text-[#111111]" /> : <Sun className="w-4 h-4 text-[#FFFFFF]" />}
         </button>
       </div>
     </header>
@@ -122,9 +122,7 @@ function MainApp() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
 
-  // Mobile state when inside "Стилист" tab:
-  // true = viewing the chat list
-  // false = viewing the chat messages
+  // Mobile state inside "Стилист" tab:
   const [mobileViewingList, setMobileViewingList] = useState(false);
 
   // Sync with localStorage
@@ -262,7 +260,7 @@ function MainApp() {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-screen bg-[#F7F4EE] dark:bg-[#1C1A18] text-[#2C2926] dark:text-[#EAE6DF] overflow-hidden font-sans transition-colors duration-300">
+    <div className="flex flex-col h-[100dvh] w-screen bg-[#F5F2EB] dark:bg-[#141210] text-[#111111] dark:text-[#FFFFFF] overflow-hidden font-sans transition-colors duration-300">
       {/* Top Header */}
       <HeaderContent
         activeTab={activeTab}
@@ -274,7 +272,7 @@ function MainApp() {
         threadsCount={threads.length}
       />
 
-      {/* Main Workspace: Clean 2-Pane Architecture (Telegram Style) */}
+      {/* Main Workspace */}
       <main className="flex-1 flex overflow-hidden">
         {/* VIEW 1: ЧАТ СО СТИЛИСТОМ */}
         {activeTab === 'chat' && (
@@ -283,7 +281,7 @@ function MainApp() {
             <div
               className={`${
                 mobileViewingList ? 'flex' : 'hidden md:flex'
-              } w-full md:w-[320px] lg:w-[360px] xl:w-[400px] shrink-0 h-full border-r border-[#E3DCD1] dark:border-[#2F2C28] bg-[#F7F4EE] dark:bg-[#1E1B19] overflow-hidden`}
+              } w-full md:w-[320px] lg:w-[360px] xl:w-[400px] shrink-0 h-full border-r border-[#D8CFC2] dark:border-[#2D2A26] bg-[#F9F7F2] dark:bg-[#1A1816] overflow-hidden`}
             >
               <ChatListSidebar
                 threads={threads}
@@ -312,8 +310,8 @@ function MainApp() {
                   onOpenChatListModal={() => setMobileViewingList(true)}
                 />
               ) : (
-                <div className="flex-1 flex items-center justify-center p-8 text-[#8A7F73]">
-                  <p className="font-serif-luxury text-lg italic">Выберите диалог или создайте новый</p>
+                <div className="flex-1 flex items-center justify-center p-8 text-[#544B3F]">
+                  <p className="font-serif-luxury text-lg italic font-medium">Выберите диалог или создайте новый</p>
                 </div>
               )}
             </div>
@@ -322,7 +320,7 @@ function MainApp() {
 
         {/* VIEW 2: ВАША КАПСУЛА (Полноэкранный красивый гардероб) */}
         {activeTab === 'wardrobe' && (
-          <div className="flex-1 flex flex-col w-full h-full max-w-6xl mx-auto overflow-hidden px-3 sm:px-6 py-2 sm:py-4">
+          <div className="flex-1 flex flex-col w-full h-full max-w-7xl mx-auto overflow-hidden px-3 sm:px-8 py-3 sm:py-6">
             <WardrobeSidebar
               wardrobe={wardrobe}
               onOpenAddModal={() => setIsAddModalOpen(true)}

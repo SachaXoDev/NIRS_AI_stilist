@@ -25,14 +25,14 @@ export const ChatListSidebar = ({
   );
 
   return (
-    <div className="w-full h-full flex flex-col select-none">
+    <div className="w-full h-full flex flex-col bg-[#F9F7F2] dark:bg-[#1A1816] select-none">
       {/* Header */}
-      <div className="p-4 sm:p-5 border-b border-[#E3DCD1] dark:border-[#2F2C28] flex items-center justify-between">
+      <div className="p-4 sm:p-5 border-b border-[#D8CFC2] dark:border-[#2D2A26] flex items-center justify-between">
         <div>
-          <span className="text-[10px] tracking-[0.16em] uppercase text-[#8A7F73] dark:text-[#A89C8F]">
+          <span className="text-[10px] tracking-[0.18em] uppercase text-[#6B6154] dark:text-[#B5AAA0] font-semibold">
             История стилиста
           </span>
-          <h3 className="text-sm font-medium tracking-wide text-[#2C2926] dark:text-[#F3EEE5] uppercase">
+          <h3 className="text-sm font-semibold tracking-wide text-[#111111] dark:text-[#FFFFFF] uppercase">
             {threads.length} диалогов
           </h3>
         </div>
@@ -40,7 +40,7 @@ export const ChatListSidebar = ({
         <button
           onClick={onCreateThread}
           title="Создать новый диалог со стилистом"
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2C2926] hover:bg-[#423D38] dark:bg-[#EAE6DF] dark:hover:bg-[#FFFFFF] text-white dark:text-[#1C1A18] text-[10px] uppercase tracking-[0.14em] font-medium transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#111111] hover:bg-[#2E2E2E] dark:bg-[#FFFFFF] dark:hover:bg-[#EAEAEA] text-white dark:text-[#111111] text-[10px] uppercase tracking-[0.14em] font-semibold transition-all shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Новый</span>
@@ -48,24 +48,24 @@ export const ChatListSidebar = ({
       </div>
 
       {/* Search */}
-      <div className="p-3 border-b border-[#ECE5D9] dark:border-[#2A2723]">
+      <div className="p-3 border-b border-[#DCD3C5] dark:border-[#2D2A26] bg-[#F2EDE4]/60 dark:bg-[#201D1A]/60">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8A7F73]" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#574D41] dark:text-[#A89C8F]" />
           <input
             type="text"
             placeholder="Поиск по чатам..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs bg-[#EDE7DC]/70 dark:bg-[#262320] border border-[#DCD3C5] dark:border-[#38332E] text-[#2C2926] dark:text-[#EAE6DF] placeholder-[#9D9387] focus:outline-none focus:border-[#8A7F73] transition-colors"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-white dark:bg-[#25221E] border border-[#C5BBAE] dark:border-[#3E3830] text-[#111111] dark:text-[#FFFFFF] placeholder-[#7D7366] font-medium focus:outline-none focus:border-[#111111] dark:focus:border-[#FFFFFF] transition-colors"
           />
         </div>
       </div>
 
       {/* List of Chat Threads */}
-      <div className="flex-1 overflow-y-auto divide-y divide-[#EAE2D5] dark:divide-[#282522]">
+      <div className="flex-1 overflow-y-auto divide-y divide-[#E0D8CB] dark:divide-[#2A2723]">
         {filteredThreads.length === 0 ? (
-          <div className="text-center py-12 px-4 text-[#8A7F73]">
-            <p className="font-serif-luxury text-sm italic">Диалогов не найдено</p>
+          <div className="text-center py-12 px-4 text-[#6B6154]">
+            <p className="font-serif-luxury text-sm italic font-medium">Диалогов не найдено</p>
           </div>
         ) : (
           filteredThreads.map((thread) => {
@@ -79,20 +79,20 @@ export const ChatListSidebar = ({
                 onClick={() => onSelectThread(thread.id)}
                 className={`group relative flex items-start gap-3 p-3.5 sm:p-4 cursor-pointer transition-colors ${
                   isActive
-                    ? 'bg-[#EDE5D8] dark:bg-[#282420] border-l-2 border-[#2C2926] dark:border-[#EAE6DF]'
-                    : 'hover:bg-[#EFEAE0] dark:hover:bg-[#23201D]'
+                    ? 'bg-[#EAE2D3] dark:bg-[#27231F] border-l-4 border-[#111111] dark:border-[#FFFFFF]'
+                    : 'hover:bg-[#EFE9DD] dark:hover:bg-[#221F1C]'
                 }`}
               >
                 {/* Avatar / Icon */}
                 <div
-                  className={`w-9 h-9 shrink-0 flex items-center justify-center rounded-none border ${
+                  className={`w-9 h-9 shrink-0 flex items-center justify-center border ${
                     hasLook
-                      ? 'bg-[#E2D8C9] dark:bg-[#2E2924] border-[#C7BBAA] dark:border-[#423C35] text-[#2C2926] dark:text-[#EAE6DF]'
-                      : 'bg-[#F2ECE1] dark:bg-[#24211E] border-[#DED4C5] dark:border-[#332F2A] text-[#8A7F73]'
+                      ? 'bg-[#DDD2C0] dark:bg-[#332C24] border-[#B8A892] dark:border-[#524638] text-[#111111] dark:text-[#FFFFFF]'
+                      : 'bg-white dark:bg-[#25221E] border-[#D0C5B5] dark:border-[#38332B] text-[#574D41] dark:text-[#A89C8F]'
                   }`}
                 >
                   {hasLook ? (
-                    <Sparkles className="w-4 h-4 text-[#8C6D4F] dark:text-[#D1B89D]" />
+                    <Sparkles className="w-4 h-4 text-[#82542B] dark:text-[#E2B78E]" />
                   ) : (
                     <MessageSquare className="w-4 h-4" />
                   )}
@@ -103,30 +103,30 @@ export const ChatListSidebar = ({
                     <h4
                       className={`text-xs truncate tracking-tight ${
                         isActive
-                          ? 'font-medium text-[#2C2926] dark:text-[#F3EEE5]'
-                          : 'font-normal text-[#3E3A35] dark:text-[#D5CCC0]'
+                          ? 'font-bold text-[#111111] dark:text-[#FFFFFF]'
+                          : 'font-semibold text-[#1F1B16] dark:text-[#E5DDD2]'
                       }`}
                     >
                       {thread.title}
                     </h4>
-                    <span className="text-[9px] tracking-wider text-[#9E9283] dark:text-[#786E63] shrink-0 font-light">
+                    <span className="text-[9px] tracking-wider text-[#6B6154] dark:text-[#A89D90] shrink-0 font-medium">
                       {thread.updatedAt}
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-[#7A6F63] dark:text-[#9A8E80] truncate font-light leading-snug">
-                    {lastMsg?.sender === 'assistant' ? 'Стилист: ' : 'Вы: '}
+                  <p className="text-[11px] text-[#423A31] dark:text-[#BEB4A6] truncate font-normal leading-snug">
+                    <span className="font-semibold">{lastMsg?.sender === 'assistant' ? 'Стилист: ' : 'Вы: '}</span>
                     {lastMsg?.text?.slice(0, 50) || 'Новый диалог'}
                   </p>
 
                   {hasLook && (
-                    <span className="inline-block mt-1 text-[9px] uppercase tracking-[0.14em] text-[#8C6D4F] dark:text-[#D1B89D] font-medium">
+                    <span className="inline-block mt-1 text-[9px] uppercase tracking-[0.14em] text-[#82542B] dark:text-[#E2B78E] font-semibold">
                       • Готовый образ внутри
                     </span>
                   )}
                 </div>
 
-                {/* Delete button (show on hover, but never allow deleting the last one) */}
+                {/* Delete button */}
                 {threads.length > 1 && (
                   <button
                     onClick={(e) => {
@@ -134,7 +134,7 @@ export const ChatListSidebar = ({
                       onDeleteThread(thread.id);
                     }}
                     title="Удалить диалог"
-                    className="opacity-0 group-hover:opacity-100 p-1.5 text-[#8A7F73] hover:text-[#991B1B] transition-opacity absolute right-2.5 top-3.5"
+                    className="opacity-0 group-hover:opacity-100 p-1.5 text-[#6B6154] hover:text-[#B91C1C] transition-opacity absolute right-2.5 top-3.5"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
