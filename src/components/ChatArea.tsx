@@ -1,12 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { ChatMessage, WardrobeItem } from '../types';
 import { OutfitCard } from './OutfitCard';
-import {
-  Send,
-  Plus,
-  ArrowUpRight,
-  Menu,
-} from 'lucide-react';
+import { Send, Menu } from 'lucide-react';
 
 interface ChatAreaProps {
   chatTitle: string;
@@ -22,19 +17,19 @@ interface ChatAreaProps {
 const QUICK_PROMPTS = [
   {
     title: 'Деловая встреча',
-    text: 'Подбери сдержанный, статусный образ для встречи в офисе в духе лаконичной классики 12 STOREEZ.',
+    text: 'Подбери лаконичный образ для деловой встречи в офисе.',
   },
   {
-    title: 'Прохладный день и дождь',
-    text: 'Что надеть на прогулку? На улице ветрено, около +12 градусов. Нужен теплый, многослойный аутфит.',
+    title: 'Прохладный день',
+    text: 'Что надеть на прогулку в прохладную погоду? Нужен многослойный аутфит.',
   },
   {
-    title: 'Кофе в городе',
-    text: 'Собери расслабленный повседневный монохромный образ для неспешного выходного дня в городе.',
+    title: 'Выходной в городе',
+    text: 'Собери расслабленный повседневный монохромный образ для выходного дня.',
   },
   {
-    title: 'Вечерний ужин',
-    text: 'Посоветуй утонченный комплект для вечернего выхода в ресторан с акцентом на текстуры.',
+    title: 'Ужин в ресторане',
+    text: 'Посоветуй сдержанный вечерний комплект с акцентом на фактуры.',
   },
 ];
 
@@ -43,7 +38,6 @@ export const ChatArea = ({
   messages,
   isLoading,
   onSendMessage,
-  onCreateNewChat,
   onSelectItem,
   onOpenChatListModal,
 }: ChatAreaProps) => {
@@ -66,66 +60,51 @@ export const ChatArea = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#F5F2EB] dark:bg-[#141210] overflow-hidden relative transition-colors duration-300">
+    <div className="flex-1 flex flex-col h-full bg-[#FFFFFF] dark:bg-[#121212] overflow-hidden relative">
       {/* Top Header */}
-      <div className="h-14 sm:h-16 border-b border-[#D8CFC2] dark:border-[#2D2A26] px-4 sm:px-8 flex items-center justify-between shrink-0 bg-[#FAF7F2]/95 dark:bg-[#181614]/95 backdrop-blur-md z-10">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          {/* Mobile button to open Telegram-style chat sidebar */}
+      <div className="h-14 sm:h-16 border-b border-[#E5E5E5] dark:border-[#262626] px-4 sm:px-8 flex items-center justify-between shrink-0 bg-[#FFFFFF]/90 dark:bg-[#121212]/90 backdrop-blur-md z-10">
+        <div className="flex items-center gap-3 min-w-0">
           {onOpenChatListModal && (
             <button
               onClick={onOpenChatListModal}
               title="Открыть список диалогов"
-              className="md:hidden p-1.5 -ml-1 text-[#111111] dark:text-[#FFFFFF] hover:bg-[#EAE2D5] dark:hover:bg-[#282420] transition-colors flex items-center gap-1.5"
+              className="md:hidden p-1.5 -ml-1 text-[#111111] dark:text-[#FFFFFF]"
             >
-              <Menu className="w-5 h-5 text-[#111111] dark:text-[#FFFFFF]" />
-              <span className="text-[11px] uppercase tracking-wider font-semibold text-[#111111] dark:text-[#FFFFFF]">Чаты</span>
+              <Menu className="w-4 h-4" />
             </button>
           )}
 
-          <div className="min-w-0">
-            <h2 className="text-sm sm:text-base font-semibold text-[#111111] dark:text-[#FFFFFF] truncate tracking-tight">
-              {chatTitle}
-            </h2>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onCreateNewChat}
-            title="Создать новый чат"
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-[#B5A898] dark:border-[#4A433A] bg-white dark:bg-[#221F1C] text-[10px] sm:text-[11px] uppercase tracking-[0.12em] font-medium text-[#111111] dark:text-[#FFFFFF] hover:bg-[#111111] hover:text-white dark:hover:bg-white dark:hover:text-[#111111] transition-all"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Новый диалог</span>
-          </button>
+          <h2 className="text-xs sm:text-sm font-medium tracking-normal text-[#111111] dark:text-[#FFFFFF] truncate">
+            {chatTitle}
+          </h2>
         </div>
       </div>
 
       {/* Messages Scroll View */}
-      <div className="flex-1 overflow-y-auto px-3.5 sm:px-10 py-4 sm:py-8 space-y-4 sm:space-y-8">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-12 py-6 sm:py-8 space-y-6">
         {messages.map((message) => {
           const isUser = message.sender === 'user';
           return (
             <div
               key={message.id}
-              className={`flex gap-3 max-w-4xl mx-auto ${
+              className={`flex gap-3 max-w-3xl mx-auto ${
                 isUser ? 'justify-end' : 'justify-start'
               }`}
             >
               <div
-                className={`flex flex-col w-full sm:max-w-2xl ${
+                className={`flex flex-col w-full sm:max-w-xl ${
                   isUser ? 'items-end' : 'items-start'
                 }`}
               >
-                {/* Crisp Contrast Message Bubbles */}
+                {/* 12 STOREEZ Minimal Aesthetic: crisp, clean, flat, modern */}
                 <div
-                  className={`p-4 sm:p-6 transition-all leading-relaxed shadow-sm ${
+                  className={`p-4 sm:p-5 leading-relaxed text-xs sm:text-sm ${
                     isUser
-                      ? 'bg-[#141414] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] text-xs sm:text-[15px] font-normal tracking-normal'
-                      : 'bg-[#FFFFFF] dark:bg-[#1E1B18] text-[#111111] dark:text-[#F7F4EE] text-xs sm:text-[15px] font-normal border border-[#D5CBC0] dark:border-[#38332E]'
+                      ? 'bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] font-normal'
+                      : 'bg-[#F7F7F7] dark:bg-[#1C1C1C] text-[#111111] dark:text-[#E5E5E5] font-normal border border-[#EAEAEA] dark:border-[#282828]'
                   }`}
                 >
-                  <p className="whitespace-pre-line leading-relaxed font-normal">{message.text}</p>
+                  <p className="whitespace-pre-line leading-relaxed">{message.text}</p>
 
                   {/* Generated Outfit */}
                   {message.suggestedOutfit && (
@@ -136,7 +115,7 @@ export const ChatArea = ({
                   )}
                 </div>
 
-                <span className="text-[9px] sm:text-[10px] tracking-[0.12em] uppercase text-[#73685C] dark:text-[#9E9285] font-medium mt-1.5 px-1">
+                <span className="text-[10px] text-[#888888] dark:text-[#777777] mt-1.5 px-0.5">
                   {message.timestamp}
                 </span>
               </div>
@@ -146,12 +125,10 @@ export const ChatArea = ({
 
         {/* Loading Indicator */}
         {isLoading && (
-          <div className="flex max-w-4xl mx-auto justify-start">
-            <div className="bg-[#FFFFFF] dark:bg-[#1E1B18] border border-[#D5CBC0] dark:border-[#38332E] p-3.5 sm:p-4 text-xs text-[#2A2621] dark:text-[#EAE6DF] font-medium flex items-center gap-2.5 shadow-sm">
-              <div className="w-2 h-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF] animate-pulse" />
-              <span className="font-serif-luxury text-sm italic tracking-wide">
-                Стилист подбирает пропорции и фактуры из вашей капсулы...
-              </span>
+          <div className="flex max-w-3xl mx-auto justify-start">
+            <div className="bg-[#F7F7F7] dark:bg-[#1C1C1C] border border-[#EAEAEA] dark:border-[#282828] p-3 text-xs text-[#555555] dark:text-[#AAAAAA] flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#111111] dark:bg-[#FFFFFF] animate-pulse" />
+              <span>Подбираем вещи и формулу образа...</span>
             </div>
           </div>
         )}
@@ -160,22 +137,18 @@ export const ChatArea = ({
       </div>
 
       {/* Input area */}
-      <div className="p-3.5 sm:p-6 border-t border-[#D8CFC2] dark:border-[#2D2A26] bg-[#FAF7F2]/95 dark:bg-[#161412]/95 backdrop-blur-md">
-        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+      <div className="p-4 sm:p-6 border-t border-[#E5E5E5] dark:border-[#262626] bg-[#FFFFFF] dark:bg-[#121212]">
+        <div className="max-w-3xl mx-auto space-y-3">
           {/* Quick Ideas */}
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none pb-0.5">
-            <span className="text-[10px] tracking-[0.16em] uppercase text-[#4D453C] dark:text-[#C5BBAE] shrink-0 font-semibold mr-1">
-              Сценарии:
-            </span>
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
             {QUICK_PROMPTS.map((p, idx) => (
               <button
                 key={idx}
                 disabled={isLoading}
                 onClick={() => onSendMessage(p.text)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-[#201D1A] border border-[#C5BBAE] dark:border-[#423C34] hover:border-[#111111] dark:hover:border-[#FFFFFF] text-[10px] sm:text-[11px] font-medium text-[#1A1A1A] dark:text-[#EAE6DF] tracking-wide whitespace-nowrap transition-all shrink-0 disabled:opacity-40 shadow-2xs"
+                className="px-3 py-1 bg-[#F5F5F5] dark:bg-[#1E1E1E] hover:bg-[#EBEBEB] dark:hover:bg-[#2A2A2A] text-[11px] font-normal text-[#333333] dark:text-[#CCCCCC] whitespace-nowrap transition-colors shrink-0 disabled:opacity-40"
               >
-                <span>{p.title}</span>
-                <ArrowUpRight className="w-3 h-3 text-[#5A5044] dark:text-[#B5AAA0]" />
+                {p.title}
               </button>
             ))}
           </div>
@@ -187,21 +160,17 @@ export const ChatArea = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               disabled={isLoading}
-              placeholder="Спросите стилиста (например: «С чем носить бежевый тренч?»)..."
-              className="w-full bg-[#FFFFFF] dark:bg-[#201D1A] border-2 border-[#C5BBAE] dark:border-[#423C34] focus:border-[#111111] dark:focus:border-[#FFFFFF] px-4 py-3 sm:px-5 sm:py-3.5 pr-14 text-xs sm:text-sm font-medium text-[#111111] dark:text-[#FFFFFF] placeholder-[#7D7366] focus:outline-none transition-colors shadow-xs"
+              placeholder="Спросите стилиста (например: «С чем носить тренч?»)..."
+              className="w-full bg-[#F5F5F5] dark:bg-[#1C1C1C] border border-transparent focus:border-[#111111] dark:focus:border-[#FFFFFF] px-4 py-3 pr-12 text-xs sm:text-sm text-[#111111] dark:text-[#FFFFFF] placeholder-[#888888] focus:outline-none transition-colors"
             />
             <button
               type="submit"
               disabled={!inputText.trim() || isLoading}
-              className="absolute right-1.5 sm:right-2 p-2 sm:p-2 bg-[#111111] hover:bg-[#2E2E2E] dark:bg-[#FFFFFF] dark:hover:bg-[#E0E0E0] text-white dark:text-[#111111] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="absolute right-2 p-1.5 bg-[#111111] dark:bg-[#FFFFFF] text-white dark:text-[#111111] hover:opacity-85 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-3.5 h-3.5" />
             </button>
           </form>
-
-          <p className="text-center text-[9px] sm:text-[10px] tracking-[0.16em] uppercase text-[#6B6154] dark:text-[#9E9283] font-medium">
-            Капсульный подход 12 STOREEZ • Высокий контраст и безупречный крой
-          </p>
         </div>
       </div>
     </div>

@@ -4,40 +4,34 @@
 
 @layer base {
   :root {
-    --font-serif: 'Cormorant Garamond', Georgia, serif;
-    --font-sans: 'Jost', 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   body {
-    font-family: var(--font-sans);
-    letter-spacing: 0.01em;
+    font-family: var(--font-main);
+    letter-spacing: -0.01em;
     color: #111111;
+    background-color: #FFFFFF;
   }
 
   .font-serif-luxury {
-    font-family: var(--font-serif);
+    font-family: var(--font-main);
+    letter-spacing: 0.08em;
   }
 }
 
-/* 12 STOREEZ Editorial Look */
-.editorial-title {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: 0.06em;
-}
-
-/* Custom crisp scrollbar */
+/* Custom crisp minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #B5A898;
-  border-radius: 9999px;
+  background: #D1D1D1;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #7D7061;
+  background: #999999;
 }
