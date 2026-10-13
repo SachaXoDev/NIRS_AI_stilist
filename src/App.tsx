@@ -28,14 +28,14 @@ function HeaderContent({
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="h-14 sm:h-16 border-b border-[#E5E5E5] dark:border-[#262626] bg-[#FFFFFF] dark:bg-[#121212] px-4 sm:px-8 flex items-center justify-between shrink-0 z-20">
+    <header className="h-14 sm:h-16 border-b border-[#DFD9CF] dark:border-[#2E2A26] bg-[#F6F4F0] dark:bg-[#181614] px-4 sm:px-8 flex items-center justify-between shrink-0 z-20">
       {/* 12 STOREEZ Official Brand Mark */}
       <div className="flex items-center gap-3">
-        <span className="text-sm sm:text-base tracking-[0.2em] font-medium text-[#111111] dark:text-[#FFFFFF] uppercase select-none">
+        <span className="text-sm sm:text-base tracking-[0.2em] font-medium text-[#1E1B18] dark:text-[#F7F5F0] uppercase select-none">
           12 STOREEZ
         </span>
-        <span className="w-px h-3 bg-[#E5E5E5] dark:bg-[#333333]" />
-        <span className="text-[10px] tracking-[0.22em] text-[#767676] dark:text-[#888888] uppercase font-normal">
+        <span className="w-px h-3 bg-[#DFD9CF] dark:bg-[#3A3530]" />
+        <span className="text-[10px] tracking-[0.22em] text-[#7C7469] dark:text-[#A69D92] uppercase font-normal">
           AI ATELIER
         </span>
       </div>
@@ -47,8 +47,8 @@ function HeaderContent({
             onClick={() => onTabChange('chat')}
             className={`text-xs uppercase tracking-[0.15em] py-2 transition-colors relative font-normal ${
               activeTab === 'chat'
-                ? 'text-[#111111] dark:text-[#FFFFFF] font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#111111] dark:after:bg-[#FFFFFF]'
-                : 'text-[#767676] dark:text-[#888888] hover:text-[#111111] dark:hover:text-[#FFFFFF]'
+                ? 'text-[#1E1B18] dark:text-[#F7F5F0] font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#1E1B18] dark:after:bg-[#F7F5F0]'
+                : 'text-[#7C7469] dark:text-[#A69D92] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0]'
             }`}
           >
             Стилист
@@ -58,8 +58,8 @@ function HeaderContent({
             onClick={() => onTabChange('wardrobe')}
             className={`text-xs uppercase tracking-[0.15em] py-2 transition-colors relative font-normal ${
               activeTab === 'wardrobe'
-                ? 'text-[#111111] dark:text-[#FFFFFF] font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#111111] dark:after:bg-[#FFFFFF]'
-                : 'text-[#767676] dark:text-[#888888] hover:text-[#111111] dark:hover:text-[#FFFFFF]'
+                ? 'text-[#1E1B18] dark:text-[#F7F5F0] font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#1E1B18] dark:after:bg-[#F7F5F0]'
+                : 'text-[#7C7469] dark:text-[#A69D92] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0]'
             }`}
           >
             Гардероб ({wardrobeCount})
@@ -70,7 +70,7 @@ function HeaderContent({
         <button
           onClick={toggleTheme}
           title={theme === 'light' ? 'Переключить тему' : 'Переключить тему'}
-          className="p-1.5 text-[#767676] hover:text-[#111111] dark:text-[#888888] dark:hover:text-[#FFFFFF] transition-colors"
+          className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:text-[#A69D92] dark:hover:text-[#F7F5F0] transition-colors"
         >
           {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
@@ -251,7 +251,7 @@ function MainApp() {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-screen bg-[#FFFFFF] dark:bg-[#121212] text-[#111111] dark:text-[#EDEDED] overflow-hidden font-sans transition-colors duration-150">
+    <div className="flex flex-col h-[100dvh] w-screen bg-[#F6F4F0] dark:bg-[#181614] text-[#1E1B18] dark:text-[#F7F5F0] overflow-hidden font-sans transition-colors duration-150">
       {/* Header */}
       <HeaderContent
         activeTab={activeTab}
@@ -267,11 +267,11 @@ function MainApp() {
         {/* VIEW 1: ЧАТ СО СТИЛИСТОМ */}
         {activeTab === 'chat' && (
           <div className="flex-1 flex w-full h-full overflow-hidden">
-            {/* Left Column: Telegram-style clean list */}
+            {/* Left Column: Telegram-style list in warm cashmere */}
             <div
               className={`${
                 mobileViewingList ? 'flex' : 'hidden md:flex'
-              } w-full md:w-[300px] lg:w-[340px] xl:w-[360px] shrink-0 h-full border-r border-[#E5E5E5] dark:border-[#262626] bg-[#FAFAFA] dark:bg-[#161616] overflow-hidden`}
+              } w-full md:w-[300px] lg:w-[340px] xl:w-[360px] shrink-0 h-full border-r border-[#DFD9CF] dark:border-[#2E2A26] bg-[#EFECE6] dark:bg-[#1D1B18] overflow-hidden`}
             >
               <ChatListSidebar
                 threads={threads}
@@ -300,7 +300,7 @@ function MainApp() {
                   onOpenChatListModal={() => setMobileViewingList(true)}
                 />
               ) : (
-                <div className="flex-1 flex items-center justify-center p-8 text-[#767676]">
+                <div className="flex-1 flex items-center justify-center p-8 text-[#7C7469]">
                   <p className="text-sm font-normal">Выберите диалог или создайте новый</p>
                 </div>
               )}

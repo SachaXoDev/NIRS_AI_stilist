@@ -51,22 +51,22 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-      <div className="w-full max-w-md bg-[#FFFFFF] dark:bg-[#181818] border border-[#E5E5E5] dark:border-[#2B2B2B] p-6 shadow-xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs">
+      <div className="w-full max-w-md bg-[#FCFAF7] dark:bg-[#1C1A18] border border-[#DFD9CF] dark:border-[#2E2A26] p-6 shadow-2xl relative">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-[#888888] hover:text-[#111111] dark:hover:text-[#FFFFFF]"
+          className="absolute top-5 right-5 text-[#8A8175] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0]"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <h3 className="text-xs uppercase tracking-[0.16em] font-medium text-[#111111] dark:text-[#FFFFFF] mb-6">
+        <h3 className="text-xs uppercase tracking-[0.16em] font-medium text-[#1E1B18] dark:text-[#F7F5F0] mb-6">
           Новая вещь
         </h3>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-[11px] uppercase tracking-[0.1em] text-[#767676] dark:text-[#888888] mb-1">
+            <label className="block text-[11px] uppercase tracking-[0.1em] text-[#7C7469] dark:text-[#A69D92] mb-1">
               Название
             </label>
             <input
@@ -75,19 +75,19 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
               placeholder="Например: Прямой блейзер из шерсти"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-[#F5F5F5] dark:bg-[#222222] text-[#111111] dark:text-[#FFFFFF] focus:outline-none"
+              className="w-full px-3 py-2 text-xs bg-[#EFECE6] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#2E2A26] text-[#1E1B18] dark:text-[#F7F5F0] focus:outline-none"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.1em] text-[#767676] dark:text-[#888888] mb-1">
+              <label className="block text-[11px] uppercase tracking-[0.1em] text-[#7C7469] dark:text-[#A69D92] mb-1">
                 Категория
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ClothingCategory)}
-                className="w-full px-3 py-2 text-xs bg-[#F5F5F5] dark:bg-[#222222] text-[#111111] dark:text-[#FFFFFF] focus:outline-none"
+                className="w-full px-3 py-2 text-xs bg-[#EFECE6] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#2E2A26] text-[#1E1B18] dark:text-[#F7F5F0] focus:outline-none"
               >
                 {CATEGORY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -98,7 +98,7 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
             </div>
 
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.1em] text-[#767676] dark:text-[#888888] mb-1">
+              <label className="block text-[11px] uppercase tracking-[0.1em] text-[#7C7469] dark:text-[#A69D92] mb-1">
                 Цвет
               </label>
               <input
@@ -106,14 +106,14 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
                 placeholder="Экрю, Графит..."
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-[#F5F5F5] dark:bg-[#222222] text-[#111111] dark:text-[#FFFFFF] focus:outline-none"
+                className="w-full px-3 py-2 text-xs bg-[#EFECE6] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#2E2A26] text-[#1E1B18] dark:text-[#F7F5F0] focus:outline-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.1em] text-[#767676] dark:text-[#888888] mb-1">
+              <label className="block text-[11px] uppercase tracking-[0.1em] text-[#7C7469] dark:text-[#A69D92] mb-1">
                 Материал
               </label>
               <input
@@ -121,19 +121,19 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
                 placeholder="Шерсть, шелк..."
                 value={material}
                 onChange={(e) => setMaterial(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-[#F5F5F5] dark:bg-[#222222] text-[#111111] dark:text-[#FFFFFF] focus:outline-none"
+                className="w-full px-3 py-2 text-xs bg-[#EFECE6] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#2E2A26] text-[#1E1B18] dark:text-[#F7F5F0] focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.1em] text-[#767676] dark:text-[#888888] mb-1">
+              <label className="block text-[11px] uppercase tracking-[0.1em] text-[#7C7469] dark:text-[#A69D92] mb-1">
                 Бренд
               </label>
               <input
                 type="text"
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-[#F5F5F5] dark:bg-[#222222] text-[#111111] dark:text-[#FFFFFF] focus:outline-none"
+                className="w-full px-3 py-2 text-xs bg-[#EFECE6] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#2E2A26] text-[#1E1B18] dark:text-[#F7F5F0] focus:outline-none"
               />
             </div>
           </div>
@@ -142,13 +142,13 @@ export const AddItemModal = ({ isOpen, onClose, onAdd }: AddItemModalProps) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs text-[#767676] hover:text-[#111111] dark:hover:text-[#FFFFFF] transition-colors"
+              className="px-4 py-2 text-xs text-[#7C7469] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-colors"
             >
               Отмена
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#111111] hover:bg-[#333333] dark:bg-[#FFFFFF] dark:hover:bg-[#E5E5E5] text-white dark:text-[#111111] text-xs uppercase tracking-[0.12em] font-medium transition-colors"
+              className="px-5 py-2 bg-[#1E1B18] hover:bg-[#322E2A] dark:bg-[#F7F5F0] dark:hover:bg-[#EBE7DF] text-[#F7F5F0] dark:text-[#1E1B18] text-xs uppercase tracking-[0.12em] font-medium transition-colors"
             >
               Сохранить
             </button>

@@ -28,7 +28,7 @@ export const OutfitCard = ({ outfit, onSelectItem }: OutfitCardProps) => {
         particleCount: 30,
         spread: 40,
         origin: { y: 0.8 },
-        colors: ['#111111', '#888888'],
+        colors: ['#1E1B18', '#A69D92', '#DFD9CF'],
       });
     }
   };
@@ -40,14 +40,14 @@ export const OutfitCard = ({ outfit, onSelectItem }: OutfitCardProps) => {
   };
 
   return (
-    <div className="mt-5 border border-[#E5E5E5] dark:border-[#2B2B2B] bg-[#FFFFFF] dark:bg-[#161616] p-4 sm:p-6 transition-all">
+    <div className="mt-5 border border-[#DFD9CF] dark:border-[#2E2A26] bg-[#FCFAF7] dark:bg-[#1C1A18] p-4 sm:p-6 transition-all">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#EBEBEB] dark:border-[#262626]">
+      <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#EFECE6] dark:border-[#282420]">
         <div>
-          <span className="text-[10px] tracking-[0.16em] uppercase text-[#767676] dark:text-[#888888] font-normal block mb-1">
+          <span className="text-[10px] tracking-[0.16em] uppercase text-[#7C7469] dark:text-[#A69D92] font-normal block mb-1">
             {outfit.occasion}
           </span>
-          <h4 className="text-sm sm:text-base font-medium text-[#111111] dark:text-[#FFFFFF] tracking-normal">
+          <h4 className="text-sm sm:text-base font-medium text-[#1E1B18] dark:text-[#F7F5F0] tracking-normal">
             {outfit.title}
           </h4>
         </div>
@@ -57,30 +57,30 @@ export const OutfitCard = ({ outfit, onSelectItem }: OutfitCardProps) => {
           <button
             onClick={handleShare}
             title="Скопировать"
-            className="p-1.5 text-[#767676] hover:text-[#111111] dark:hover:text-[#FFFFFF] transition-colors"
+            className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-colors"
           >
-            {copied ? <Check className="w-4 h-4 text-[#111111] dark:text-[#FFFFFF]" /> : <Share2 className="w-4 h-4" />}
+            {copied ? <Check className="w-4 h-4 text-[#1E1B18] dark:text-[#F7F5F0]" /> : <Share2 className="w-4 h-4" />}
           </button>
           <button
             onClick={handleSave}
             title={isSaved ? 'Сохранено' : 'Сохранить'}
-            className="p-1.5 text-[#767676] hover:text-[#111111] dark:hover:text-[#FFFFFF] transition-colors"
+            className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-colors"
           >
-            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#111111] dark:text-[#FFFFFF]' : ''}`} />
+            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#1E1B18] dark:text-[#F7F5F0]' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Wardrobe Items Gallery in 12 STOREEZ format */}
+      {/* Wardrobe Items Gallery */}
       <div className="my-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {outfit.items.map((item) => (
             <div
               key={item.id}
               onClick={() => onSelectItem?.(item)}
-              className="group flex flex-col bg-[#FAFAFA] dark:bg-[#1C1C1C] cursor-pointer"
+              className="group flex flex-col bg-[#F6F4F0] dark:bg-[#221F1C] border border-[#EBE7DF] dark:border-[#2D2925] cursor-pointer"
             >
-              <div className="aspect-[3/4] w-full overflow-hidden bg-[#F2F2F2] dark:bg-[#191919]">
+              <div className="aspect-[3/4] w-full overflow-hidden bg-[#ECE7DE] dark:bg-[#1A1816]">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
@@ -88,10 +88,10 @@ export const OutfitCard = ({ outfit, onSelectItem }: OutfitCardProps) => {
                 />
               </div>
               <div className="p-2.5 flex flex-col justify-between flex-1">
-                <span className="text-[11px] font-normal text-[#111111] dark:text-[#EDEDED] line-clamp-1">
+                <span className="text-[11px] font-normal text-[#1E1B18] dark:text-[#F7F5F0] line-clamp-1">
                   {item.title}
                 </span>
-                <span className="text-[10px] text-[#767676] dark:text-[#888888] mt-0.5">
+                <span className="text-[10px] text-[#7C7469] dark:text-[#A69D92] mt-0.5">
                   {item.color}
                 </span>
               </div>
@@ -101,16 +101,16 @@ export const OutfitCard = ({ outfit, onSelectItem }: OutfitCardProps) => {
       </div>
 
       {/* Stylist Breakdown */}
-      <div className="space-y-3 pt-3 border-t border-[#EBEBEB] dark:border-[#262626]">
-        <div className="text-xs text-[#444444] dark:text-[#CCCCCC] leading-relaxed">
+      <div className="space-y-3 pt-3 border-t border-[#EFECE6] dark:border-[#282420]">
+        <div className="text-xs text-[#38332E] dark:text-[#D8D1C7] leading-relaxed">
           {outfit.stylistReasoning}
         </div>
 
         {outfit.confidenceTips?.length > 0 && (
           <ul className="space-y-1.5 pt-2">
             {outfit.confidenceTips.map((tip, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-xs text-[#666666] dark:text-[#AAAAAA] leading-normal">
-                <span className="w-1 h-1 rounded-full bg-[#888888] mt-1.5 shrink-0" />
+              <li key={idx} className="flex items-start gap-2 text-xs text-[#6B6359] dark:text-[#B5AAA0] leading-normal">
+                <span className="w-1 h-1 rounded-full bg-[#8A8175] mt-1.5 shrink-0" />
                 <span>{tip}</span>
               </li>
             ))}
