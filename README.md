@@ -80,7 +80,14 @@ npm run dev
 
 ---
 
-## Структура проекта
+## Структура проекта и документация
+
+- [CHECKPOINT_1.md](./CHECKPOINT_1.md) — **Отчет по первой контрольной точке (тема, дизайн, статус выполнения и планы)**
+- [spec/product/product.md](./spec/product/product.md) — Продуктовые требования и целевая аудитория
+- [spec/product/scenarios.md](./spec/product/scenarios.md) — Пользовательские сценарии
+- [spec/tech/architecture.md](./spec/tech/architecture.md) — Техническая архитектура
+- [spec/tech/rag.md](./spec/tech/rag.md) — Спецификация RAG-пайплайна
+- [CHANGE_HISTORY.md](./CHANGE_HISTORY.md) — История версий
 
 ```text
 ├── public/                 # Статические ассеты (векторные SVG-вещи)
