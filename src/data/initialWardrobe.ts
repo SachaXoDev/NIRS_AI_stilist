@@ -13,7 +13,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Arket',
     material: '100% органический хлопок',
     embeddingSnippet: 'Белая рубашка оверсайз Arket из хлопка. Универсальная база под жакет или поверх топа.',
-    uploadedAt: '2026-03-01'
+    uploadedAt: '2026-10-01'
   },
   {
     id: 'item-2',
@@ -27,7 +27,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'COS',
     material: 'Шерсть с эластаном',
     embeddingSnippet: 'Черный однобортный блейзер COS прямого кроя. Отлично подходит для деловых встреч и вечерних образов.',
-    uploadedAt: '2026-03-02'
+    uploadedAt: '2026-10-02'
   },
   {
     id: 'item-3',
@@ -41,7 +41,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Levi\'s',
     material: 'Плотный деним',
     embeddingSnippet: 'Темно-синие классические джинсы Levi\'s 501. Высокая талия, прямой крой.',
-    uploadedAt: '2026-03-03'
+    uploadedAt: '2026-10-03'
   },
   {
     id: 'item-4',
@@ -55,7 +55,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Massimo Dutti',
     material: 'Тонкая костюмная шерсть',
     embeddingSnippet: 'Серые свободные брюки со защипами палаццо. Идеально комбинируются со свитерами и строгой обувью.',
-    uploadedAt: '2026-03-04'
+    uploadedAt: '2026-10-04'
   },
   {
     id: 'item-5',
@@ -69,7 +69,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Uniqlo',
     material: '100% кашемир',
     embeddingSnippet: 'Уютный свитер кремового цвета из кашемира с круглым вырезом.',
-    uploadedAt: '2026-03-05'
+    uploadedAt: '2026-10-05'
   },
   {
     id: 'item-6',
@@ -83,7 +83,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Burberry insp.',
     material: 'Габардин с пропиткой',
     embeddingSnippet: 'Двубортный длинный бежевый тренч с поясом. Защищает от ветра и дождя в весенне-осенний сезон.',
-    uploadedAt: '2026-03-06'
+    uploadedAt: '2026-10-06'
   },
   {
     id: 'item-7',
@@ -97,7 +97,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Veja',
     material: 'Натуральная кожа',
     embeddingSnippet: 'Белые низкие кеды из матовой кожи. Универсальная обувь к любому дневному аутфиту.',
-    uploadedAt: '2026-03-07'
+    uploadedAt: '2026-10-07'
   },
   {
     id: 'item-8',
@@ -111,7 +111,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Vagabond',
     material: 'Глянцевая кожа',
     embeddingSnippet: 'Черные кожаные лоферы на массивной подошве. Добавляют структурности деловому стилю.',
-    uploadedAt: '2026-03-08'
+    uploadedAt: '2026-10-08'
   },
   {
     id: 'item-9',
@@ -125,7 +125,7 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Polène',
     material: 'Зернистая кожа теленка',
     embeddingSnippet: 'Кожаная каркасная сумка цвета горького шоколада. Вмещает ноутбук и документы.',
-    uploadedAt: '2026-03-09'
+    uploadedAt: '2026-10-09'
   },
   {
     id: 'item-10',
@@ -139,6 +139,6 @@ export const INITIAL_WARDROBE: WardrobeItem[] = [
     brand: 'Vintage Atelier',
     material: '100% шелк твил',
     embeddingSnippet: 'Квадратный шелковый каре с теплыми охристыми акцентами для освежения образа.',
-    uploadedAt: '2026-03-10'
+    uploadedAt: '2026-10-10'
   }
 ];

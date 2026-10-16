@@ -5,6 +5,19 @@ export type ClothingCategory =
   | 'shoes'
   | 'accessories';
 
+export type UserRole = 'user' | 'admin';
+
+export interface UserAccount {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  password?: string;
+  avatarUrl?: string;
+  vipStatus?: string;
+  createdAt: string;
+}
+
 export interface WardrobeItem {
   id: string;
   title: string;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChatThread } from '../types';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Plus, Search, Trash2, Pencil, Check, X } from 'lucide-react';
 
 interface ChatListSidebarProps {
   threads: ChatThread[];
@@ -8,6 +8,7 @@ interface ChatListSidebarProps {
   onSelectThread: (threadId: string) => void;
   onCreateThread: () => void;
   onDeleteThread: (threadId: string) => void;
+  onRenameThread?: (threadId: string, newTitle: string) => void;
 }
 
 export const ChatListSidebar = ({
@@ -16,8 +17,31 @@ export const ChatListSidebar = ({
   onSelectThread,
   onCreateThread,
   onDeleteThread,
+  onRenameThread,
 }: ChatListSidebarProps) => {
   const [search, setSearch] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState('');
+  const [deletingThread, setDeletingThread] = useState<ChatThread | null>(null);
+
+  const handleStartRename = (e: React.MouseEvent, thread: ChatThread) => {
+    e.stopPropagation();
+    setEditingId(thread.id);
+    setEditingTitle(thread.title);
+  };
+
+  const handleSaveRename = (e: React.MouseEvent | React.FormEvent, threadId: string) => {
+    e.stopPropagation();
+    if (editingTitle.trim() && onRenameThread) {
+      onRenameThread(threadId, editingTitle.trim());
+    }
+    setEditingId(null);
+  };
+
+  const handleCancelRename = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(null);
+  };
 
   const filteredThreads = threads.filter((t) =>
     t.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -78,18 +102,50 @@ export const ChatListSidebar = ({
                 }`}
               >
                 <div className="flex items-center justify-between gap-2 mb-1">
-                  <h4
-                    className={`text-xs truncate tracking-normal ${
-                      isActive
-                        ? 'font-medium text-[#1E1B18] dark:text-[#F7F5F0]'
-                        : 'font-normal text-[#38332E] dark:text-[#D8D1C7]'
-                    }`}
-                  >
-                    {thread.title}
-                  </h4>
-                  <span className="text-[10px] text-[#8A8175] shrink-0 font-normal">
-                    {thread.updatedAt}
-                  </span>
+                  {editingId === thread.id ? (
+                    <div className="flex items-center gap-1 w-full" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="text"
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveRename(e, thread.id);
+                          if (e.key === 'Escape') setEditingId(null);
+                        }}
+                        autoFocus
+                        className="flex-1 text-xs px-1.5 py-0.5 bg-white dark:bg-[#1E1C19] border border-[#1E1B18] dark:border-white rounded text-[#1E1B18] dark:text-white focus:outline-none"
+                      />
+                      <button
+                        onClick={(e) => handleSaveRename(e, thread.id)}
+                        className="p-1 hover:text-emerald-600 transition-colors cursor-pointer"
+                        title="Сохранить"
+                      >
+                        <Check className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={handleCancelRename}
+                        className="p-1 hover:text-red-600 transition-colors cursor-pointer"
+                        title="Отмена"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <h4
+                        className={`text-xs truncate tracking-normal ${
+                          isActive
+                            ? 'font-medium text-[#1E1B18] dark:text-[#F7F5F0]'
+                            : 'font-normal text-[#38332E] dark:text-[#D8D1C7]'
+                        }`}
+                      >
+                        {thread.title}
+                      </h4>
+                      <span className="text-[10px] text-[#8A8175] shrink-0 font-normal">
+                        {thread.updatedAt}
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 <p className="text-xs text-[#6B6359] dark:text-[#A69D92] truncate font-normal leading-normal">
@@ -97,23 +153,79 @@ export const ChatListSidebar = ({
                   {lastMsg?.text?.slice(0, 50) || 'Новый диалог'}
                 </p>
 
-                {threads.length > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteThread(thread.id);
-                    }}
-                    title="Удалить"
-                    className="opacity-0 group-hover:opacity-100 p-1 text-[#8A8175] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-opacity absolute right-3 bottom-3"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
+                {editingId !== thread.id && (
+                  <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 absolute right-3 bottom-2.5 transition-opacity bg-[#EFECE6]/90 dark:bg-[#1D1B18]/90 pl-1">
+                    {onRenameThread && (
+                      <button
+                        onClick={(e) => handleStartRename(e, thread)}
+                        title="Переименовать"
+                        className="p-1 text-[#8A8175] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-colors cursor-pointer"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                    )}
+                    {threads.length > 1 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeletingThread(thread);
+                        }}
+                        title="Удалить диалог"
+                        className="p-1 text-[#8A8175] hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             );
           })
         )}
       </div>
+
+      {/* Delete Confirmation Modal in 12 STOREEZ Style */}
+      {deletingThread && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-in fade-in duration-150"
+          onClick={() => setDeletingThread(null)}
+        >
+          <div
+            className="w-full max-w-sm bg-[#FCFAF7] dark:bg-[#1C1A18] border border-[#DFD9CF] dark:border-[#2E2A26] p-6 shadow-2xl relative text-[#1E1B18] dark:text-[#F7F5F0]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8175] dark:text-[#A69D92] mb-2 font-normal">
+              12 STOREEZ • Диалог
+            </div>
+
+            <h3 className="text-sm uppercase tracking-[0.06em] font-medium text-[#1E1B18] dark:text-[#F7F5F0] mb-2">
+              Удалить этот диалог?
+            </h3>
+
+            <p className="text-xs text-[#6B6359] dark:text-[#A69D92] font-light leading-relaxed mb-5">
+              Диалог «<strong>{deletingThread.title}</strong>» и все рекомендации стилиста внутри него будут удалены.
+            </p>
+
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#EFECE6] dark:border-[#282420]">
+              <button
+                onClick={() => setDeletingThread(null)}
+                className="px-3.5 py-2 text-xs text-[#8A8175] hover:text-[#1E1B18] dark:hover:text-white transition-colors cursor-pointer font-light"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={() => {
+                  onDeleteThread(deletingThread.id);
+                  setDeletingThread(null);
+                }}
+                className="px-4 py-2 bg-[#1E1B18] hover:bg-black dark:bg-[#F7F5F0] dark:hover:bg-white text-[#F7F5F0] dark:text-[#1E1B18] text-xs uppercase tracking-[0.12em] font-normal transition-colors cursor-pointer"
+              >
+                Удалить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import type { ChatMessage, WardrobeItem } from '../types';
+import type { ChatMessage, WardrobeItem, OutfitLook } from '../types';
 import { OutfitCard } from './OutfitCard';
-import { Send, Menu } from 'lucide-react';
+import { Send, Menu, CloudDrizzle } from 'lucide-react';
 
 interface ChatAreaProps {
   chatTitle: string;
@@ -12,24 +12,27 @@ interface ChatAreaProps {
   onSelectItem: (item: WardrobeItem) => void;
   onOpenChatListModal?: () => void;
   showBackButton?: boolean;
+  savedOutfitIds?: string[];
+  onToggleSaveOutfit?: (outfit: OutfitLook) => void;
 }
 
 const QUICK_PROMPTS = [
+  {
+    title: 'Москва сегодня: +6°C, пасмурно',
+    text: 'Подбери образ по погоде на сегодня: в Москве около +6°C и сыро. Нужен теплый тренч или пальто.',
+    isWeather: true,
+  },
   {
     title: 'Деловая встреча',
     text: 'Подбери лаконичный образ для деловой встречи в офисе.',
   },
   {
-    title: 'Прохладный день',
-    text: 'Что надеть на прогулку в прохладную погоду? Нужен многослойный аутфит.',
+    title: 'Ужин в ресторане',
+    text: 'Посоветуй сдержанный вечерний комплект с акцентом на фактуры.',
   },
   {
     title: 'Выходной в городе',
     text: 'Собери расслабленный повседневный монохромный образ для выходного дня.',
-  },
-  {
-    title: 'Ужин в ресторане',
-    text: 'Посоветуй сдержанный вечерний комплект с акцентом на фактуры.',
   },
 ];
 
@@ -40,6 +43,8 @@ export const ChatArea = ({
   onSendMessage,
   onSelectItem,
   onOpenChatListModal,
+  savedOutfitIds = [],
+  onToggleSaveOutfit,
 }: ChatAreaProps) => {
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -111,6 +116,8 @@ export const ChatArea = ({
                     <OutfitCard
                       outfit={message.suggestedOutfit}
                       onSelectItem={onSelectItem}
+                      isSaved={savedOutfitIds.includes(message.suggestedOutfit.id)}
+                      onToggleSave={onToggleSaveOutfit}
                     />
                   )}
                 </div>
@@ -146,9 +153,14 @@ export const ChatArea = ({
                 key={idx}
                 disabled={isLoading}
                 onClick={() => onSendMessage(p.text)}
-                className="px-3 py-1 bg-[#ECE7DF] dark:bg-[#24211E] hover:bg-[#E2DCCF] dark:hover:bg-[#2E2A26] border border-[#DFD9CF] dark:border-[#332F2A] text-[11px] font-normal text-[#38332E] dark:text-[#D8D1C7] whitespace-nowrap transition-colors shrink-0 disabled:opacity-40"
+                className={`px-3 py-1.5 border text-[11px] font-normal whitespace-nowrap transition-colors shrink-0 disabled:opacity-40 flex items-center gap-1.5 cursor-pointer ${
+                  p.isWeather
+                    ? 'bg-[#E5DFD5] dark:bg-[#2C2824] border-[#1E1B18]/30 dark:border-white/30 text-[#1E1B18] dark:text-[#F7F5F0] font-medium'
+                    : 'bg-[#ECE7DF] dark:bg-[#24211E] hover:bg-[#E2DCCF] dark:hover:bg-[#2E2A26] border-[#DFD9CF] dark:border-[#332F2A] text-[#38332E] dark:text-[#D8D1C7]'
+                }`}
               >
-                {p.title}
+                {p.isWeather && <CloudDrizzle className="w-3.5 h-3.5 text-[#6B6359] dark:text-[#A69D92]" />}
+                <span>{p.title}</span>
               </button>
             ))}
           </div>
