@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "split": "visual_smoke",
+  "user_id": "visual-evaluation-user",
+  "corpus": "wardrobe_seed.json",
+  "alpha": 0.65,
+  "mrr_k": 3,
+  "required_slots": [],
+  "provenance": {
+    "kind": "illustration_smoke",
+    "annotation_status": "assistant_draft_requires_independent_team_review",
+    "images": "10 supplied SVG illustrations, some contain printed labels; not a clothing photo benchmark.",
+    "limitations": "Text-to-image category ranks have only 2 candidates. Use a global image collection if reporting nontrivial image retrieval."
+  },
+  "queries": [
+    {
+      "id": "text-item-1",
+      "query": "Белая рубашка с длинными рукавами и воротником",
+      "relevant_by_slot": {
+        "tops": [
+          "item-1"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-2",
+      "query": "Черный строгий блейзер с лацканами",
+      "relevant_by_slot": {
+        "outerwear": [
+          "item-2"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-3",
+      "query": "Прямые синие джинсы",
+      "relevant_by_slot": {
+        "bottoms": [
+          "item-3"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-4",
+      "query": "Серые широкие брюки палаццо",
+      "relevant_by_slot": {
+        "bottoms": [
+          "item-4"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-5",
+      "query": "Светлый кремовый вязаный джемпер",
+      "relevant_by_slot": {
+        "tops": [
+          "item-5"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-6",
+      "query": "Длинный бежевый двубортный тренч с поясом",
+      "relevant_by_slot": {
+        "outerwear": [
+          "item-6"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-7",
+      "query": "Белые низкие кеды",
+      "relevant_by_slot": {
+        "shoes": [
+          "item-7"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-8",
+      "query": "Черные кожаные лоферы",
+      "relevant_by_slot": {
+        "shoes": [
+          "item-8"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-9",
+      "query": "Коричневая структурированная сумка с ручками",
+      "relevant_by_slot": {
+        "accessories": [
+          "item-9"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    },
+    {
+      "id": "text-item-10",
+      "query": "Шелковый платок с геометрическим рисунком",
+      "relevant_by_slot": {
+        "accessories": [
+          "item-10"
+        ]
+      },
+      "rationale": "Иллюстративная текст→изображение проверка по 10 исходным SVG."
+    }
+  ]
+}

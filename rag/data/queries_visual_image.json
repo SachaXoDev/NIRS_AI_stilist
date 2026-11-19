@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "split": "visual_instance_smoke",
+  "user_id": "visual-evaluation-user",
+  "corpus": "wardrobe_seed.json",
+  "alpha": 0.65,
+  "mrr_k": 3,
+  "required_slots": [],
+  "provenance": {
+    "kind": "near_duplicate_instance_smoke",
+    "annotation_status": "identity_labels",
+    "images": "Transformed rasterizations of original SVGs, prepared by the image pipeline.",
+    "limitations": "Same source item exists in the index; measures instance robustness, not unseen-photo semantic generalization."
+  },
+  "queries": [
+    {
+      "id": "image-item-1",
+      "query": "",
+      "query_image": "data/visual_queries/item-1.png",
+      "relevant_by_slot": {
+        "tops": [
+          "item-1"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-2",
+      "query": "",
+      "query_image": "data/visual_queries/item-2.png",
+      "relevant_by_slot": {
+        "outerwear": [
+          "item-2"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-3",
+      "query": "",
+      "query_image": "data/visual_queries/item-3.png",
+      "relevant_by_slot": {
+        "bottoms": [
+          "item-3"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-4",
+      "query": "",
+      "query_image": "data/visual_queries/item-4.png",
+      "relevant_by_slot": {
+        "bottoms": [
+          "item-4"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-5",
+      "query": "",
+      "query_image": "data/visual_queries/item-5.png",
+      "relevant_by_slot": {
+        "tops": [
+          "item-5"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-6",
+      "query": "",
+      "query_image": "data/visual_queries/item-6.png",
+      "relevant_by_slot": {
+        "outerwear": [
+          "item-6"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-7",
+      "query": "",
+      "query_image": "data/visual_queries/item-7.png",
+      "relevant_by_slot": {
+        "shoes": [
+          "item-7"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-8",
+      "query": "",
+      "query_image": "data/visual_queries/item-8.png",
+      "relevant_by_slot": {
+        "shoes": [
+          "item-8"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-9",
+      "query": "",
+      "query_image": "data/visual_queries/item-9.png",
+      "relevant_by_slot": {
+        "accessories": [
+          "item-9"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    },
+    {
+      "id": "image-item-10",
+      "query": "",
+      "query_image": "data/visual_queries/item-10.png",
+      "relevant_by_slot": {
+        "accessories": [
+          "item-10"
+        ]
+      },
+      "rationale": "Измененная растеризация того же предмета: проверка image→image."
+    }
+  ]
+}

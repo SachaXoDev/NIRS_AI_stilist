@@ -1,0 +1,264 @@
+{
+  "$defs": {
+    "WardrobeItem": {
+      "additionalProperties": false,
+      "description": "Frontend-compatible item. Ownership belongs to the containing user snapshot.",
+      "properties": {
+        "id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "tops",
+            "bottoms",
+            "shoes",
+            "outerwear",
+            "accessories"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "color": {
+          "default": "",
+          "title": "Color",
+          "type": "string"
+        },
+        "season": {
+          "default": "all",
+          "enum": [
+            "all",
+            "spring/summer",
+            "autumn/winter"
+          ],
+          "title": "Season",
+          "type": "string"
+        },
+        "style": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Style",
+          "type": "array"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "imageUrl": {
+          "default": "",
+          "title": "Imageurl",
+          "type": "string"
+        },
+        "brand": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Brand"
+        },
+        "material": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Material"
+        },
+        "embeddingSnippet": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Embeddingsnippet"
+        },
+        "uploadedAt": {
+          "default": "",
+          "title": "Uploadedat",
+          "type": "string"
+        },
+        "imagePath": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Imagepath"
+        },
+        "weather": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WeatherAttributes"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "category"
+      ],
+      "title": "WardrobeItem",
+      "type": "object"
+    },
+    "WeatherAttributes": {
+      "additionalProperties": false,
+      "description": "Curated facts; None means unknown, never an inferred guarantee.",
+      "properties": {
+        "temperature_min": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature Min"
+        },
+        "temperature_max": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature Max"
+        },
+        "waterproof": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Waterproof"
+        },
+        "windproof": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Windproof"
+        },
+        "open_shoes": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Open Shoes"
+        }
+      },
+      "title": "WeatherAttributes",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "No LLM text or fictional confidence percentage is generated here.",
+  "properties": {
+    "valid": {
+      "title": "Valid",
+      "type": "boolean"
+    },
+    "complete": {
+      "title": "Complete",
+      "type": "boolean"
+    },
+    "selected_items": {
+      "items": {
+        "$ref": "#/$defs/WardrobeItem"
+      },
+      "title": "Selected Items",
+      "type": "array"
+    },
+    "missing_slots": {
+      "items": {
+        "enum": [
+          "tops",
+          "bottoms",
+          "shoes",
+          "outerwear",
+          "accessories"
+        ],
+        "type": "string"
+      },
+      "title": "Missing Slots",
+      "type": "array"
+    },
+    "violations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Violations",
+      "type": "array"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    },
+    "wardrobe_revision": {
+      "title": "Wardrobe Revision",
+      "type": "string"
+    }
+  },
+  "required": [
+    "valid",
+    "complete",
+    "wardrobe_revision"
+  ],
+  "title": "SelectionValidation",
+  "type": "object"
+}

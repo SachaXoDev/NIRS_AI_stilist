@@ -1,0 +1,81 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "occasion": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Occasion"
+    },
+    "weather": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Weather"
+    },
+    "vibe": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Vibe"
+    },
+    "temperature_c": {
+      "anyOf": [
+        {
+          "maximum": 65,
+          "minimum": -80,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Temperature C"
+    },
+    "rain": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rain"
+    },
+    "wind": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Wind"
+    }
+  },
+  "title": "QueryContext",
+  "type": "object"
+}

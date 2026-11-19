@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wardrobe-rag"
+version = "0.1.0"
+description = "Tenant-isolated multilingual text and visual wardrobe retrieval for KT-2"
+requires-python = ">=3.11,<3.15"
+dependencies = [
+  "chromadb>=1.0,<2",
+  "sentence-transformers>=5,<6",
+  "torch>=2.6,<3",
+  "torchvision>=0.21,<1",
+  "pydantic>=2.10,<3",
+  "pillow>=11,<13",
+  "numpy>=2,<3",
+  "rank-bm25>=0.2.2,<0.3",
+  "snowballstemmer>=2.2,<4",
+  "filelock>=3.16,<4",
+  "resvg-py>=0.2,<1",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+wardrobe-rag = "wardrobe_rag.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wardrobe_rag"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,11 @@
+﻿mode,query_id,slot,repeats,latency_median_ms,hit_rate@1,hit_rate@3,mrr@3,relevant_ids,ranked_ids_first_repeat
+visual,image-item-1,tops,3,48.93369999990682,1.0,1.0,1.0,"[""item-1""]","[""item-1"", ""item-5""]"
+visual,image-item-2,outerwear,3,48.47460000019055,1.0,1.0,1.0,"[""item-2""]","[""item-2"", ""item-6""]"
+visual,image-item-3,bottoms,3,49.30850000164355,1.0,1.0,1.0,"[""item-3""]","[""item-3"", ""item-4""]"
+visual,image-item-4,bottoms,3,49.39050000029965,1.0,1.0,1.0,"[""item-4""]","[""item-4"", ""item-3""]"
+visual,image-item-5,tops,3,49.78340000161552,1.0,1.0,1.0,"[""item-5""]","[""item-5"", ""item-1""]"
+visual,image-item-6,outerwear,3,48.07200000141165,1.0,1.0,1.0,"[""item-6""]","[""item-6"", ""item-2""]"
+visual,image-item-7,shoes,3,49.07380000076955,1.0,1.0,1.0,"[""item-7""]","[""item-7"", ""item-8""]"
+visual,image-item-8,shoes,3,48.87759999837726,1.0,1.0,1.0,"[""item-8""]","[""item-8"", ""item-7""]"
+visual,image-item-9,accessories,3,49.84150000018417,1.0,1.0,1.0,"[""item-9""]","[""item-9"", ""item-10""]"
+visual,image-item-10,accessories,3,50.34410000007483,1.0,1.0,1.0,"[""item-10""]","[""item-10"", ""item-9""]"

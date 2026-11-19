@@ -11,3 +11,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+rag/.venv/
+rag/.model_cache/
+rag/.rag_data*/
+rag/results/
+rag/data/visual_queries/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/

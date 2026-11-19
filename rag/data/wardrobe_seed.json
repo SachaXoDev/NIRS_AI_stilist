@@ -1,0 +1,240 @@
+[
+  {
+    "id": "item-1",
+    "title": "Белая хлопковая рубашка оверсайз",
+    "category": "tops",
+    "color": "Белый",
+    "season": "all",
+    "style": [
+      "casual",
+      "business",
+      "smart-casual",
+      "minimalism"
+    ],
+    "tags": [
+      "базовая",
+      "оверсайз",
+      "хлопок",
+      "офис",
+      "повседневная"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Arket",
+    "material": "100% органический хлопок",
+    "embeddingSnippet": "Белая рубашка оверсайз Arket из хлопка. Универсальная база под жакет или поверх топа.",
+    "uploadedAt": "2026-10-01"
+  },
+  {
+    "id": "item-2",
+    "title": "Черный структурированный блейзер",
+    "category": "outerwear",
+    "color": "Черный",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual",
+      "chic"
+    ],
+    "tags": [
+      "жакет",
+      "блейзер",
+      "черный",
+      "строгий",
+      "прямой крой"
+    ],
+    "imageUrl": "/clothes/blazer.svg",
+    "brand": "COS",
+    "material": "Шерсть с эластаном",
+    "embeddingSnippet": "Черный однобортный блейзер COS прямого кроя. Отлично подходит для деловых встреч и вечерних образов.",
+    "uploadedAt": "2026-10-02"
+  },
+  {
+    "id": "item-3",
+    "title": "Прямые темно-синие джинсы с высокой посадкой",
+    "category": "bottoms",
+    "color": "Синий",
+    "season": "all",
+    "style": [
+      "casual",
+      "smart-casual"
+    ],
+    "tags": [
+      "деним",
+      "джинсы",
+      "базовые",
+      "прямой силуэт"
+    ],
+    "imageUrl": "/clothes/jeans.svg",
+    "brand": "Levi's",
+    "material": "Плотный деним",
+    "embeddingSnippet": "Темно-синие классические джинсы Levi's 501. Высокая талия, прямой крой.",
+    "uploadedAt": "2026-10-03"
+  },
+  {
+    "id": "item-4",
+    "title": "Широкие серые брюки палаццо со складками",
+    "category": "bottoms",
+    "color": "Серый",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual",
+      "old-money"
+    ],
+    "tags": [
+      "брюки",
+      "палаццо",
+      "серые",
+      "костюмные",
+      "элегантные"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Massimo Dutti",
+    "material": "Тонкая костюмная шерсть",
+    "embeddingSnippet": "Серые свободные брюки со защипами палаццо. Идеально комбинируются со свитерами и строгой обувью.",
+    "uploadedAt": "2026-10-04"
+  },
+  {
+    "id": "item-5",
+    "title": "Кашемировый джемпер молочного оттенка",
+    "category": "tops",
+    "color": "Молочный / Бежевый",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "cozy",
+      "minimalism"
+    ],
+    "tags": [
+      "свитер",
+      "джемпер",
+      "кашемир",
+      "теплый",
+      "база"
+    ],
+    "imageUrl": "/clothes/sweater.svg",
+    "brand": "Uniqlo",
+    "material": "100% кашемир",
+    "embeddingSnippet": "Уютный свитер кремового цвета из кашемира с круглым вырезом.",
+    "uploadedAt": "2026-10-05"
+  },
+  {
+    "id": "item-6",
+    "title": "Бежевый классический тренчкот",
+    "category": "outerwear",
+    "color": "Бежевый",
+    "season": "spring/summer",
+    "style": [
+      "classic",
+      "smart-casual",
+      "chic"
+    ],
+    "tags": [
+      "тренч",
+      "плащ",
+      "бежевый",
+      "демисезонный",
+      "водоотталкивающий"
+    ],
+    "imageUrl": "/clothes/trench.svg",
+    "brand": "Burberry insp.",
+    "material": "Габардин с пропиткой",
+    "embeddingSnippet": "Двубортный длинный бежевый тренч с поясом. Защищает от ветра и дождя в весенне-осенний сезон.",
+    "uploadedAt": "2026-10-06"
+  },
+  {
+    "id": "item-7",
+    "title": "Минималистичные белые кожаные кеды",
+    "category": "shoes",
+    "color": "Белый",
+    "season": "all",
+    "style": [
+      "casual",
+      "streetwear",
+      "minimalism"
+    ],
+    "tags": [
+      "обувь",
+      "кроссовки",
+      "кеды",
+      "белые",
+      "кожа"
+    ],
+    "imageUrl": "/clothes/sneakers.svg",
+    "brand": "Veja",
+    "material": "Натуральная кожа",
+    "embeddingSnippet": "Белые низкие кеды из матовой кожи. Универсальная обувь к любому дневному аутфиту.",
+    "uploadedAt": "2026-10-07"
+  },
+  {
+    "id": "item-8",
+    "title": "Черные кожаные лоферы на толстой подошве",
+    "category": "shoes",
+    "color": "Черный",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual",
+      "preppy"
+    ],
+    "tags": [
+      "лоферы",
+      "туфли",
+      "кожа",
+      "офис",
+      "трендовые"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Vagabond",
+    "material": "Глянцевая кожа",
+    "embeddingSnippet": "Черные кожаные лоферы на массивной подошве. Добавляют структурности деловому стилю.",
+    "uploadedAt": "2026-10-08"
+  },
+  {
+    "id": "item-9",
+    "title": "Структурированная кожаная сумка-тоут",
+    "category": "accessories",
+    "color": "Шоколадный / Коричневый",
+    "season": "all",
+    "style": [
+      "business",
+      "chic",
+      "minimalism"
+    ],
+    "tags": [
+      "сумка",
+      "тоут",
+      "коричневый",
+      "аксессуар",
+      "вместительная"
+    ],
+    "imageUrl": "/clothes/tote.svg",
+    "brand": "Polène",
+    "material": "Зернистая кожа теленка",
+    "embeddingSnippet": "Кожаная каркасная сумка цвета горького шоколада. Вмещает ноутбук и документы.",
+    "uploadedAt": "2026-10-09"
+  },
+  {
+    "id": "item-10",
+    "title": "Шелковый шейный платок с геометрическим принтом",
+    "category": "accessories",
+    "color": "Мультиколор / Охра",
+    "season": "all",
+    "style": [
+      "chic",
+      "accent",
+      "french"
+    ],
+    "tags": [
+      "платок",
+      "шелк",
+      "акцент",
+      "шея"
+    ],
+    "imageUrl": "/clothes/scarf.svg",
+    "brand": "Vintage Atelier",
+    "material": "100% шелк твил",
+    "embeddingSnippet": "Квадратный шелковый каре с теплыми охристыми акцентами для освежения образа.",
+    "uploadedAt": "2026-10-10"
+  }
+]

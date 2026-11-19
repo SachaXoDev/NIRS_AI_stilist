@@ -1,0 +1,1465 @@
+[
+  {
+    "id": "item-1",
+    "title": "Белая хлопковая рубашка оверсайз",
+    "category": "tops",
+    "color": "Белый",
+    "season": "all",
+    "style": [
+      "casual",
+      "business",
+      "smart-casual",
+      "minimalism"
+    ],
+    "tags": [
+      "базовая",
+      "оверсайз",
+      "хлопок",
+      "офис",
+      "повседневная"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Arket",
+    "material": "100% органический хлопок",
+    "embeddingSnippet": "Белая рубашка оверсайз Arket из хлопка. Универсальная база под жакет или поверх топа.",
+    "uploadedAt": "2026-10-01"
+  },
+  {
+    "id": "item-2",
+    "title": "Черный структурированный блейзер",
+    "category": "outerwear",
+    "color": "Черный",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual",
+      "chic"
+    ],
+    "tags": [
+      "жакет",
+      "блейзер",
+      "черный",
+      "строгий",
+      "прямой крой"
+    ],
+    "imageUrl": "/clothes/blazer.svg",
+    "brand": "COS",
+    "material": "Шерсть с эластаном",
+    "embeddingSnippet": "Черный однобортный блейзер COS прямого кроя. Отлично подходит для деловых встреч и вечерних образов.",
+    "uploadedAt": "2026-10-02"
+  },
+  {
+    "id": "item-3",
+    "title": "Прямые темно-синие джинсы с высокой посадкой",
+    "category": "bottoms",
+    "color": "Синий",
+    "season": "all",
+    "style": [
+      "casual",
+      "smart-casual"
+    ],
+    "tags": [
+      "деним",
+      "джинсы",
+      "базовые",
+      "прямой силуэт"
+    ],
+    "imageUrl": "/clothes/jeans.svg",
+    "brand": "Levi's",
+    "material": "Плотный деним",
+    "embeddingSnippet": "Темно-синие классические джинсы Levi's 501. Высокая талия, прямой крой.",
+    "uploadedAt": "2026-10-03"
+  },
+  {
+    "id": "item-4",
+    "title": "Широкие серые брюки палаццо со складками",
+    "category": "bottoms",
+    "color": "Серый",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual",
+      "old-money"
+    ],
+    "tags": [
+      "брюки",
+      "палаццо",
+      "серые",
+      "костюмные",
+      "элегантные"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Massimo Dutti",
+    "material": "Тонкая костюмная шерсть",
+    "embeddingSnippet": "Серые свободные брюки со защипами палаццо. Идеально комбинируются со свитерами и строгой обувью.",
+    "uploadedAt": "2026-10-04"
+  },
+  {
+    "id": "item-5",
+    "title": "Кашемировый джемпер молочного оттенка",
+    "category": "tops",
+    "color": "Молочный / Бежевый",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "cozy",
+      "minimalism"
+    ],
+    "tags": [
+      "свитер",
+      "джемпер",
+      "кашемир",
+      "теплый",
+      "база"
+    ],
+    "imageUrl": "/clothes/sweater.svg",
+    "brand": "Uniqlo",
+    "material": "100% кашемир",
+    "embeddingSnippet": "Уютный свитер кремового цвета из кашемира с круглым вырезом.",
+    "uploadedAt": "2026-10-05"
+  },
+  {
+    "id": "item-6",
+    "title": "Бежевый классический тренчкот",
+    "category": "outerwear",
+    "color": "Бежевый",
+    "season": "spring/summer",
+    "style": [
+      "classic",
+      "smart-casual",
+      "chic"
+    ],
+    "tags": [
+      "тренч",
+      "плащ",
+      "бежевый",
+      "демисезонный",
+      "водоотталкивающий"
+    ],
+    "imageUrl": "/clothes/trench.svg",
+    "brand": "Burberry insp.",
+    "material": "Габардин с пропиткой",
+    "embeddingSnippet": "Двубортный длинный бежевый тренч с поясом. Защищает от ветра и дождя в весенне-осенний сезон.",
+    "uploadedAt": "2026-10-06"
+  },
+  {
+    "id": "item-7",
+    "title": "Минималистичные белые кожаные кеды",
+    "category": "shoes",
+    "color": "Белый",
+    "season": "all",
+    "style": [
+      "casual",
+      "streetwear",
+      "minimalism"
+    ],
+    "tags": [
+      "обувь",
+      "кроссовки",
+      "кеды",
+      "белые",
+      "кожа"
+    ],
+    "imageUrl": "/clothes/sneakers.svg",
+    "brand": "Veja",
+    "material": "Натуральная кожа",
+    "embeddingSnippet": "Белые низкие кеды из матовой кожи. Универсальная обувь к любому дневному аутфиту.",
+    "uploadedAt": "2026-10-07"
+  },
+  {
+    "id": "item-8",
+    "title": "Черные кожаные лоферы на толстой подошве",
+    "category": "shoes",
+    "color": "Черный",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual",
+      "preppy"
+    ],
+    "tags": [
+      "лоферы",
+      "туфли",
+      "кожа",
+      "офис",
+      "трендовые"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Vagabond",
+    "material": "Глянцевая кожа",
+    "embeddingSnippet": "Черные кожаные лоферы на массивной подошве. Добавляют структурности деловому стилю.",
+    "uploadedAt": "2026-10-08"
+  },
+  {
+    "id": "item-9",
+    "title": "Структурированная кожаная сумка-тоут",
+    "category": "accessories",
+    "color": "Шоколадный / Коричневый",
+    "season": "all",
+    "style": [
+      "business",
+      "chic",
+      "minimalism"
+    ],
+    "tags": [
+      "сумка",
+      "тоут",
+      "коричневый",
+      "аксессуар",
+      "вместительная"
+    ],
+    "imageUrl": "/clothes/tote.svg",
+    "brand": "Polène",
+    "material": "Зернистая кожа теленка",
+    "embeddingSnippet": "Кожаная каркасная сумка цвета горького шоколада. Вмещает ноутбук и документы.",
+    "uploadedAt": "2026-10-09"
+  },
+  {
+    "id": "item-10",
+    "title": "Шелковый шейный платок с геометрическим принтом",
+    "category": "accessories",
+    "color": "Мультиколор / Охра",
+    "season": "all",
+    "style": [
+      "chic",
+      "accent",
+      "french"
+    ],
+    "tags": [
+      "платок",
+      "шелк",
+      "акцент",
+      "шея"
+    ],
+    "imageUrl": "/clothes/scarf.svg",
+    "brand": "Vintage Atelier",
+    "material": "100% шелк твил",
+    "embeddingSnippet": "Квадратный шелковый каре с теплыми охристыми акцентами для освежения образа.",
+    "uploadedAt": "2026-10-10"
+  },
+  {
+    "id": "t01",
+    "title": "Черный шелковый топ на тонких бретелях",
+    "category": "tops",
+    "color": "Черный",
+    "material": "100% шелк",
+    "season": "all",
+    "tags": [
+      "топ",
+      "вечер",
+      "шелк",
+      "струящийся"
+    ],
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черный шелковый топ на тонких бретелях. Материал: 100% шелк. топ, вечер, шелк, струящийся."
+  },
+  {
+    "id": "t02",
+    "title": "Темно-синяя приталенная рубашка из поплина",
+    "category": "tops",
+    "color": "Темно-синий",
+    "material": "100% хлопок поплин",
+    "season": "all",
+    "tags": [
+      "рубашка",
+      "офис",
+      "деловая",
+      "приталенная"
+    ],
+    "style": [
+      "business"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Темно-синяя приталенная рубашка из поплина. Материал: 100% хлопок поплин. рубашка, офис, деловая, приталенная."
+  },
+  {
+    "id": "t03",
+    "title": "Бордовая водолазка из мериносовой шерсти",
+    "category": "tops",
+    "color": "Бордовый",
+    "material": "100% мериносовая шерсть",
+    "season": "autumn/winter",
+    "tags": [
+      "водолазка",
+      "теплый",
+      "офис",
+      "тонкий трикотаж"
+    ],
+    "style": [
+      "business",
+      "cozy"
+    ],
+    "imageUrl": "/clothes/sweater.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бордовая водолазка из мериносовой шерсти. Материал: 100% мериносовая шерсть. водолазка, теплый, офис, тонкий трикотаж.",
+    "weather": {
+      "temperature_min": -5,
+      "temperature_max": 15
+    }
+  },
+  {
+    "id": "t04",
+    "title": "Серый объемный свитер крупной вязки",
+    "category": "tops",
+    "color": "Серый",
+    "material": "Плотная овечья шерсть",
+    "season": "autumn/winter",
+    "tags": [
+      "свитер",
+      "теплый",
+      "прогулка",
+      "объемный"
+    ],
+    "style": [
+      "casual",
+      "cozy"
+    ],
+    "imageUrl": "/clothes/sweater.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Серый объемный свитер крупной вязки. Материал: Плотная овечья шерсть. свитер, теплый, прогулка, объемный.",
+    "weather": {
+      "temperature_min": -10,
+      "temperature_max": 12
+    }
+  },
+  {
+    "id": "t05",
+    "title": "Бежевая свободная льняная рубашка",
+    "category": "tops",
+    "color": "Бежевый",
+    "material": "100% лен",
+    "season": "spring/summer",
+    "tags": [
+      "рубашка",
+      "лето",
+      "жара",
+      "дышащая"
+    ],
+    "style": [
+      "casual",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бежевая свободная льняная рубашка. Материал: 100% лен. рубашка, лето, жара, дышащая.",
+    "weather": {
+      "temperature_min": 18,
+      "temperature_max": 35
+    }
+  },
+  {
+    "id": "t06",
+    "title": "Белая базовая хлопковая футболка",
+    "category": "tops",
+    "color": "Белый",
+    "material": "100% хлопок",
+    "season": "spring/summer",
+    "tags": [
+      "футболка",
+      "лето",
+      "повседневная",
+      "базовая"
+    ],
+    "style": [
+      "casual",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Белая базовая хлопковая футболка. Материал: 100% хлопок. футболка, лето, повседневная, базовая."
+  },
+  {
+    "id": "t07",
+    "title": "Оливковая функциональная флисовая кофта",
+    "category": "tops",
+    "color": "Оливковый",
+    "material": "Технический флис",
+    "season": "autumn/winter",
+    "tags": [
+      "флис",
+      "поход",
+      "трекинг",
+      "теплый",
+      "быстросохнущий"
+    ],
+    "style": [
+      "outdoor",
+      "sport"
+    ],
+    "imageUrl": "/clothes/sweater.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Оливковая функциональная флисовая кофта. Материал: Технический флис. флис, поход, трекинг, теплый, быстросохнущий."
+  },
+  {
+    "id": "t08",
+    "title": "Красный шерстяной свитер крупной вязки",
+    "category": "tops",
+    "color": "Красный",
+    "material": "100% шерсть",
+    "season": "autumn/winter",
+    "tags": [
+      "свитер",
+      "акцент",
+      "яркий",
+      "мороз",
+      "теплый"
+    ],
+    "style": [
+      "casual",
+      "accent"
+    ],
+    "imageUrl": "/clothes/sweater.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Красный шерстяной свитер крупной вязки. Материал: 100% шерсть. свитер, акцент, яркий, мороз, теплый.",
+    "weather": {
+      "temperature_min": -10,
+      "temperature_max": 10
+    }
+  },
+  {
+    "id": "t09",
+    "title": "Голубая хлопковая рубашка в белую полоску",
+    "category": "tops",
+    "color": "Голубой / Белый",
+    "material": "Хлопок",
+    "season": "all",
+    "tags": [
+      "рубашка",
+      "полоска",
+      "расслабленная",
+      "офис"
+    ],
+    "style": [
+      "smart-casual",
+      "casual"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Голубая хлопковая рубашка в белую полоску. Материал: Хлопок. рубашка, полоска, расслабленная, офис."
+  },
+  {
+    "id": "t10",
+    "title": "Пудрово-розовая сатиновая блуза",
+    "category": "tops",
+    "color": "Пудрово-розовый",
+    "material": "Вискозный сатин",
+    "season": "all",
+    "tags": [
+      "блуза",
+      "сатин",
+      "вечер",
+      "свидание",
+      "мягкий блеск"
+    ],
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Пудрово-розовая сатиновая блуза. Материал: Вискозный сатин. блуза, сатин, вечер, свидание, мягкий блеск."
+  },
+  {
+    "id": "t11",
+    "title": "Черная спортивная футболка для бега",
+    "category": "tops",
+    "color": "Черный",
+    "material": "Быстросохнущий полиэстер",
+    "season": "all",
+    "tags": [
+      "футболка",
+      "бег",
+      "тренировка",
+      "спорт",
+      "влагоотведение"
+    ],
+    "style": [
+      "sport"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черная спортивная футболка для бега. Материал: Быстросохнущий полиэстер. футболка, бег, тренировка, спорт, влагоотведение."
+  },
+  {
+    "id": "t12",
+    "title": "Кремовый фактурный вязаный кардиган",
+    "category": "tops",
+    "color": "Кремовый",
+    "material": "Шерсть с хлопком",
+    "season": "all",
+    "tags": [
+      "кардиган",
+      "уютный",
+      "фактурный",
+      "кофейня",
+      "поездка"
+    ],
+    "style": [
+      "cozy",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/sweater.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Кремовый фактурный вязаный кардиган. Материал: Шерсть с хлопком. кардиган, уютный, фактурный, кофейня, поездка."
+  },
+  {
+    "id": "t13",
+    "title": "Изумрудная шелковая блуза со свободным рукавом",
+    "category": "tops",
+    "color": "Изумрудный",
+    "material": "100% шелк",
+    "season": "all",
+    "tags": [
+      "блуза",
+      "вечер",
+      "галерея",
+      "акцент",
+      "шелк"
+    ],
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Изумрудная шелковая блуза со свободным рукавом. Материал: 100% шелк. блуза, вечер, галерея, акцент, шелк."
+  },
+  {
+    "id": "b01",
+    "title": "Черные прямые костюмные брюки из шерсти",
+    "category": "bottoms",
+    "color": "Черный",
+    "material": "Костюмная шерсть",
+    "season": "all",
+    "tags": [
+      "брюки",
+      "офис",
+      "деловые",
+      "прямые"
+    ],
+    "style": [
+      "business",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черные прямые костюмные брюки из шерсти. Материал: Костюмная шерсть. брюки, офис, деловые, прямые."
+  },
+  {
+    "id": "b02",
+    "title": "Бежевые широкие льняные брюки",
+    "category": "bottoms",
+    "color": "Бежевый",
+    "material": "100% лен",
+    "season": "spring/summer",
+    "tags": [
+      "брюки",
+      "лето",
+      "жара",
+      "широкие",
+      "дышащие"
+    ],
+    "style": [
+      "casual",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бежевые широкие льняные брюки. Материал: 100% лен. брюки, лето, жара, широкие, дышащие.",
+    "weather": {
+      "temperature_min": 18,
+      "temperature_max": 35
+    }
+  },
+  {
+    "id": "b03",
+    "title": "Черная шелковая юбка миди по косой",
+    "category": "bottoms",
+    "color": "Черный",
+    "material": "100% шелк",
+    "season": "all",
+    "tags": [
+      "юбка",
+      "миди",
+      "вечер",
+      "струящаяся",
+      "свидание"
+    ],
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черная шелковая юбка миди по косой. Материал: 100% шелк. юбка, миди, вечер, струящаяся, свидание."
+  },
+  {
+    "id": "b04",
+    "title": "Оливковые хлопковые брюки карго для похода",
+    "category": "bottoms",
+    "color": "Оливковый",
+    "material": "Плотный хлопок рипстоп",
+    "season": "all",
+    "tags": [
+      "карго",
+      "поход",
+      "трекинг",
+      "карманы",
+      "прочные"
+    ],
+    "style": [
+      "outdoor"
+    ],
+    "imageUrl": "/clothes/jeans.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Оливковые хлопковые брюки карго для похода. Материал: Плотный хлопок рипстоп. карго, поход, трекинг, карманы, прочные."
+  },
+  {
+    "id": "b05",
+    "title": "Узкие джинсы цвета индиго",
+    "category": "bottoms",
+    "color": "Индиго",
+    "material": "Деним с эластаном",
+    "season": "all",
+    "tags": [
+      "джинсы",
+      "деним",
+      "узкие",
+      "повседневные"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/jeans.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Узкие джинсы цвета индиго. Материал: Деним с эластаном. джинсы, деним, узкие, повседневные."
+  },
+  {
+    "id": "b06",
+    "title": "Темно-синие костюмные брюки со стрелками",
+    "category": "bottoms",
+    "color": "Темно-синий",
+    "material": "Тонкая шерсть",
+    "season": "all",
+    "tags": [
+      "брюки",
+      "стрелки",
+      "деловые",
+      "офис",
+      "костюм"
+    ],
+    "style": [
+      "business"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Темно-синие костюмные брюки со стрелками. Материал: Тонкая шерсть. брюки, стрелки, деловые, офис, костюм."
+  },
+  {
+    "id": "b07",
+    "title": "Серые теплые шерстяные брюки на подкладке",
+    "category": "bottoms",
+    "color": "Серый",
+    "material": "Плотная шерсть на подкладке",
+    "season": "autumn/winter",
+    "tags": [
+      "брюки",
+      "теплый",
+      "зима",
+      "мороз",
+      "офис"
+    ],
+    "style": [
+      "business",
+      "cozy"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Серые теплые шерстяные брюки на подкладке. Материал: Плотная шерсть на подкладке. брюки, теплый, зима, мороз, офис.",
+    "weather": {
+      "temperature_min": -15,
+      "temperature_max": 12
+    }
+  },
+  {
+    "id": "b08",
+    "title": "Песочные хлопковые чиносы свободной посадки",
+    "category": "bottoms",
+    "color": "Песочный",
+    "material": "Хлопковый твил",
+    "season": "all",
+    "tags": [
+      "чиносы",
+      "брюки",
+      "поездка",
+      "комфорт",
+      "повседневные"
+    ],
+    "style": [
+      "smart-casual",
+      "casual"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Песочные хлопковые чиносы свободной посадки. Материал: Хлопковый твил. чиносы, брюки, поездка, комфорт, повседневные."
+  },
+  {
+    "id": "b09",
+    "title": "Черные эластичные легинсы для бега",
+    "category": "bottoms",
+    "color": "Черный",
+    "material": "Технический полиамид с эластаном",
+    "season": "all",
+    "tags": [
+      "легинсы",
+      "бег",
+      "спорт",
+      "тренировка"
+    ],
+    "style": [
+      "sport"
+    ],
+    "imageUrl": "/clothes/jeans.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черные эластичные легинсы для бега. Материал: Технический полиамид с эластаном. легинсы, бег, спорт, тренировка."
+  },
+  {
+    "id": "b10",
+    "title": "Белые хлопковые шорты до колена",
+    "category": "bottoms",
+    "color": "Белый",
+    "material": "Хлопок",
+    "season": "spring/summer",
+    "tags": [
+      "шорты",
+      "лето",
+      "жара",
+      "отпуск"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Белые хлопковые шорты до колена. Материал: Хлопок. шорты, лето, жара, отпуск.",
+    "weather": {
+      "temperature_min": 22,
+      "temperature_max": 38
+    }
+  },
+  {
+    "id": "b11",
+    "title": "Бордовые бархатные широкие брюки",
+    "category": "bottoms",
+    "color": "Бордовый",
+    "material": "Хлопковый бархат",
+    "season": "all",
+    "tags": [
+      "брюки",
+      "бархат",
+      "вечер",
+      "театр",
+      "праздник"
+    ],
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бордовые бархатные широкие брюки. Материал: Хлопковый бархат. брюки, бархат, вечер, театр, праздник."
+  },
+  {
+    "id": "b12",
+    "title": "Светло-голубые широкие расслабленные джинсы",
+    "category": "bottoms",
+    "color": "Светло-голубой",
+    "material": "Мягкий хлопковый деним",
+    "season": "all",
+    "tags": [
+      "джинсы",
+      "широкие",
+      "светлые",
+      "комфорт",
+      "поездка"
+    ],
+    "style": [
+      "casual",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/jeans.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Светло-голубые широкие расслабленные джинсы. Материал: Мягкий хлопковый деним. джинсы, широкие, светлые, комфорт, поездка."
+  },
+  {
+    "id": "b13",
+    "title": "Коричневые вельветовые брюки прямого кроя",
+    "category": "bottoms",
+    "color": "Коричневый",
+    "material": "Хлопковый вельвет",
+    "season": "autumn/winter",
+    "tags": [
+      "брюки",
+      "вельвет",
+      "осень",
+      "теплый",
+      "кофейня"
+    ],
+    "style": [
+      "casual",
+      "cozy"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Коричневые вельветовые брюки прямого кроя. Материал: Хлопковый вельвет. брюки, вельвет, осень, теплый, кофейня."
+  },
+  {
+    "id": "s01",
+    "title": "Черные кожаные ботильоны на устойчивом каблуке",
+    "category": "shoes",
+    "color": "Черный",
+    "material": "Кожа с теплой подкладкой",
+    "season": "autumn/winter",
+    "tags": [
+      "ботильоны",
+      "закрытые",
+      "офис",
+      "прохлада",
+      "деловые"
+    ],
+    "style": [
+      "business",
+      "chic"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черные кожаные ботильоны на устойчивом каблуке. Материал: Кожа с теплой подкладкой. ботильоны, закрытые, офис, прохлада, деловые.",
+    "weather": {
+      "temperature_min": -3,
+      "temperature_max": 15,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s02",
+    "title": "Черные замшевые лодочки на каблуке",
+    "category": "shoes",
+    "color": "Черный",
+    "material": "Натуральная замша",
+    "season": "all",
+    "tags": [
+      "лодочки",
+      "каблук",
+      "вечер",
+      "свидание",
+      "закрытые"
+    ],
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черные замшевые лодочки на каблуке. Материал: Натуральная замша. лодочки, каблук, вечер, свидание, закрытые.",
+    "weather": {
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s03",
+    "title": "Бежевые кожаные сандалии на плоской подошве",
+    "category": "shoes",
+    "color": "Бежевый",
+    "material": "Натуральная кожа",
+    "season": "spring/summer",
+    "tags": [
+      "сандалии",
+      "открытые",
+      "лето",
+      "жара",
+      "комфорт"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бежевые кожаные сандалии на плоской подошве. Материал: Натуральная кожа. сандалии, открытые, лето, жара, комфорт.",
+    "weather": {
+      "temperature_min": 20,
+      "temperature_max": 38,
+      "open_shoes": true
+    }
+  },
+  {
+    "id": "s04",
+    "title": "Коричневые непромокаемые трекинговые ботинки",
+    "category": "shoes",
+    "color": "Коричневый",
+    "material": "Мембрана и нубук",
+    "season": "all",
+    "tags": [
+      "ботинки",
+      "поход",
+      "трекинг",
+      "дождь",
+      "водонепроницаемые"
+    ],
+    "style": [
+      "outdoor"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Коричневые непромокаемые трекинговые ботинки. Материал: Мембрана и нубук. ботинки, поход, трекинг, дождь, водонепроницаемые.",
+    "weather": {
+      "temperature_min": -5,
+      "temperature_max": 20,
+      "waterproof": true,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s05",
+    "title": "Черные амортизирующие кроссовки для бега",
+    "category": "shoes",
+    "color": "Черный",
+    "material": "Дышащая техническая сетка",
+    "season": "all",
+    "tags": [
+      "кроссовки",
+      "бег",
+      "спорт",
+      "тренировка",
+      "амортизация"
+    ],
+    "style": [
+      "sport"
+    ],
+    "imageUrl": "/clothes/sneakers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черные амортизирующие кроссовки для бега. Материал: Дышащая техническая сетка. кроссовки, бег, спорт, тренировка, амортизация.",
+    "weather": {
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s06",
+    "title": "Кремовые кожаные балетки с мягким носком",
+    "category": "shoes",
+    "color": "Кремовый",
+    "material": "Мягкая кожа",
+    "season": "all",
+    "tags": [
+      "балетки",
+      "элегантные",
+      "город",
+      "вечер",
+      "плоская подошва"
+    ],
+    "style": [
+      "chic",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Кремовые кожаные балетки с мягким носком. Материал: Мягкая кожа. балетки, элегантные, город, вечер, плоская подошва.",
+    "weather": {
+      "temperature_min": 12,
+      "temperature_max": 28,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s07",
+    "title": "Темно-синие текстильные кеды",
+    "category": "shoes",
+    "color": "Темно-синий",
+    "material": "Хлопковый канвас",
+    "season": "all",
+    "tags": [
+      "кеды",
+      "деним",
+      "город",
+      "повседневные",
+      "поездка"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/sneakers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Темно-синие текстильные кеды. Материал: Хлопковый канвас. кеды, деним, город, повседневные, поездка.",
+    "weather": {
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s08",
+    "title": "Коричневые замшевые дезерты на низком ходу",
+    "category": "shoes",
+    "color": "Коричневый",
+    "material": "Натуральная замша",
+    "season": "autumn/winter",
+    "tags": [
+      "дезерты",
+      "ботинки",
+      "осень",
+      "комфорт",
+      "кофейня"
+    ],
+    "style": [
+      "smart-casual",
+      "cozy"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Коричневые замшевые дезерты на низком ходу. Материал: Натуральная замша. дезерты, ботинки, осень, комфорт, кофейня.",
+    "weather": {
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s09",
+    "title": "Черные утепленные зимние ботинки",
+    "category": "shoes",
+    "color": "Черный",
+    "material": "Кожа с шерстяной подкладкой",
+    "season": "autumn/winter",
+    "tags": [
+      "ботинки",
+      "зима",
+      "мороз",
+      "теплый",
+      "снег"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черные утепленные зимние ботинки. Материал: Кожа с шерстяной подкладкой. ботинки, зима, мороз, теплый, снег.",
+    "weather": {
+      "temperature_min": -25,
+      "temperature_max": 5,
+      "waterproof": true,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s10",
+    "title": "Золотистые вечерние босоножки на тонких ремешках",
+    "category": "shoes",
+    "color": "Золотистый",
+    "material": "Металлизированная кожа",
+    "season": "spring/summer",
+    "tags": [
+      "босоножки",
+      "вечер",
+      "каблук",
+      "праздник",
+      "открытые"
+    ],
+    "style": [
+      "evening",
+      "accent"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Золотистые вечерние босоножки на тонких ремешках. Материал: Металлизированная кожа. босоножки, вечер, каблук, праздник, открытые.",
+    "weather": {
+      "temperature_min": 20,
+      "temperature_max": 35,
+      "open_shoes": true
+    }
+  },
+  {
+    "id": "s11",
+    "title": "Черные кожаные дерби для деловых встреч",
+    "category": "shoes",
+    "color": "Черный",
+    "material": "Гладкая натуральная кожа",
+    "season": "all",
+    "tags": [
+      "дерби",
+      "туфли",
+      "офис",
+      "деловые",
+      "закрытые"
+    ],
+    "style": [
+      "business",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черные кожаные дерби для деловых встреч. Материал: Гладкая натуральная кожа. дерби, туфли, офис, деловые, закрытые.",
+    "weather": {
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s12",
+    "title": "Бежевые льняные эспадрильи",
+    "category": "shoes",
+    "color": "Бежевый",
+    "material": "Лен и джут",
+    "season": "spring/summer",
+    "tags": [
+      "эспадрильи",
+      "лето",
+      "отпуск",
+      "дышащие"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/sneakers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бежевые льняные эспадрильи. Материал: Лен и джут. эспадрильи, лето, отпуск, дышащие.",
+    "weather": {
+      "temperature_min": 18,
+      "temperature_max": 35,
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "s13",
+    "title": "Бордовые кожаные лоферы с кисточками",
+    "category": "shoes",
+    "color": "Бордовый",
+    "material": "Гладкая кожа",
+    "season": "all",
+    "tags": [
+      "лоферы",
+      "акцент",
+      "офис",
+      "город",
+      "преппи"
+    ],
+    "style": [
+      "smart-casual",
+      "preppy"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бордовые кожаные лоферы с кисточками. Материал: Гладкая кожа. лоферы, акцент, офис, город, преппи.",
+    "weather": {
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "o01",
+    "title": "Темно-синее длинное шерстяное пальто",
+    "category": "outerwear",
+    "color": "Темно-синий",
+    "material": "Плотная шерсть",
+    "season": "autumn/winter",
+    "tags": [
+      "пальто",
+      "зима",
+      "офис",
+      "теплый"
+    ],
+    "style": [
+      "business"
+    ],
+    "imageUrl": "/clothes/trench.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Темно-синее длинное шерстяное пальто. Материал: Плотная шерсть. пальто, зима, офис, теплый.",
+    "weather": {
+      "temperature_min": -10,
+      "temperature_max": 10,
+      "windproof": true
+    }
+  },
+  {
+    "id": "o02",
+    "title": "Оливковый непромокаемый плащ с капюшоном",
+    "category": "outerwear",
+    "color": "Оливковый",
+    "material": "Водонепроницаемая мембрана",
+    "season": "all",
+    "tags": [
+      "плащ",
+      "дождь",
+      "капюшон",
+      "поход",
+      "ветер"
+    ],
+    "style": [
+      "outdoor"
+    ],
+    "imageUrl": "/clothes/trench.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Оливковый непромокаемый плащ с капюшоном. Материал: Водонепроницаемая мембрана. плащ, дождь, капюшон, поход, ветер.",
+    "weather": {
+      "temperature_min": 5,
+      "temperature_max": 20,
+      "waterproof": true,
+      "windproof": true
+    }
+  },
+  {
+    "id": "o03",
+    "title": "Кремовый укороченный твидовый жакет",
+    "category": "outerwear",
+    "color": "Кремовый",
+    "material": "Шерстяной твид",
+    "season": "all",
+    "tags": [
+      "жакет",
+      "вечер",
+      "элегантный",
+      "фактурный"
+    ],
+    "style": [
+      "chic"
+    ],
+    "imageUrl": "/clothes/blazer.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Кремовый укороченный твидовый жакет. Материал: Шерстяной твид. жакет, вечер, элегантный, фактурный."
+  },
+  {
+    "id": "o04",
+    "title": "Бежевый льняной блейзер без подкладки",
+    "category": "outerwear",
+    "color": "Бежевый",
+    "material": "100% лен",
+    "season": "spring/summer",
+    "tags": [
+      "блейзер",
+      "лето",
+      "офис",
+      "легкий"
+    ],
+    "style": [
+      "business",
+      "minimalism"
+    ],
+    "imageUrl": "/clothes/blazer.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бежевый льняной блейзер без подкладки. Материал: 100% лен. блейзер, лето, офис, легкий.",
+    "weather": {
+      "temperature_min": 18,
+      "temperature_max": 32
+    }
+  },
+  {
+    "id": "o05",
+    "title": "Черный объемный пуховик для мороза",
+    "category": "outerwear",
+    "color": "Черный",
+    "material": "Пух и водостойкий нейлон",
+    "season": "autumn/winter",
+    "tags": [
+      "пуховик",
+      "мороз",
+      "зима",
+      "теплый"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/trench.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Черный объемный пуховик для мороза. Материал: Пух и водостойкий нейлон. пуховик, мороз, зима, теплый.",
+    "weather": {
+      "temperature_min": -25,
+      "temperature_max": 3,
+      "waterproof": true,
+      "windproof": true
+    }
+  },
+  {
+    "id": "o06",
+    "title": "Коричневая кожаная куртка прямого кроя",
+    "category": "outerwear",
+    "color": "Коричневый",
+    "material": "Натуральная кожа",
+    "season": "autumn/winter",
+    "tags": [
+      "куртка",
+      "осень",
+      "город",
+      "ветер"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/blazer.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Коричневая кожаная куртка прямого кроя. Материал: Натуральная кожа. куртка, осень, город, ветер.",
+    "weather": {
+      "temperature_min": 5,
+      "temperature_max": 18,
+      "windproof": true
+    }
+  },
+  {
+    "id": "o07",
+    "title": "Красное шерстяное пальто с поясом",
+    "category": "outerwear",
+    "color": "Красный",
+    "material": "Шерсть с кашемиром",
+    "season": "autumn/winter",
+    "tags": [
+      "пальто",
+      "акцент",
+      "зима",
+      "теплый"
+    ],
+    "style": [
+      "chic",
+      "accent"
+    ],
+    "imageUrl": "/clothes/trench.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Красное шерстяное пальто с поясом. Материал: Шерсть с кашемиром. пальто, акцент, зима, теплый.",
+    "weather": {
+      "temperature_min": -10,
+      "temperature_max": 10
+    }
+  },
+  {
+    "id": "o08",
+    "title": "Серая легкая спортивная ветровка",
+    "category": "outerwear",
+    "color": "Серый",
+    "material": "Технический нейлон",
+    "season": "all",
+    "tags": [
+      "ветровка",
+      "бег",
+      "спорт",
+      "ветер"
+    ],
+    "style": [
+      "sport"
+    ],
+    "imageUrl": "/clothes/blazer.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Серая легкая спортивная ветровка. Материал: Технический нейлон. ветровка, бег, спорт, ветер.",
+    "weather": {
+      "temperature_min": 8,
+      "temperature_max": 22,
+      "windproof": true
+    }
+  },
+  {
+    "id": "a01",
+    "title": "Маленькая черная вечерняя сумка",
+    "category": "accessories",
+    "color": "Черный",
+    "material": "Гладкая кожа",
+    "season": "all",
+    "tags": [
+      "сумка",
+      "вечер",
+      "компактная"
+    ],
+    "style": [
+      "evening"
+    ],
+    "imageUrl": "/clothes/tote.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Маленькая черная вечерняя сумка. Материал: Гладкая кожа. сумка, вечер, компактная."
+  },
+  {
+    "id": "a02",
+    "title": "Серый объемный шерстяной шарф",
+    "category": "accessories",
+    "color": "Серый",
+    "material": "100% шерсть",
+    "season": "autumn/winter",
+    "tags": [
+      "шарф",
+      "зима",
+      "теплый"
+    ],
+    "style": [
+      "cozy"
+    ],
+    "imageUrl": "/clothes/scarf.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Серый объемный шерстяной шарф. Материал: 100% шерсть. шарф, зима, теплый."
+  },
+  {
+    "id": "a03",
+    "title": "Бежевая плетеная соломенная сумка",
+    "category": "accessories",
+    "color": "Бежевый",
+    "material": "Натуральная солома",
+    "season": "spring/summer",
+    "tags": [
+      "сумка",
+      "лето",
+      "отпуск"
+    ],
+    "style": [
+      "casual"
+    ],
+    "imageUrl": "/clothes/tote.svg",
+    "brand": "Synthetic Study",
+    "uploadedAt": "2026-11-19",
+    "embeddingSnippet": "Бежевая плетеная соломенная сумка. Материал: Натуральная солома. сумка, лето, отпуск."
+  }
+]

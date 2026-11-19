@@ -1,0 +1,191 @@
+{
+  "$defs": {
+    "QueryContext": {
+      "additionalProperties": false,
+      "properties": {
+        "occasion": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occasion"
+        },
+        "weather": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weather"
+        },
+        "vibe": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vibe"
+        },
+        "temperature_c": {
+          "anyOf": [
+            {
+              "maximum": 65,
+              "minimum": -80,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature C"
+        },
+        "rain": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rain"
+        },
+        "wind": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wind"
+        }
+      },
+      "title": "QueryContext",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "user_id": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "User Id",
+      "type": "string"
+    },
+    "query": {
+      "default": "",
+      "maxLength": 10000,
+      "title": "Query",
+      "type": "string"
+    },
+    "query_image": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Query Image"
+    },
+    "mode": {
+      "default": "hybrid",
+      "enum": [
+        "bm25",
+        "dense",
+        "hybrid",
+        "visual",
+        "multimodal"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "alpha": {
+      "default": 0.65,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Alpha",
+      "type": "number"
+    },
+    "visual_weight": {
+      "default": 0.35,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Visual Weight",
+      "type": "number"
+    },
+    "context": {
+      "$ref": "#/$defs/QueryContext"
+    },
+    "anchor_item_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Anchor Item Id"
+    },
+    "exclude_item_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Exclude Item Ids",
+      "type": "array"
+    },
+    "exclude_colors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Exclude Colors",
+      "type": "array"
+    },
+    "exclude_materials": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Exclude Materials",
+      "type": "array"
+    },
+    "require_outerwear": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Require Outerwear"
+    }
+  },
+  "required": [
+    "user_id"
+  ],
+  "title": "RetrievalRequest",
+  "type": "object"
+}

@@ -1,0 +1,538 @@
+{
+  "$defs": {
+    "Candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "item": {
+          "$ref": "#/$defs/WardrobeItem"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "bm25_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bm25 Score"
+        },
+        "bm25_rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bm25 Rank"
+        },
+        "dense_distance": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dense Distance"
+        },
+        "dense_rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dense Rank"
+        },
+        "visual_distance": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visual Distance"
+        },
+        "visual_rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visual Rank"
+        },
+        "bm25_contribution": {
+          "default": 0,
+          "title": "Bm25 Contribution",
+          "type": "number"
+        },
+        "dense_contribution": {
+          "default": 0,
+          "title": "Dense Contribution",
+          "type": "number"
+        },
+        "visual_contribution": {
+          "default": 0,
+          "title": "Visual Contribution",
+          "type": "number"
+        },
+        "anchored": {
+          "default": false,
+          "title": "Anchored",
+          "type": "boolean"
+        },
+        "fallback": {
+          "default": false,
+          "title": "Fallback",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "item",
+        "score"
+      ],
+      "title": "Candidate",
+      "type": "object"
+    },
+    "QueryContext": {
+      "additionalProperties": false,
+      "properties": {
+        "occasion": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occasion"
+        },
+        "weather": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weather"
+        },
+        "vibe": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vibe"
+        },
+        "temperature_c": {
+          "anyOf": [
+            {
+              "maximum": 65,
+              "minimum": -80,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature C"
+        },
+        "rain": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rain"
+        },
+        "wind": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wind"
+        }
+      },
+      "title": "QueryContext",
+      "type": "object"
+    },
+    "WardrobeItem": {
+      "additionalProperties": false,
+      "description": "Frontend-compatible item. Ownership belongs to the containing user snapshot.",
+      "properties": {
+        "id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "tops",
+            "bottoms",
+            "shoes",
+            "outerwear",
+            "accessories"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "color": {
+          "default": "",
+          "title": "Color",
+          "type": "string"
+        },
+        "season": {
+          "default": "all",
+          "enum": [
+            "all",
+            "spring/summer",
+            "autumn/winter"
+          ],
+          "title": "Season",
+          "type": "string"
+        },
+        "style": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Style",
+          "type": "array"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "imageUrl": {
+          "default": "",
+          "title": "Imageurl",
+          "type": "string"
+        },
+        "brand": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Brand"
+        },
+        "material": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Material"
+        },
+        "embeddingSnippet": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Embeddingsnippet"
+        },
+        "uploadedAt": {
+          "default": "",
+          "title": "Uploadedat",
+          "type": "string"
+        },
+        "imagePath": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Imagepath"
+        },
+        "weather": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WeatherAttributes"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "category"
+      ],
+      "title": "WardrobeItem",
+      "type": "object"
+    },
+    "WeatherAttributes": {
+      "additionalProperties": false,
+      "description": "Curated facts; None means unknown, never an inferred guarantee.",
+      "properties": {
+        "temperature_min": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature Min"
+        },
+        "temperature_max": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature Max"
+        },
+        "waterproof": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Waterproof"
+        },
+        "windproof": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Windproof"
+        },
+        "open_shoes": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Open Shoes"
+        }
+      },
+      "title": "WeatherAttributes",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "user_id": {
+      "title": "User Id",
+      "type": "string"
+    },
+    "query": {
+      "title": "Query",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "bm25",
+        "dense",
+        "hybrid",
+        "visual",
+        "multimodal"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "alpha": {
+      "title": "Alpha",
+      "type": "number"
+    },
+    "visual_weight": {
+      "title": "Visual Weight",
+      "type": "number"
+    },
+    "rrf_c": {
+      "title": "Rrf C",
+      "type": "integer"
+    },
+    "candidates_by_slot": {
+      "additionalProperties": {
+        "items": {
+          "$ref": "#/$defs/Candidate"
+        },
+        "type": "array"
+      },
+      "propertyNames": {
+        "enum": [
+          "tops",
+          "bottoms",
+          "shoes",
+          "outerwear",
+          "accessories"
+        ]
+      },
+      "title": "Candidates By Slot",
+      "type": "object"
+    },
+    "required_slots": {
+      "items": {
+        "enum": [
+          "tops",
+          "bottoms",
+          "shoes",
+          "outerwear",
+          "accessories"
+        ],
+        "type": "string"
+      },
+      "title": "Required Slots",
+      "type": "array"
+    },
+    "missing_slots": {
+      "items": {
+        "enum": [
+          "tops",
+          "bottoms",
+          "shoes",
+          "outerwear",
+          "accessories"
+        ],
+        "type": "string"
+      },
+      "title": "Missing Slots",
+      "type": "array"
+    },
+    "context": {
+      "$ref": "#/$defs/QueryContext"
+    },
+    "anchor_item_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Anchor Item Id"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    },
+    "timings_ms": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Timings Ms",
+      "type": "object"
+    },
+    "wardrobe_revision": {
+      "title": "Wardrobe Revision",
+      "type": "string"
+    },
+    "model_fingerprint": {
+      "title": "Model Fingerprint",
+      "type": "string"
+    },
+    "score_method": {
+      "default": "weighted_rrf",
+      "title": "Score Method",
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "query",
+    "mode",
+    "alpha",
+    "visual_weight",
+    "rrf_c",
+    "candidates_by_slot",
+    "wardrobe_revision",
+    "model_fingerprint"
+  ],
+  "title": "RetrievalResult",
+  "type": "object"
+}

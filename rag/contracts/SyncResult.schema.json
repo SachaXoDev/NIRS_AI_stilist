@@ -1,0 +1,63 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "user_id": {
+      "title": "User Id",
+      "type": "string"
+    },
+    "revision": {
+      "title": "Revision",
+      "type": "string"
+    },
+    "indexed_count": {
+      "title": "Indexed Count",
+      "type": "integer"
+    },
+    "image_count": {
+      "title": "Image Count",
+      "type": "integer"
+    },
+    "added_count": {
+      "default": 0,
+      "title": "Added Count",
+      "type": "integer"
+    },
+    "updated_count": {
+      "default": 0,
+      "title": "Updated Count",
+      "type": "integer"
+    },
+    "deleted_count": {
+      "default": 0,
+      "title": "Deleted Count",
+      "type": "integer"
+    },
+    "unchanged_count": {
+      "default": 0,
+      "title": "Unchanged Count",
+      "type": "integer"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    },
+    "timings_ms": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Timings Ms",
+      "type": "object"
+    }
+  },
+  "required": [
+    "user_id",
+    "revision",
+    "indexed_count",
+    "image_count"
+  ],
+  "title": "SyncResult",
+  "type": "object"
+}

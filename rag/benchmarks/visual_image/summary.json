@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-19T19:23:19.350038+00:00",
+  "dataset": {
+    "schema_version": 1,
+    "split": "visual_instance_smoke",
+    "user_id": "research",
+    "corpus": "wardrobe_seed.json",
+    "alpha": 0.65,
+    "mrr_k": 3,
+    "required_slots": [],
+    "provenance": {
+      "kind": "near_duplicate_instance_smoke",
+      "annotation_status": "identity_labels",
+      "images": "Transformed rasterizations of original SVGs, prepared by the image pipeline.",
+      "limitations": "Same source item exists in the index; measures instance robustness, not unseen-photo semantic generalization."
+    }
+  },
+  "query_count": 10,
+  "repeats": 3,
+  "warmup_per_query_mode": 1,
+  "mrr_k": 3,
+  "latency_protocol": "Serial in-process wall-clock retrieval only, after declared warmups. No LLM, UI, indexing or model initialization included.",
+  "statistical_unit": "Query-slot pairs; repeated calls are repeated measurements, not independent new queries.",
+  "runtime": {
+    "python": "3.14.3",
+    "system": "Windows-10-10.0.19045-SP0"
+  },
+  "metadata": {
+    "initialization_and_sync_ms": 8683.889200001431,
+    "sync": {
+      "user_id": "research",
+      "revision": "0b0107c6d0e8474c15b7956350c21e023646fcc56f3c846bf696e3547282858d",
+      "indexed_count": 10,
+      "image_count": 10,
+      "added_count": 0,
+      "updated_count": 0,
+      "deleted_count": 0,
+      "unchanged_count": 10,
+      "warnings": [],
+      "timings_ms": {
+        "prepare_ms": 8041.679400001158,
+        "total_ms": 8041.860799999995
+      }
+    },
+    "models": {
+      "models": {
+        "text": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+        "image": "sentence-transformers/clip-ViT-B-32",
+        "visual_text": "sentence-transformers/clip-ViT-B-32-multilingual-v1"
+      },
+      "revisions": {
+        "text": "4328cf26390c98c5e3c738b4460a05b95f4911f5",
+        "image": "327ab6726d33c0e22f920c83f2ff9e4bd38ca37f",
+        "visual_text": "58edf8cada9e398793dca955574a48cbb7f18be2"
+      },
+      "device": "cpu",
+      "offline": true
+    },
+    "model_fingerprint": "3dd91d47be2542103e17e84332216e8869bfd003b55dcba16c8186264cb34f50",
+    "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "corpus_file": "wardrobe_seed.json",
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "logical_cpus": 20,
+    "omp_threads": "4",
+    "mkl_threads": "4",
+    "packages": {
+      "wardrobe-rag": "0.1.0",
+      "chromadb": "1.5.9",
+      "rank-bm25": "0.2.2",
+      "sentence-transformers": "5.7.0",
+      "transformers": "5.23.0",
+      "torch": "2.15.0",
+      "torchvision": "0.29.2",
+      "resvg-py": "0.5.0"
+    },
+    "corpus_revision": "0b0107c6d0e8474c15b7956350c21e023646fcc56f3c846bf696e3547282858d"
+  },
+  "modes": {
+    "visual": {
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "mrr@3": 1.0
+      },
+      "pooled_metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "mrr@3": 1.0
+      },
+      "by_slot": {
+        "accessories": {
+          "hit_rate@1": 1.0,
+          "hit_rate@3": 1.0,
+          "mrr@3": 1.0
+        },
+        "bottoms": {
+          "hit_rate@1": 1.0,
+          "hit_rate@3": 1.0,
+          "mrr@3": 1.0
+        },
+        "outerwear": {
+          "hit_rate@1": 1.0,
+          "hit_rate@3": 1.0,
+          "mrr@3": 1.0
+        },
+        "shoes": {
+          "hit_rate@1": 1.0,
+          "hit_rate@3": 1.0,
+          "mrr@3": 1.0
+        },
+        "tops": {
+          "hit_rate@1": 1.0,
+          "hit_rate@3": 1.0,
+          "mrr@3": 1.0
+        }
+      },
+      "full_slot_coverage": {
+        "@1": 1.0,
+        "@3": 1.0
+      },
+      "candidate_slot_coverage_with_fallback": 1.0,
+      "query_slot_pairs": 10,
+      "retrieval_calls": 30,
+      "latency_ms": {
+        "samples": 30,
+        "median": 49.384250000002794,
+        "p95": 50.803999999880034,
+        "mean": 49.34516666665635,
+        "minimum": 47.168900000542635,
+        "maximum": 51.782700000330806
+      },
+      "component_timings_ms": {
+        "model_prepare": {
+          "samples": 30,
+          "median": 0.03245000152674038,
+          "p95": 0.03506499942886876,
+          "mean": 0.03267000017027991,
+          "minimum": 0.031100000342121348,
+          "maximum": 0.03859999924316071
+        },
+        "embedding_visual": {
+          "samples": 30,
+          "median": 39.917599999171216,
+          "p95": 41.13846500058571,
+          "mean": 39.9630466671321,
+          "minimum": 38.46990000238293,
+          "maximum": 41.55510000055074
+        },
+        "visual_search": {
+          "samples": 30,
+          "median": 7.577699998364551,
+          "p95": 8.964689994718354,
+          "mean": 7.774173331927159,
+          "minimum": 6.8412000000535045,
+          "maximum": 10.792599998239893
+        },
+        "fusion_constraints": {
+          "samples": 30,
+          "median": 0.1410000022588065,
+          "p95": 0.1650000016525155,
+          "mean": 0.14364666712936014,
+          "minimum": 0.1281000004382804,
+          "maximum": 0.19190000239177607
+        },
+        "total": {
+          "samples": 30,
+          "median": 48.68490000080783,
+          "p95": 50.10960499912471,
+          "mean": 48.638519999803975,
+          "minimum": 46.482099998684134,
+          "maximum": 51.09249999804888
+        }
+      },
+      "first_observed_call_ms": 141.3049000002502,
+      "warnings": []
+    }
+  },
+  "dataset_sha256": "5dc2fb5582fb7d6af9f6964183e147338d2eaec30a458e1106a4de9cf8177198",
+  "corpus_sha256": "b6ddf99384d098f264f7e0de9b691e3ecfedac9bc552b910225ed639f9d62c2c"
+}

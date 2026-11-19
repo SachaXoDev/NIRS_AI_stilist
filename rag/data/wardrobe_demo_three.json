@@ -1,0 +1,75 @@
+[
+  {
+    "id": "item-1",
+    "title": "Белая хлопковая рубашка оверсайз",
+    "category": "tops",
+    "color": "Белый",
+    "season": "all",
+    "style": [
+      "casual",
+      "business",
+      "smart-casual",
+      "minimalism"
+    ],
+    "tags": [
+      "базовая",
+      "оверсайз",
+      "хлопок",
+      "офис",
+      "повседневная"
+    ],
+    "imageUrl": "/clothes/shirt.svg",
+    "brand": "Arket",
+    "material": "100% органический хлопок",
+    "embeddingSnippet": "Белая рубашка оверсайз Arket из хлопка. Универсальная база под жакет или поверх топа.",
+    "uploadedAt": "2026-10-01"
+  },
+  {
+    "id": "item-4",
+    "title": "Широкие серые брюки палаццо со складками",
+    "category": "bottoms",
+    "color": "Серый",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual",
+      "old-money"
+    ],
+    "tags": [
+      "брюки",
+      "палаццо",
+      "серые",
+      "костюмные",
+      "элегантные"
+    ],
+    "imageUrl": "/clothes/palazzo.svg",
+    "brand": "Massimo Dutti",
+    "material": "Тонкая костюмная шерсть",
+    "embeddingSnippet": "Серые свободные брюки со защипами палаццо. Идеально комбинируются со свитерами и строгой обувью.",
+    "uploadedAt": "2026-10-04"
+  },
+  {
+    "id": "item-8",
+    "title": "Черные кожаные лоферы на толстой подошве",
+    "category": "shoes",
+    "color": "Черный",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual",
+      "preppy"
+    ],
+    "tags": [
+      "лоферы",
+      "туфли",
+      "кожа",
+      "офис",
+      "трендовые"
+    ],
+    "imageUrl": "/clothes/loafers.svg",
+    "brand": "Vagabond",
+    "material": "Глянцевая кожа",
+    "embeddingSnippet": "Черные кожаные лоферы на массивной подошве. Добавляют структурности деловому стилю.",
+    "uploadedAt": "2026-10-08"
+  }
+]

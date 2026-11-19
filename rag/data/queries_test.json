@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "user_id": "evaluation-user",
+  "corpus": "wardrobe_eval.json",
+  "alpha": 0.65,
+  "mrr_k": 3,
+  "required_slots": [
+    "tops",
+    "bottoms",
+    "shoes"
+  ],
+  "provenance": {
+    "kind": "synthetic_pilot",
+    "annotation_status": "assistant_draft_requires_independent_team_review",
+    "created": "2026-11-19",
+    "corpus": "wardrobe_eval.json",
+    "corpus_items": 60,
+    "source_seed": "wardrobe_seed.json (10 frontend items unchanged)",
+    "synthetic_extra_items": 50,
+    "images": "Existing category SVG surrogates; text-only benchmark, not photographic evidence.",
+    "label_policy": "Declared from descriptions before observing rankings. Several compatible IDs per required slot.",
+    "alpha_policy": "Predeclared 0.65. Test labels must not be used to choose alpha.",
+    "independence": "Draft scenarios are not an independently annotated external benchmark."
+  },
+  "split": "test",
+  "queries": [
+    {
+      "id": "q01",
+      "query": "Москва: +6°C, ветрено, деловая встреча. Нужен теплый аккуратный многослойный образ.",
+      "relevant_by_slot": {
+        "tops": [
+          "item-5",
+          "t03"
+        ],
+        "bottoms": [
+          "item-4",
+          "b01",
+          "b06",
+          "b07"
+        ],
+        "shoes": [
+          "item-8",
+          "s01",
+          "s11"
+        ]
+      },
+      "rationale": "Теплый трикотаж, деловой низ и закрытая деловая обувь.",
+      "context": {
+        "temperature_c": 6,
+        "wind": true,
+        "occasion": "business"
+      }
+    },
+    {
+      "id": "q02",
+      "query": "Вечернее открытие выставки в галерее: выразительная фактура и элегантность.",
+      "relevant_by_slot": {
+        "tops": [
+          "t01",
+          "t10",
+          "t13"
+        ],
+        "bottoms": [
+          "b03",
+          "b11",
+          "item-4"
+        ],
+        "shoes": [
+          "s02",
+          "s06",
+          "item-8"
+        ]
+      },
+      "rationale": "Вечерние ткани и элегантные силуэты допускают несколько сочетаний."
+    },
+    {
+      "id": "q03",
+      "query": "На улице +28°C. Собери легкий летний образ из льна в бежевых тонах.",
+      "relevant_by_slot": {
+        "tops": [
+          "t05"
+        ],
+        "bottoms": [
+          "b02"
+        ],
+        "shoes": [
+          "s03",
+          "s12"
+        ]
+      },
+      "rationale": "Точный материал и бежевый цвет; открытая летняя обувь допустима.",
+      "context": {
+        "temperature_c": 28
+      }
+    },
+    {
+      "id": "q04",
+      "query": "Дождливая прогулка по городу, прохладно. Хочу непромокаемую обувь и уютный верх.",
+      "relevant_by_slot": {
+        "tops": [
+          "item-5",
+          "t04",
+          "t12"
+        ],
+        "bottoms": [
+          "item-3",
+          "b13"
+        ],
+        "shoes": [
+          "s04"
+        ]
+      },
+      "rationale": "Требование непромокаемой обуви подтверждено синтетической разметкой ботинок.",
+      "context": {
+        "rain": true,
+        "temperature_c": 10
+      }
+    },
+    {
+      "id": "q05",
+      "query": "Собери комплект для утренней пробежки: футболка, легинсы и амортизирующая обувь.",
+      "relevant_by_slot": {
+        "tops": [
+          "t11"
+        ],
+        "bottoms": [
+          "b09"
+        ],
+        "shoes": [
+          "s05"
+        ]
+      },
+      "rationale": "Специализированные спортивные предметы во всех трех слотах."
+    },
+    {
+      "id": "q06",
+      "query": "Черный вечерний образ с шелковым топом, юбкой миди и закрытыми туфлями.",
+      "relevant_by_slot": {
+        "tops": [
+          "t01"
+        ],
+        "bottoms": [
+          "b03"
+        ],
+        "shoes": [
+          "s02"
+        ]
+      },
+      "rationale": "Точные типы вещей, черный цвет и закрытые лодочки."
+    },
+    {
+      "id": "q07",
+      "query": "Деловые переговоры: белая хлопковая рубашка, строгие брюки и кожаные туфли.",
+      "relevant_by_slot": {
+        "tops": [
+          "item-1"
+        ],
+        "bottoms": [
+          "item-4",
+          "b01",
+          "b06"
+        ],
+        "shoes": [
+          "item-8",
+          "s11"
+        ]
+      },
+      "rationale": "Классический деловой набор; серые, черные и синие брюки допустимы."
+    },
+    {
+      "id": "q08",
+      "query": "Расслабленный выходной с денимом и кедами, без нарядности.",
+      "relevant_by_slot": {
+        "tops": [
+          "t06",
+          "t09",
+          "item-1"
+        ],
+        "bottoms": [
+          "item-3",
+          "b05",
+          "b12"
+        ],
+        "shoes": [
+          "item-7",
+          "s07"
+        ]
+      },
+      "rationale": "Повседневные хлопковые верхи, джинсы, кеды."
+    },
+    {
+      "id": "q09",
+      "query": "Уютная встреча в кофейне: мягкий кремовый трикотаж и теплые тактильные ткани.",
+      "relevant_by_slot": {
+        "tops": [
+          "item-5",
+          "t12"
+        ],
+        "bottoms": [
+          "b13",
+          "b07",
+          "item-3"
+        ],
+        "shoes": [
+          "s08",
+          "s13",
+          "item-8"
+        ]
+      },
+      "rationale": "Кремовый трикотаж с вельветом, шерстью или плотным денимом."
+    },
+    {
+      "id": "q10",
+      "query": "Поход по лесной тропе: оливковый флис, карго и надежные трекинговые ботинки.",
+      "relevant_by_slot": {
+        "tops": [
+          "t07"
+        ],
+        "bottoms": [
+          "b04"
+        ],
+        "shoes": [
+          "s04"
+        ]
+      },
+      "rationale": "Точные outdoor-типы вместо городских замен."
+    },
+    {
+      "id": "q11",
+      "query": "Светлый городской образ без черного цвета: спокойные оттенки и удобная обувь.",
+      "relevant_by_slot": {
+        "tops": [
+          "t05",
+          "t06",
+          "item-5",
+          "t12",
+          "t09"
+        ],
+        "bottoms": [
+          "b08",
+          "b02",
+          "b12"
+        ],
+        "shoes": [
+          "item-7",
+          "s06",
+          "s12"
+        ]
+      },
+      "rationale": "Светлые нейтральные вещи; черные исключены явным фильтром.",
+      "exclude_colors": [
+        "черный"
+      ]
+    },
+    {
+      "id": "q12",
+      "query": "Хочу темно-синий деловой комплект с приталенной рубашкой и брюками со стрелками.",
+      "relevant_by_slot": {
+        "tops": [
+          "t02"
+        ],
+        "bottoms": [
+          "b06"
+        ],
+        "shoes": [
+          "s11",
+          "item-8"
+        ]
+      },
+      "rationale": "Точные цвет, тип рубашки и костюмный низ."
+    },
+    {
+      "id": "q13",
+      "query": "Холодный зимний день: яркий красный свитер как акцент, теплые брюки и ботинки.",
+      "relevant_by_slot": {
+        "tops": [
+          "t08"
+        ],
+        "bottoms": [
+          "b07",
+          "b13"
+        ],
+        "shoes": [
+          "s09",
+          "s01"
+        ]
+      },
+      "rationale": "Явно красный шерстяной верх и зимние фактуры.",
+      "context": {
+        "temperature_c": 0
+      }
+    },
+    {
+      "id": "q14",
+      "query": "Для свидания хочу пудровую сатиновую блузу и мягкий вечерний силуэт.",
+      "relevant_by_slot": {
+        "tops": [
+          "t10"
+        ],
+        "bottoms": [
+          "b03",
+          "b11"
+        ],
+        "shoes": [
+          "s02",
+          "s06",
+          "s10"
+        ]
+      },
+      "rationale": "Пудровый сатин с вечерним низом и элегантной обувью."
+    },
+    {
+      "id": "q15",
+      "query": "В галерею: изумрудный шелк как цветовой акцент, сдержанный низ.",
+      "relevant_by_slot": {
+        "tops": [
+          "t13"
+        ],
+        "bottoms": [
+          "b03",
+          "b01",
+          "item-4"
+        ],
+        "shoes": [
+          "s02",
+          "item-8",
+          "s06"
+        ]
+      },
+      "rationale": "Изумрудная блуза с нейтральным черным или серым низом."
+    },
+    {
+      "id": "q16",
+      "query": "Неформальное свидание после офиса: синяя рубашка, чиносы или темный деним.",
+      "relevant_by_slot": {
+        "tops": [
+          "t02",
+          "t09"
+        ],
+        "bottoms": [
+          "b08",
+          "b06",
+          "b05"
+        ],
+        "shoes": [
+          "s08",
+          "s13",
+          "item-8"
+        ]
+      },
+      "rationale": "Smart casual без спортивных и подчеркнуто праздничных предметов."
+    },
+    {
+      "id": "q17",
+      "query": "Собери минималистичный образ с широкими светло-голубыми джинсами.",
+      "relevant_by_slot": {
+        "tops": [
+          "t06",
+          "item-1",
+          "t12"
+        ],
+        "bottoms": [
+          "b12"
+        ],
+        "shoes": [
+          "item-7",
+          "s07"
+        ]
+      },
+      "rationale": "Светлый свободный деним с простым верхом и кедами."
+    },
+    {
+      "id": "q18",
+      "query": "Спокойная эстетика old money: сорочка или кардиган, свободные брюки, лоферы.",
+      "relevant_by_slot": {
+        "tops": [
+          "item-1",
+          "t02",
+          "t12"
+        ],
+        "bottoms": [
+          "item-4",
+          "b08",
+          "b06"
+        ],
+        "shoes": [
+          "item-8",
+          "s13"
+        ]
+      },
+      "rationale": "Точное требование лоферов и нейтральные smart-casual вещи."
+    },
+    {
+      "id": "q19",
+      "query": "На улице около нуля: теплый шерстяной верх под пальто, плотные брюки и зимняя обувь.",
+      "relevant_by_slot": {
+        "tops": [
+          "t03",
+          "t04",
+          "t08"
+        ],
+        "bottoms": [
+          "b07",
+          "b13"
+        ],
+        "shoes": [
+          "s09",
+          "s01"
+        ]
+      },
+      "rationale": "Шерсть и закрытая утепленная обувь; летние вещи исключаются известными диапазонами.",
+      "context": {
+        "temperature_c": 0,
+        "wind": true
+      }
+    },
+    {
+      "id": "q20",
+      "query": "Долгая поездка и аэропорт: мягкий удобный верх, свободный низ и кеды.",
+      "relevant_by_slot": {
+        "tops": [
+          "item-5",
+          "t12",
+          "t06"
+        ],
+        "bottoms": [
+          "b08",
+          "b12",
+          "item-3"
+        ],
+        "shoes": [
+          "item-7",
+          "s07"
+        ]
+      },
+      "rationale": "Комфортный трикотаж/хлопок, свободные брюки или деним, кеды."
+    }
+  ]
+}
