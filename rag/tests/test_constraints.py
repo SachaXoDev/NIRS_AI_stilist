@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from wardrobe_rag.constraints import assemble_outfit, validate_selection
-from wardrobe_rag.schemas import Candidate, RetrievalResult
+import pytest
+
+from wardrobe_rag.constraints import assemble_outfit, required_slots, resolve_context, validate_selection
+from wardrobe_rag.config import RAGConfig
+from wardrobe_rag.schemas import Candidate, RetrievalRequest, RetrievalResult
 
 
 def make_result(items, **updates):
@@ -65,3 +68,21 @@ def test_required_outerwear_is_checked_in_final_selection(wardrobe):
     assert not incomplete.complete
     assert "outerwear" in incomplete.missing_slots
     assert validate_selection(["top", "bottom", "shoe", "coat"], result).complete
+
+
+@pytest.mark.parametrize("query, expected", [
+    ("на улице −5°C, снег", -5),      # U+2212, как в погодных виджетах
+    ("Москва −12, метель", -12),
+    ("–3°C и ветер", -3),             # en dash, набранный вместо минуса
+    ("-5°C", -5),
+    ("+6°C", 6),
+    ("днём 10–15°C", 15),             # диапазон остаётся диапазоном
+    ("Москва – 5°C", 5),              # тире как знак препинания
+    ("поездка на 5-6 дней", None),
+])
+def test_temperature_sign_is_parsed_with_typographic_minus(query, expected):
+    request = RetrievalRequest(user_id="alice", query=query)
+    context = resolve_context(request)
+    assert context.temperature_c == expected
+    if expected is not None and expected <= 12:
+        assert "outerwear" in required_slots(request, context, RAGConfig())

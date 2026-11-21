@@ -19,6 +19,9 @@ def resolve_context(request: RetrievalRequest) -> QueryContext:
     """Parse only explicit temperature/weather expressions; caller fields win."""
     context = request.context.model_copy()
     text = " ".join(filter(None, [request.query, context.weather])).lower().replace("ё", "е")
+    # Typographic minus (U+2212) always means "below zero"; an en dash does only when glued
+    # to a number and not part of a range like "10–15°C". Otherwise "−5°C" was read as +5.
+    text = re.sub(r"(?<!\d)–(?=\d)", "-", text).replace("−", "-")
     if context.temperature_c is None:
         match = re.search(r"(?<!\w)([+-]\s*\d{1,2}(?:[.,]\d+)?)\s*(?:°\s*[cс]?|[cс]\b)?", text)
         if match is None:
