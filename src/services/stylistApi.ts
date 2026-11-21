@@ -1,20 +1,35 @@
-import type { WardrobeItem, OutfitLook } from '../types';
+import type { WardrobeItem, OutfitLook, ClothingCategory, RetrievalResult } from '../types';
 import { INITIAL_WARDROBE } from '../data/initialWardrobe';
+import { getCurrentUser } from './authService';
 
 /**
  * Service representing the AI Stylist API.
- * Currently runs with intelligent mock RAG heuristics matching user requests to the wardrobe items.
- * When the backend integrator prepares the Python/FastAPI RAG service,
- * simply change USE_REAL_BACKEND to true and configure the endpoint!
+ *
+ * По умолчанию работает клиентский симулятор (проект запускается без бэкенда).
+ * Чтобы ходить в настоящий FastAPI-бэкенд (каталог backend/), создайте .env.local:
+ *
+ *   VITE_USE_REAL_BACKEND=true
+ *   VITE_BACKEND_URL=http://localhost:8000
  */
 
-const USE_REAL_BACKEND = false;
+const USE_REAL_BACKEND = import.meta.env.VITE_USE_REAL_BACKEND === 'true';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+const BACKEND_TIMEOUT_MS = 90_000;
+
+// Видимая пометка: ответ собран не сервером, а локальным симулятором.
+const OFFLINE_NOTE =
+  ' (Сервер стилиста сейчас недоступен — этот образ собран локальным демо-симулятором.)';
 
 interface StylistResponse {
   text: string;
   suggestedOutfit?: OutfitLook;
   referencedItemIds?: string[];
+  // Необязательная диагностика бэкенда (см. spec/tech/architecture.md)
+  source?: 'llm' | 'mock' | 'fallback' | 'none' | 'client-mock';
+  missingSlots?: ClothingCategory[];
+  warnings?: string[];
+  timings?: Record<string, number>;
+  retrieval?: RetrievalResult;
 }
 
 export async function askStylist(
@@ -22,21 +37,34 @@ export async function askStylist(
   wardrobe: WardrobeItem[],
   context?: { occasion?: string; weather?: string; vibe?: string }
 ): Promise<StylistResponse> {
+  let backendFailed = false;
+
   if (USE_REAL_BACKEND) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), BACKEND_TIMEOUT_MS);
     try {
       const res = await fetch(`${BACKEND_URL}/api/recommend-outfit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           query: userQuery,
+          // Гардероб живёт в localStorage, поэтому серверу нужен полный снимок вещей:
+          // он синхронизирует его с индексом поиска и подбирает образ только из него.
+          wardrobe,
           wardrobe_ids: wardrobe.map((i) => i.id),
+          // Демо-идентификатор, не защищённая сессия: разделяет гардеробы пользователей.
+          user_id: getCurrentUser()?.id ?? 'anonymous',
           context,
         }),
       });
-      if (!res.ok) throw new Error('API error');
+      if (!res.ok) throw new Error(`API error ${res.status}`);
       return await res.json();
     } catch (err) {
+      backendFailed = true;
       console.warn('Real backend unavailable, falling back to client-side RAG simulator:', err);
+    } finally {
+      clearTimeout(timer);
     }
   }
 
@@ -188,8 +216,9 @@ export async function askStylist(
   };
 
   return {
-    text: stylistText,
+    text: backendFailed ? stylistText + OFFLINE_NOTE : stylistText,
     suggestedOutfit: outfit,
     referencedItemIds: selectedItems.map((i) => i.id),
+    source: 'client-mock',
   };
 }
