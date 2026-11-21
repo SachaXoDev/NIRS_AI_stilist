@@ -3,8 +3,12 @@
 > **КТ-2, часть Матвея:** готовый модуль текстового и визуального поиска находится
 > в [`rag/`](./rag/README.md). Он включает Chroma, BM25/Dense/CLIP, гибридное RRF,
 > сборку слотов, локальный инженерный стенд и исследовательские метрики.
-> [Подключение к будущему backend](./rag/INTEGRATION.md).
-> В основном React-приложении backend и LLM пока не подключены.
+> [Подключение к backend](./rag/INTEGRATION.md).
+>
+> **КТ-2, часть Егора:** FastAPI-сервер находится в [`backend/`](./backend/README.md). Он
+> синхронизирует гардероб с модулем поиска, вызывает LLM (Qwen или любую OpenAI-совместимую
+> модель), проверяет выбранные вещи и отдаёт образ по контракту фронтенда, в том числе потоком SSE.
+> React-приложение ходит в него при `VITE_USE_REAL_BACKEND=true` (по умолчанию — клиентский симулятор).
 
 > **Персональный гардеробный сервис и AI-стилист на базе капсульного гардероба**  
 > Проект в рамках курса **НИРС 2026 (МГТУ им. Н.Э. Баумана)** по направлению *RAG-системы и интеллектуальные ассистенты*.  
@@ -77,6 +81,23 @@ npm run dev
 
 ---
 
+### 4. Запуск с настоящим бэкендом (необязательно)
+
+```bash
+# терминал 1 — сервер (подробности и PowerShell-вариант: backend/README.md)
+cd backend
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -e ../rag
+.venv/bin/python -m uvicorn app.main:app --port 8000
+
+# терминал 2 — фронтенд
+echo "VITE_USE_REAL_BACKEND=true" > .env.local
+npm run dev
+```
+
+---
+
 ## Другие команды
 
 - **Сборка для продакшена (typecheck + minification):**
@@ -102,6 +123,8 @@ npm run dev
 - [CHANGE_HISTORY.md](./CHANGE_HISTORY.md) — История версий
 
 ```text
+├── backend/                # FastAPI-сервер: оркестрация RAG, LLM, валидация (КТ-2)
+├── rag/                    # Пакет wardrobe_rag: индексация и поиск по гардеробу (КТ-2)
 ├── public/                 # Статические ассеты (векторные SVG-вещи)
 ├── spec/                   # SDD-документация (Product & Tech Specs)
 │   ├── product/            # Сценарии и продуктовые требования

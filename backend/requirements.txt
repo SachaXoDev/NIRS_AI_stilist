@@ -1,0 +1,7 @@
+# Сам бэкенд. Python 3.11+ (как у пакета rag/).
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.10
+pydantic-settings>=2.3
+httpx>=0.27
+# Поиск ставится отдельно, из соседнего каталога:  pip install -e ../rag

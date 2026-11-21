@@ -1,5 +1,8 @@
 # Подключение поиска к backend Егора
 
+> Реализация описанной ниже схемы находится в [`backend/`](../backend/README.md):
+> адаптер — `backend/app/rag/wardrobe_rag_engine.py`, пайплайн — `backend/app/services/orchestrator.py`.
+
 Пакет не создаёт FastAPI-сервис и не вызывает LLM. Его результат — канонические вещи, кандидаты, диагностика и проверка выбранных ID. API, внешний OutfitLook, SSE и prompt подключаются в backend.
 
 ## Жизненный цикл и Python API
