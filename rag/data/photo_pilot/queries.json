@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "split": "real_photo_cross_view_instance_smoke",
+  "user_id": "photo-pilot",
+  "corpus": "corpus.json",
+  "mrr_k": 3,
+  "required_slots": [
+    "outerwear"
+  ],
+  "provenance": {
+    "kind": "separate_real_photos_same_instance",
+    "annotation_status": "identity_labels_from_museum_accessions",
+    "images": "provenance.json",
+    "limitations": "Four historical museum coats in one slot. This measures cross-view instance matching, not semantic generalization, street-photo robustness, or outfit quality. Query and index are separate photographs but can share a studio setup and photographer. Interpret Hit@1 and per-query ranks; the default retriever returns only two outerwear candidates, so Hit@3 effectively measures Hit@2 and MRR@3 only sees those two ranks."
+  },
+  "queries": [
+    {
+      "id": "met-157668-alternate-view",
+      "query": "",
+      "query_image": "assets/met-157668-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-157668"
+        ]
+      },
+      "rationale": "Separate back photograph of the same Met accession (2009.300.2801a, b) as the indexed front photograph. The other coats are same-slot negatives."
+    },
+    {
+      "id": "met-157728-alternate-view",
+      "query": "",
+      "query_image": "assets/met-157728-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-157728"
+        ]
+      },
+      "rationale": "Separate back photograph of the same Met accession (2009.300.2857) as the indexed front photograph. The other coats are same-slot negatives."
+    },
+    {
+      "id": "met-158255-alternate-view",
+      "query": "",
+      "query_image": "assets/met-158255-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-158255"
+        ]
+      },
+      "rationale": "Separate three-quarter front photograph of the same Met accession (2009.300.333a, b) as the indexed front photograph. The other coats are same-slot negatives."
+    },
+    {
+      "id": "met-157916-alternate-view",
+      "query": "",
+      "query_image": "assets/met-157916-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-157916"
+        ]
+      },
+      "rationale": "Separate back photograph of the same Met accession (2009.300.3024) as the indexed three-quarter front photograph. The other coats are same-slot negatives."
+    }
+  ]
+}

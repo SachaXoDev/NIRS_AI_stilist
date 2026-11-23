@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     llm_timeout_s: float = Field(default=30.0, gt=0)
     llm_max_repairs: int = Field(default=1, ge=0, le=3)
     llm_json_mode: bool = True
+    llm_outfit_schema: bool = False
     # Пауза между чанками mock-стрима, чтобы на фронте был виден «эффект печатания»
     mock_stream_delay_s: float = Field(default=0.03, ge=0.0)
 

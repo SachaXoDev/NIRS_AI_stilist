@@ -1,6 +1,6 @@
 """Оркестрация пайплайна стилиста (схема из `rag/INTEGRATION.md`).
 
-    синхронизация гардероба → поиск кандидатов по слотам → LLM выбирает id и пишет тексты
+    синхронизация → фильтр повода и погоды → поиск кандидатов → LLM выбирает ID
     → проверка выбора движком → (исправление LLM) → детерминированная сборка как фолбэк
 
 Гарантии для фронтенда:
@@ -33,23 +33,24 @@ from app.schemas import (
     CATEGORY_LABELS_RU,
     CATEGORY_ORDER,
     OutfitLook,
+    RecommendContext,
     RecommendRequest,
     RecommendResponse,
     ResponseMeta,
     RuntimeSettings,
     WardrobeItem,
 )
-from app.services.analysis import analyze_query
+from app.services.analysis import (
+    analyze_query, is_outfit_query, is_outfit_revision, outfit_revision, small_talk_reply,
+)
 from app.services.llm.base import LLMClient, LLMError
-from app.services.llm.mock import build_mock_draft
-from app.services.prompts import PromptContext, build_messages, build_repair_messages
+from app.services.prompts import PromptContext, build_conversation_messages, build_messages, build_repair_messages
 from app.services.scoring import MATCH_SCORE_METHOD, match_score
 from app.services.streaming import JsonStringFieldExtractor
+from app.services.suitability import unsuitable_reason
 from app.services.validation import (
-    MAX_TIPS,
+    MAX_TEXT_CHARS,
     DraftParseError,
-    StylistDraft,
-    field_errors,
     parse_draft,
 )
 from app.storage.app_store import DEMO_USER_ID, AppStore
@@ -85,8 +86,16 @@ class _Prepared:
 
 
 @dataclass
+class _Conversation:
+    query: str
+    messages: list[dict[str, str]]
+    runtime: RuntimeSettings
+    started: float
+    timings: dict[str, float] = field(default_factory=dict)
+
+
+@dataclass
 class _Generation:
-    draft: StylistDraft
     items: list[WardrobeItem]
     attempts: int
     source: str
@@ -147,27 +156,39 @@ class StylistService:
 
     # --- рекомендация -------------------------------------------------------------
 
+    @staticmethod
+    def _uses_wardrobe(request: RecommendRequest, prior_request: str | None) -> bool:
+        context = request.context
+        return bool(
+            prior_request or request.anchor_item_id or request.query_image or request.mode
+            or (context and (context.occasion or context.weather or context.vibe))
+            or is_outfit_query(request.query)
+        )
+
     async def recommend(self, request: RecommendRequest) -> RecommendResponse:
-        prepared = await self._prepare(request)
+        prior_request = _last_outfit_request(request)
+        prepared = await self._prepare(request, prior_request)
         if isinstance(prepared, RecommendResponse):
             return prepared
+        if isinstance(prepared, _Conversation):
+            return await self._answer_conversation(prepared)
         generation = await self._generate(prepared)
         return self._build_response(prepared, generation)
 
     async def recommend_stream(self, request: RecommendRequest) -> AsyncIterator[StreamEvent]:
-        """События: status → retrieval → delta* → result.
-
-        Сначала уходит диагностика поиска, затем настоящие текстовые чанки LLM, последним —
-        проверенный ответ (тот же объект, что у обычного эндпоинта; его `text` авторитетен).
-        """
-        yield "status", {"stage": "retrieval"}
-        prepared = await self._prepare(request)
+        """Диалог: status → delta* → result. Для подбора добавляется диагностика поиска."""
+        prior_request = _last_outfit_request(request)
+        if self._uses_wardrobe(request, prior_request):
+            yield "status", {"stage": "retrieval"}
+        prepared = await self._prepare(request, prior_request)
         if isinstance(prepared, RecommendResponse):
             yield "delta", {"text": prepared.text}
             yield "result", _dump(prepared)
             return
 
-        yield "retrieval", _retrieval_payload(prepared.ctx.outcome, full=prepared.debug)
+        outfit = isinstance(prepared, _Prepared)
+        if outfit:
+            yield "retrieval", _retrieval_payload(prepared.ctx.outcome, full=prepared.debug)
         yield "status", {"stage": "generation"}
 
         raw_parts: list[str] = []
@@ -176,12 +197,11 @@ class StylistService:
         llm_started = time.perf_counter()
         try:
             async for chunk in self._llm.stream(
-                prepared.messages, context=prepared.ctx, temperature=prepared.runtime.temperature
+                prepared.messages, context=prepared.ctx if outfit else None,
+                temperature=prepared.runtime.temperature,
             ):
                 raw_parts.append(chunk)
-                delta = extractor.feed(chunk)
-                if delta:
-                    # Время до первого текста и до готового JSON измеряются раздельно.
+                if not outfit and (delta := extractor.feed(chunk)):
                     prepared.timings.setdefault("llmFirstTextMs", _ms_since(llm_started))
                     yield "delta", {"text": delta}
         except LLMError as exc:
@@ -189,31 +209,57 @@ class StylistService:
             logger.warning("LLM stream failed: %s", exc)
         prepared.timings["llmMs"] = _ms_since(llm_started)
 
+        if isinstance(prepared, _Conversation):
+            response = await self._answer_conversation(
+                prepared, raw="".join(raw_parts), failed=stream_error is not None,
+            )
+            yield "result", _dump(response)
+            return
+
         yield "status", {"stage": "validation"}
         generation = await self._generate(
             prepared, first_raw="".join(raw_parts), first_error=stream_error
         )
-        yield "result", _dump(self._build_response(prepared, generation))
+        response = self._build_response(prepared, generation)
+        yield "delta", {"text": response.text}
+        yield "result", _dump(response)
 
     # --- шаги пайплайна -----------------------------------------------------------
 
-    def _meta(self, *, attempts: int = 0, revision: str = "", occasion: str = "") -> ResponseMeta:
+    def _meta(
+        self, *, attempts: int = 0, revision: str = "", occasion: str = "", searched: bool = True,
+    ) -> ResponseMeta:
         provider, model = self.llm_info
         return ResponseMeta(
             llm_provider=provider,
             llm_model=model,
             llm_attempts=attempts,
-            retriever=self._engine.name,
+            retriever=self._engine.name if searched else None,
             wardrobe_revision=revision,
             occasion=occasion,
-            match_score_method=MATCH_SCORE_METHOD,
+            match_score_method=MATCH_SCORE_METHOD if searched else "",
         )
 
-    async def _prepare(self, request: RecommendRequest) -> _Prepared | RecommendResponse:
+    async def _prepare(
+        self, request: RecommendRequest, prior_request: str | None,
+    ) -> _Prepared | _Conversation | RecommendResponse:
         started = time.perf_counter()
+        runtime = self.get_runtime_settings()
+        context = request.context
+        if not self._uses_wardrobe(request, prior_request):
+            return _Conversation(
+                query=request.query,
+                messages=build_conversation_messages(request.query, request.history, runtime.persona_prompt),
+                runtime=runtime,
+                started=started,
+            )
+
+        occasion, warmer = outfit_revision(request.query, prior_request)
+        if occasion and not (context and context.occasion):
+            context = (context or RecommendContext()).model_copy(update={"occasion": occasion})
+
         timings: dict[str, float] = {}
         warnings: list[str] = []
-        runtime = self.get_runtime_settings()
         user_id = request.user_id or DEMO_USER_ID
 
         if request.wardrobe is not None:
@@ -247,14 +293,20 @@ class StylistService:
                 meta=self._meta(),
             )
 
-        analysis = analyze_query(request.query, request.context, items)
+        analysis = analyze_query(request.query, context, items)
         known_ids = {item.id for item in items}
         anchor = request.anchor_item_id or next(iter(analysis.anchor_item_ids), None)
         if anchor is not None and anchor not in known_ids:
             warnings.append(f"Якорной вещи {anchor} нет в гардеробе — подбор без неё")
             anchor = None
+        unsuitable = {item.id: reason for item in items if (reason := unsuitable_reason(item, analysis))}
+        if anchor in unsuitable:
+            warnings.append(f"Якорная вещь {anchor} не подходит: {unsuitable[anchor]}. Подбор без неё.")
+            anchor = None
+        if unsuitable:
+            warnings.append(f"Исключено вещей по поводу или погоде: {len(unsuitable)}")
+            exclude.extend(unsuitable)
 
-        context = request.context
         query = RetrievalQuery(
             user_id=user_id,
             query=request.query,
@@ -263,21 +315,24 @@ class StylistService:
             visual_weight=(
                 request.visual_weight if request.visual_weight is not None else runtime.visual_weight
             ),
-            occasion=context.occasion if context else None,
+            occasion="beach" if analysis.occasion == "beach" else (context.occasion if context else None),
             weather=context.weather if context else None,
             vibe=context.vibe if context else None,
             anchor_item_id=anchor,
             exclude_item_ids=exclude,
             query_image=request.query_image,
+            require_outerwear=warmer,
         )
         phase = time.perf_counter()
         try:
             outcome = await asyncio.to_thread(self._engine.retrieve, query)
         except AnchorRejected as exc:
             warnings.append(
-                f"Вещь {anchor} не подходит под ограничения запроса (например, по погоде), "
+                f"Якорная вещь {anchor} не подходит под ограничения запроса (например, по погоде), "
                 f"подбор выполнен без неё: {exc}"
             )
+            if anchor is not None:
+                query.exclude_item_ids.append(anchor)
             query.anchor_item_id = None
             outcome = await asyncio.to_thread(self._engine.retrieve, query)
         timings["retrievalMs"] = _ms_since(phase)
@@ -294,7 +349,9 @@ class StylistService:
                 warnings.extend(assembly.violations)
             timings["totalMs"] = _ms_since(started)
             return RecommendResponse(
-                text=_incomplete_text(missing, outcome),
+                text=_incomplete_text(missing, outcome, unsuitable_slots={
+                    item.category for item in items if item.id in unsuitable
+                }),
                 source="none",
                 missing_slots=missing,
                 warnings=_unique(warnings),
@@ -320,17 +377,50 @@ class StylistService:
             timings=timings,
         )
 
+    async def _answer_conversation(
+        self, prepared: _Conversation, *, raw: str | None = None, failed: bool = False,
+    ) -> RecommendResponse:
+        if raw is None:
+            llm_started = time.perf_counter()
+            try:
+                raw = await self._llm.complete(
+                    prepared.messages, context=None, temperature=prepared.runtime.temperature,
+                )
+            except LLMError as exc:
+                logger.warning("Conversation LLM failed: %s", exc)
+                failed = True
+            prepared.timings["llmMs"] = _ms_since(llm_started)
+
+        text = ""
+        if raw and not failed:
+            try:
+                text = parse_draft(raw).text[:MAX_TEXT_CHARS]
+            except DraftParseError:
+                logger.warning("Conversation LLM returned an invalid reply")
+        source = "mock" if self._llm.provider == "mock" else "llm"
+        warnings = []
+        if not text:
+            source = "fallback"
+            warnings.append("Языковая модель не вернула ответ на разговорный запрос")
+            text = small_talk_reply(prepared.query) or (
+                "Не удалось получить ответ стилиста. Попробуйте отправить вопрос ещё раз."
+            )
+        return RecommendResponse(
+            text=text, source=source, warnings=warnings,
+            timings={**prepared.timings, "totalMs": _ms_since(prepared.started)},
+            meta=self._meta(attempts=1, searched=False),
+        )
+
     async def _review(
         self, raw: str, ctx: PromptContext
-    ) -> tuple[StylistDraft | None, list[WardrobeItem], list[str]]:
+    ) -> tuple[list[WardrobeItem], list[str]]:
         """Разобрать ответ LLM и проверить выбранные id движком поиска."""
         try:
             draft = parse_draft(raw)
         except DraftParseError as exc:
-            return None, [], [str(exc)]
-        errors = field_errors(draft)
+            return [], [str(exc)]
         if draft.outfit is None or not draft.outfit.item_ids:
-            return draft, [], errors
+            return [], ["выбери вещи в outfit.item_ids"]
         check = await asyncio.to_thread(
             self._engine.validate_selection, draft.outfit.item_ids, ctx.outcome
         )
@@ -338,12 +428,12 @@ class StylistService:
             raise RagEngineError(
                 "Гардероб изменился, пока стилист подбирал образ. Повторите запрос."
             )
-        errors.extend(check.violations)
+        errors = list(check.violations)
         if check.missing_slots:
             errors.append(
                 "в образе не заполнены обязательные слоты: " + ", ".join(check.missing_slots)
             )
-        return draft, check.items, errors
+        return check.items, errors
 
     async def _generate(
         self,
@@ -375,10 +465,10 @@ class StylistService:
                         logger.warning("LLM call failed: %s", exc)
                         llm_down = True
                         break
-                draft, items, errors = await self._review(raw, ctx)
-                if draft is not None and not errors:
+                items, errors = await self._review(raw, ctx)
+                if not errors:
                     source = "mock" if provider == "mock" else "llm"
-                    return _Generation(draft, _sort_items(items), attempts, source)
+                    return _Generation(_sort_items(items), attempts, source)
                 logger.info("LLM draft rejected (attempt %d): %s", attempts, errors)
                 messages = build_repair_messages(prepared.messages, raw, errors)
                 raw = None
@@ -391,13 +481,16 @@ class StylistService:
             if llm_down
             else "Ответ LLM не прошёл проверку — образ собран детерминированно, без модели"
         )
-        draft = StylistDraft.model_validate(build_mock_draft(ctx))
-        return _Generation(draft, _sort_items(ctx.assembly.items), attempts, "fallback")
+        check = await asyncio.to_thread(
+            self._engine.validate_selection, [item.id for item in ctx.assembly.items], ctx.outcome,
+        )
+        if not check.complete:
+            raise RagEngineError("Гардероб изменился, пока стилист подбирал образ. Повторите запрос.")
+        return _Generation(_sort_items(check.items), attempts, "fallback")
 
     def _build_response(self, prepared: _Prepared, generation: _Generation) -> RecommendResponse:
         ctx = prepared.ctx
         outcome = ctx.outcome
-        draft = generation.draft
         prepared.timings["totalMs"] = _ms_since(prepared.started)
         common: dict[str, Any] = {
             "source": generation.source,
@@ -411,38 +504,51 @@ class StylistService:
             "retrieval": _retrieval_payload(outcome, full=True) if prepared.debug else None,
         }
 
-        outfit_draft = draft.outfit
-        if outfit_draft is None or not generation.items:
-            # Разговорная реплика: образа нет, это не ошибка.
-            return RecommendResponse(text=draft.text, **common)
-
         items = [_with_image(item) for item in generation.items]
+        summary = "В образ вошли: " + "; ".join(item.title for item in items) + "."
+        colors = list(dict.fromkeys(item.color.strip().lower() for item in items if item.color.strip()))
+        palette = "Палитра образа: " + ", ".join(colors) + "." if colors else ""
         outfit = OutfitLook(
             id=f"outfit-{uuid.uuid4().hex[:12]}",
-            title=outfit_draft.title[:120],
-            description=outfit_draft.description or draft.text,
-            occasion=outfit_draft.occasion or ctx.analysis.occasion_label,
+            title=f"Образ · {ctx.analysis.occasion_label}",
+            description=summary,
+            occasion=ctx.analysis.occasion_label,
             items=items,
-            stylist_reasoning=outfit_draft.stylist_reasoning,
+            stylist_reasoning=palette,
             match_score=match_score(generation.items, outcome),
-            confidence_tips=outfit_draft.confidence_tips[:MAX_TIPS],
+            confidence_tips=[],
         )
         return RecommendResponse(
-            text=draft.text,
+            text=summary,
             suggested_outfit=outfit,
             referenced_item_ids=[item.id for item in items],
             **common,
         )
 
 
-def _incomplete_text(missing: list[str], outcome: RetrievalOutcome) -> str:
+def _last_outfit_request(request: RecommendRequest) -> str | None:
+    """Короткую правку связываем только с запросами, для которых была карточка."""
+    if not request.history or not is_outfit_revision(request.query):
+        return None
+    previous = None
+    for user, reply in zip(request.history, request.history[1:]):
+        if user.sender == "user" and reply.sender == "assistant" and reply.has_outfit:
+            if previous is None or is_outfit_query(user.text):
+                previous = user.text
+    return previous
+
+
+def _incomplete_text(missing: list[str], outcome: RetrievalOutcome, *, unsuitable_slots: set[str]) -> str:
     if not missing:
         return (
             "Не получилось собрать из гардероба образ, который проходит проверку слотов и "
             "погодных ограничений. Попробуйте уточнить запрос или добавить вещи."
         )
     labels = ", ".join(CATEGORY_LABELS_RU[slot] for slot in missing)
-    text = f"Пока не могу собрать законченный образ: в гардеробе не хватает — {labels}."
+    if set(missing) & unsuitable_slots or outcome.context.get("occasion") == "beach":
+        text = f"Не могу собрать подходящий образ для этого повода и погоды. Не хватает подходящих вещей: {labels}."
+    else:
+        text = f"Пока не могу собрать законченный образ: в гардеробе не хватает — {labels}."
     if "outerwear" in missing and outcome.context.get("temperature_c") is not None:
         text += f" При {outcome.context['temperature_c']:+g}°C без верхней одежды не обойтись."
     elif "outerwear" in missing:

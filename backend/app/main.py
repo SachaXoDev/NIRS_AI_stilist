@@ -13,7 +13,7 @@ from app.rag.factory import build_engine
 from app.services.llm.base import LLMClient
 from app.services.llm.factory import build_llm
 from app.services.orchestrator import StylistService
-from app.storage.app_store import DEMO_USER_ID, AppStore, load_wardrobe_file
+from app.storage.app_store import DEMO_USER_ID, AppStore, load_base_capsule, load_wardrobe_file
 
 API_VERSION = "0.2.0"
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def _seed_demo_wardrobe(engine: RagEngine, settings: Settings) -> None:
     """Демо-пользователь с базовой капсулой — чтобы запрос с одним `query` сразу работал."""
     if engine.get_items(DEMO_USER_ID):
         return
-    items = load_wardrobe_file(settings.seed_wardrobe_path or None)
+    items = load_wardrobe_file(settings.seed_wardrobe_path) if settings.seed_wardrobe_path else load_base_capsule()
     report = engine.sync(DEMO_USER_ID, items)
     logger.info("Seeded demo wardrobe: %s items", report.get("indexed_count"))
 

@@ -133,6 +133,7 @@ class WardrobeRagEngine:
                 ),
                 anchor_item_id=query.anchor_item_id,
                 exclude_item_ids=[i for i in query.exclude_item_ids if i != query.anchor_item_id],
+                require_outerwear=True if query.require_outerwear else None,
             )
             with self._lock:
                 result = self._service.retrieve(request)

@@ -14,6 +14,7 @@ from app.services.llm.base import LLMError
 from app.storage.app_store import load_wardrobe_file
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+TEST_CAPSULE_PATH = REPO_ROOT / "rag" / "data" / "wardrobe_seed.json"
 
 
 class ScriptedLLM:
@@ -51,6 +52,7 @@ def settings(tmp_path) -> Settings:
         llm_provider="mock",
         rag_engine="builtin",
         database_path=str(tmp_path / "test.db"),
+        seed_wardrobe_path=str(TEST_CAPSULE_PATH),
         mock_stream_delay_s=0.0,
         admin_token="",
     )
@@ -72,7 +74,7 @@ def client(make_client) -> TestClient:
 
 @pytest.fixture
 def capsule():
-    return load_wardrobe_file()
+    return load_wardrobe_file(TEST_CAPSULE_PATH)
 
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-import type { WardrobeItem, OutfitLook, ClothingCategory, RetrievalResult } from '../types';
+import type { WardrobeItem, OutfitLook, ClothingCategory, RetrievalResult, StylistHistoryMessage } from '../types';
 import { INITIAL_WARDROBE } from '../data/initialWardrobe';
 import { getCurrentUser } from './authService';
 import { BACKEND_URL, USE_REAL_BACKEND } from './backendConfig';
@@ -13,7 +13,8 @@ import { BACKEND_URL, USE_REAL_BACKEND } from './backendConfig';
  *   VITE_BACKEND_URL=http://localhost:8000
  */
 
-const BACKEND_TIMEOUT_MS = 90_000;
+// Первый подбор индексирует гардероб: на локальной машине это может занять больше минуты.
+const BACKEND_TIMEOUT_MS = 180_000;
 
 // Видимая пометка: ответ собран не сервером, а локальным симулятором.
 const OFFLINE_NOTE =
@@ -34,6 +35,7 @@ interface StylistResponse {
 interface StylistRequestOptions {
   signal?: AbortSignal;
   userId?: string;
+  history?: StylistHistoryMessage[];
   onText?: (text: string) => void;
 }
 
@@ -102,6 +104,7 @@ export async function askStylist(
           // Демо-идентификатор, не защищённая сессия: разделяет гардеробы пользователей.
           user_id: options.userId ?? getCurrentUser()?.id ?? 'anonymous',
           context,
+          history: options.history,
         }),
       });
       return await readStylistStream(res, options.onText);

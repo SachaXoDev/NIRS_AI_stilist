@@ -1,0 +1,134 @@
+{
+  "source_institution": "The Metropolitan Museum of Art, New York, The Costume Institute",
+  "license": "CC0 1.0 Universal",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "rights_verification": "Each Commons file page explicitly marks the photograph CC0 and identifies it as a Met donation. Each matching Met Collection API record has isPublicDomain=true and lists both source photographs.",
+  "rights_checked_on": "2026-11-23",
+  "asset_processing": "Unmodified 500-pixel-wide Wikimedia Commons JPEG previews of separate source exposures. No local edits or augmentations.",
+  "items": [
+    {
+      "item_id": "met-157668",
+      "accession_number": "2009.300.2801a, b",
+      "object_url": "https://www.metmuseum.org/art/collection/search/157668",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/157668",
+      "credit_line": "Brooklyn Museum Costume Collection at The Metropolitan Museum of Art, Gift of the Brooklyn Museum, 2009; Gift of Mrs. Thomas Brown Rudd, 1955",
+      "images": [
+        {
+          "path": "assets/met-157668-index.jpg",
+          "role": "index",
+          "view": "front",
+          "photographer": "Lolly Koon",
+          "commons_file_url": "https://commons.wikimedia.org/wiki/File:Coat_MET_55.207.43a-b_front_CP4.jpg",
+          "commons_original_url": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Coat_MET_55.207.43a-b_front_CP4.jpg",
+          "met_original_url": "https://images.metmuseum.org/CRDImages/ci/original/55.207.43a-b_front_CP4.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Coat_MET_55.207.43a-b_front_CP4.jpg/500px-Coat_MET_55.207.43a-b_front_CP4.jpg",
+          "sha256": "189c3b1e2f7d90e30be1dffdb7ae466d64a8bd0320c675f540c8faa03726ca66"
+        },
+        {
+          "path": "assets/met-157668-query.jpg",
+          "role": "query",
+          "view": "back",
+          "photographer": "Lolly Koon",
+          "commons_file_url": "https://commons.wikimedia.org/wiki/File:Coat_MET_55.207.43a-b_back_CP4.jpg",
+          "commons_original_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Coat_MET_55.207.43a-b_back_CP4.jpg",
+          "met_original_url": "https://images.metmuseum.org/CRDImages/ci/original/55.207.43a-b_back_CP4.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Coat_MET_55.207.43a-b_back_CP4.jpg/500px-Coat_MET_55.207.43a-b_back_CP4.jpg",
+          "sha256": "d95c2718a89d784ced3454d2e558ddc2b0ad5fa2120f0794855884a6631c25c5"
+        }
+      ]
+    },
+    {
+      "item_id": "met-157728",
+      "accession_number": "2009.300.2857",
+      "object_url": "https://www.metmuseum.org/art/collection/search/157728",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/157728",
+      "credit_line": "Brooklyn Museum Costume Collection at The Metropolitan Museum of Art, Gift of the Brooklyn Museum, 2009; Gift of Loretta McKenna, 1961",
+      "images": [
+        {
+          "path": "assets/met-157728-index.jpg",
+          "role": "index",
+          "view": "front",
+          "photographer": "Lolly Koon",
+          "commons_file_url": "https://commons.wikimedia.org/wiki/File:Coat_MET_61.183_front_CP4.jpg",
+          "commons_original_url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Coat_MET_61.183_front_CP4.jpg",
+          "met_original_url": "https://images.metmuseum.org/CRDImages/ci/original/61.183_front_CP4.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Coat_MET_61.183_front_CP4.jpg/500px-Coat_MET_61.183_front_CP4.jpg",
+          "sha256": "73ec298a0ec97a607d9b0bc150c14193ac9528cc33c1393780754648b5dc931d"
+        },
+        {
+          "path": "assets/met-157728-query.jpg",
+          "role": "query",
+          "view": "back",
+          "photographer": "Lolly Koon",
+          "commons_file_url": "https://commons.wikimedia.org/wiki/File:Coat_MET_61.183_back_CP4.jpg",
+          "commons_original_url": "https://upload.wikimedia.org/wikipedia/commons/0/06/Coat_MET_61.183_back_CP4.jpg",
+          "met_original_url": "https://images.metmuseum.org/CRDImages/ci/original/61.183_back_CP4.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/06/Coat_MET_61.183_back_CP4.jpg/500px-Coat_MET_61.183_back_CP4.jpg",
+          "sha256": "9043abcd72bde23251069f9a5b822234dfe0a2591037c0c98165e337260442af"
+        }
+      ]
+    },
+    {
+      "item_id": "met-158255",
+      "accession_number": "2009.300.333a, b",
+      "object_url": "https://www.metmuseum.org/art/collection/search/158255",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/158255",
+      "credit_line": "Brooklyn Museum Costume Collection at The Metropolitan Museum of Art, Gift of the Brooklyn Museum, 2009; Frederick Loeser Fund, 1964",
+      "images": [
+        {
+          "path": "assets/met-158255-index.jpg",
+          "role": "index",
+          "view": "front",
+          "photographer": "Lea Christiano",
+          "commons_file_url": "https://commons.wikimedia.org/wiki/File:Coat_MET_64.75_front_CP4.jpg",
+          "commons_original_url": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Coat_MET_64.75_front_CP4.jpg",
+          "met_original_url": "https://images.metmuseum.org/CRDImages/ci/original/64.75_front_CP4.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Coat_MET_64.75_front_CP4.jpg/500px-Coat_MET_64.75_front_CP4.jpg",
+          "sha256": "114fe2c05f7b2a80ad41d6f17b19cd5166c332c81fdfa13e9a5cf3e6e2ed1333"
+        },
+        {
+          "path": "assets/met-158255-query.jpg",
+          "role": "query",
+          "view": "three-quarter front",
+          "photographer": "Lea Christiano",
+          "commons_file_url": "https://commons.wikimedia.org/wiki/File:Coat_MET_64.75_threequarter_front_CP4.jpg",
+          "commons_original_url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Coat_MET_64.75_threequarter_front_CP4.jpg",
+          "met_original_url": "https://images.metmuseum.org/CRDImages/ci/original/64.75_threequarter_front_CP4.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Coat_MET_64.75_threequarter_front_CP4.jpg/500px-Coat_MET_64.75_threequarter_front_CP4.jpg",
+          "sha256": "9a61f39349e11e6a3843836de8157498e08f82bf2c4c81a69769c5d81e1bb3f3"
+        }
+      ]
+    },
+    {
+      "item_id": "met-157916",
+      "accession_number": "2009.300.3024",
+      "object_url": "https://www.metmuseum.org/art/collection/search/157916",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/157916",
+      "credit_line": "Brooklyn Museum Costume Collection at The Metropolitan Museum of Art, Gift of the Brooklyn Museum, 2009; Gift of Mrs. William E. S. Griswold, 1941",
+      "images": [
+        {
+          "path": "assets/met-157916-index.jpg",
+          "role": "index",
+          "view": "three-quarter front",
+          "photographer": "Lea Christiano",
+          "commons_file_url": "https://commons.wikimedia.org/wiki/File:Evening_coat_MET_41.909_threequarter_front_CP4.jpg",
+          "commons_original_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Evening_coat_MET_41.909_threequarter_front_CP4.jpg",
+          "met_original_url": "https://images.metmuseum.org/CRDImages/ci/original/41.909_threequarter_front_CP4.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Evening_coat_MET_41.909_threequarter_front_CP4.jpg/500px-Evening_coat_MET_41.909_threequarter_front_CP4.jpg",
+          "sha256": "fd1df3b6a59607244d7b6c99e5631ec6fb1a0644311229cbdc98e61c688e845d"
+        },
+        {
+          "path": "assets/met-157916-query.jpg",
+          "role": "query",
+          "view": "back",
+          "photographer": "Lea Christiano",
+          "commons_file_url": "https://commons.wikimedia.org/wiki/File:Evening_coat_MET_41.909_back_CP4.jpg",
+          "commons_original_url": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Evening_coat_MET_41.909_back_CP4.jpg",
+          "met_original_url": "https://images.metmuseum.org/CRDImages/ci/original/41.909_back_CP4.jpg",
+          "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Evening_coat_MET_41.909_back_CP4.jpg/500px-Evening_coat_MET_41.909_back_CP4.jpg",
+          "sha256": "8dc53ece94c8ff5099129fdcc387eaa5b0e8ea8813108f6b068f732c26a192de"
+        }
+      ]
+    }
+  ]
+}

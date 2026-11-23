@@ -1,0 +1,964 @@
+[
+  {
+    "id": "item-11",
+    "title": "Голубая рубашка из поплина",
+    "category": "tops",
+    "color": "Голубой",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual"
+    ],
+    "tags": [
+      "рубашки",
+      "офис",
+      "дресс-код",
+      "длинный рукав",
+      "отложной воротник"
+    ],
+    "imageUrl": "/clothes/capsule/blue-poplin-shirt.svg",
+    "material": "Хлопковый поплин",
+    "embeddingSnippet": "Голубая рубашка прямого кроя с манжетами и нагрудным карманом; подходит под офисный жакет.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-12",
+    "title": "Молочная блуза с воротником-бантом",
+    "category": "tops",
+    "color": "Молочный",
+    "season": "all",
+    "style": [
+      "business",
+      "evening",
+      "chic"
+    ],
+    "tags": [
+      "рубашки",
+      "офис",
+      "деловая встреча",
+      "блуза",
+      "бант",
+      "нарядная"
+    ],
+    "imageUrl": "/clothes/capsule/ivory-bow-blouse.svg",
+    "material": "Вискозный креп",
+    "embeddingSnippet": "Мягкая блуза с длинным рукавом и завязками у горловины; сочетается с юбкой-карандашом и костюмными брюками.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-13",
+    "title": "Молочно-синяя футболка в полоску",
+    "category": "tops",
+    "color": "Молочный / Синий",
+    "season": "spring/summer",
+    "style": [
+      "casual",
+      "classic"
+    ],
+    "tags": [
+      "футболки и топы",
+      "морская полоска",
+      "тельняшка",
+      "короткий рукав",
+      "прогулка"
+    ],
+    "imageUrl": "/clothes/capsule/striped-breton-tee.svg",
+    "material": "Хлопковое джерси",
+    "embeddingSnippet": "Футболка с круглым вырезом и широкими синими полосами; на каждый день с джинсами или чиносами.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-14",
+    "title": "Сливовый кардиган на молнии",
+    "category": "tops",
+    "color": "Сливовый",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "cozy"
+    ],
+    "tags": [
+      "трикотаж",
+      "кардиган",
+      "рельефная вязка",
+      "стойка",
+      "слой"
+    ],
+    "imageUrl": "/clothes/capsule/plum-zip-cardigan.svg",
+    "material": "Шерсть с полиамидом",
+    "embeddingSnippet": "Вязаный кардиган со стойкой и молнией, удобный промежуточный слой на прохладную прогулку.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-15",
+    "title": "Бирюзовая спортивная майка",
+    "category": "tops",
+    "color": "Бирюзовый",
+    "season": "spring/summer",
+    "style": [
+      "sport"
+    ],
+    "tags": [
+      "футболки и топы",
+      "спортзал",
+      "бег",
+      "тренировка",
+      "майка",
+      "быстросохнущая ткань"
+    ],
+    "imageUrl": "/clothes/capsule/teal-training-tank.svg",
+    "material": "Полиэстер с эластаном",
+    "embeddingSnippet": "Легкая майка с широкими проймами для тренировки в зале и бега в теплую погоду.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-16",
+    "title": "Сиреневая беговая футболка",
+    "category": "tops",
+    "color": "Сиреневый",
+    "season": "spring/summer",
+    "style": [
+      "sport",
+      "casual"
+    ],
+    "tags": [
+      "футболки и топы",
+      "бег",
+      "фитнес",
+      "короткий рукав",
+      "сетчатые вставки"
+    ],
+    "imageUrl": "/clothes/capsule/lilac-running-tee.svg",
+    "material": "Полиэстер с сетчатыми вставками",
+    "embeddingSnippet": "Футболка свободного кроя с контрастными сетчатыми вставками под рукавами для пробежек.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-17",
+    "title": "Изумрудный атласный топ на бретелях",
+    "category": "tops",
+    "color": "Изумрудный",
+    "season": "all",
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "tags": [
+      "футболки и топы",
+      "ужин",
+      "вечеринка",
+      "тонкие бретели",
+      "мягкий блеск"
+    ],
+    "imageUrl": "/clothes/capsule/emerald-satin-cami.svg",
+    "material": "Вискозный атлас",
+    "embeddingSnippet": "Топ с тонкими бретелями и мягкой драпировкой у горловины для ужина или вечернего выхода.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-18",
+    "title": "Коралловая пляжная рубашка из льна",
+    "category": "tops",
+    "color": "Коралловый",
+    "season": "spring/summer",
+    "style": [
+      "beach",
+      "casual"
+    ],
+    "tags": [
+      "рубашки",
+      "пляж",
+      "отпуск",
+      "набережная",
+      "свободный крой",
+      "короткий рукав"
+    ],
+    "imageUrl": "/clothes/capsule/coral-linen-shirt.svg",
+    "material": "Лен",
+    "embeddingSnippet": "Свободная льняная рубашка с короткими рукавами; на пляж с песочными шортами и сандалиями.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-19",
+    "title": "Кремовая водолазка из мериноса",
+    "category": "tops",
+    "color": "Кремовый",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "business",
+      "cozy"
+    ],
+    "tags": [
+      "трикотаж",
+      "зима",
+      "мороз",
+      "высокий ворот",
+      "базовый слой"
+    ],
+    "imageUrl": "/clothes/capsule/cream-merino-turtleneck.svg",
+    "material": "Мериносовая шерсть",
+    "embeddingSnippet": "Водолазка в рубчик с высоким отворотом; зимой носится как теплый слой под верхней одеждой.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-20",
+    "title": "Темно-синие костюмные брюки со стрелками",
+    "category": "bottoms",
+    "color": "Темно-синий",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual"
+    ],
+    "tags": [
+      "брюки",
+      "офис",
+      "дресс-код",
+      "защипы",
+      "стрелки",
+      "прямые брюки"
+    ],
+    "imageUrl": "/clothes/capsule/navy-pleated-trousers.svg",
+    "material": "Костюмная шерсть с эластаном",
+    "embeddingSnippet": "Прямые костюмные брюки с защипами у пояса; офисная пара к голубой рубашке или молочной блузе.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-21",
+    "title": "Графитовая юбка-карандаш",
+    "category": "bottoms",
+    "color": "Графитовый",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual"
+    ],
+    "tags": [
+      "юбки",
+      "офис",
+      "юбка-карандаш",
+      "миди",
+      "шлица"
+    ],
+    "imageUrl": "/clothes/capsule/graphite-pencil-skirt.svg",
+    "material": "Шерсть с полиэстером",
+    "embeddingSnippet": "Юбка прямого кроя ниже колена со шлицей; сочетается с жакетом и закрытыми туфлями.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-22",
+    "title": "Светло-голубые джинсы свободного кроя",
+    "category": "bottoms",
+    "color": "Светло-голубой",
+    "season": "all",
+    "style": [
+      "casual",
+      "streetwear"
+    ],
+    "tags": [
+      "джинсы",
+      "деним",
+      "джинсы",
+      "широкие штанины",
+      "прогулка"
+    ],
+    "imageUrl": "/clothes/capsule/light-wash-jeans.svg",
+    "material": "Хлопковый деним",
+    "embeddingSnippet": "Светлые джинсы с широкими штанинами и накладными задними карманами для повседневных комплектов.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-23",
+    "title": "Оливковые чиносы с подворотами",
+    "category": "bottoms",
+    "color": "Оливковый",
+    "season": "all",
+    "style": [
+      "casual",
+      "smart-casual"
+    ],
+    "tags": [
+      "брюки",
+      "чиносы",
+      "укороченные брюки",
+      "зауженный крой",
+      "город"
+    ],
+    "imageUrl": "/clothes/capsule/olive-chinos.svg",
+    "material": "Хлопковый твил с эластаном",
+    "embeddingSnippet": "Легкие зауженные брюки с косыми карманами и подворотами; подходят к футболке и кедам.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-24",
+    "title": "Антрацитовые тренировочные легинсы",
+    "category": "bottoms",
+    "color": "Антрацитовый",
+    "season": "all",
+    "style": [
+      "sport"
+    ],
+    "tags": [
+      "брюки",
+      "фитнес",
+      "йога",
+      "спортзал",
+      "легинсы",
+      "высокий пояс"
+    ],
+    "imageUrl": "/clothes/capsule/charcoal-training-leggings.svg",
+    "material": "Полиамид с эластаном",
+    "embeddingSnippet": "Облегающие легинсы с широким поясом и плоскими швами для тренировок в зале.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-25",
+    "title": "Кобальтовые беговые шорты",
+    "category": "bottoms",
+    "color": "Кобальтовый",
+    "season": "spring/summer",
+    "style": [
+      "sport"
+    ],
+    "tags": [
+      "шорты",
+      "бег",
+      "стадион",
+      "резинка",
+      "закругленный край"
+    ],
+    "imageUrl": "/clothes/capsule/cobalt-running-shorts.svg",
+    "material": "Полиэстер с эластаном",
+    "embeddingSnippet": "Свободные беговые шорты с разрезами сбоку для шага и легкой эластичной талией.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-26",
+    "title": "Винная атласная юбка миди",
+    "category": "bottoms",
+    "color": "Винный",
+    "season": "all",
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "tags": [
+      "юбки",
+      "ужин",
+      "театр",
+      "юбка миди",
+      "косой крой",
+      "мягкий блеск"
+    ],
+    "imageUrl": "/clothes/capsule/wine-satin-skirt.svg",
+    "material": "Вискозный атлас",
+    "embeddingSnippet": "Юбка миди по косой с плавно расширяющимся подолом для вечернего образа с топом на бретелях.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-27",
+    "title": "Песочные льняные шорты",
+    "category": "bottoms",
+    "color": "Песочный",
+    "season": "spring/summer",
+    "style": [
+      "beach",
+      "casual"
+    ],
+    "tags": [
+      "шорты",
+      "пляж",
+      "отпуск",
+      "набережная",
+      "кулиска",
+      "свободный крой"
+    ],
+    "imageUrl": "/clothes/capsule/sand-linen-shorts.svg",
+    "material": "Лен с хлопком",
+    "embeddingSnippet": "Свободные пляжные шорты на кулиске; пара к коралловой рубашке и плоским сандалиям.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-28",
+    "title": "Двубортный жакет оттенка тауп",
+    "category": "outerwear",
+    "color": "Серо-бежевый",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual"
+    ],
+    "tags": [
+      "жакеты",
+      "офис",
+      "костюмный жакет",
+      "двубортный",
+      "лацканы"
+    ],
+    "imageUrl": "/clothes/capsule/taupe-double-breasted-blazer.svg",
+    "material": "Шерсть с вискозой",
+    "embeddingSnippet": "Структурный двубортный жакет с широкими лацканами; подходит к юбке-карандашу и прямым брюкам.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false,
+      "windproof": false
+    }
+  },
+  {
+    "id": "item-29",
+    "title": "Укороченная куртка из денима индиго",
+    "category": "outerwear",
+    "color": "Индиго",
+    "season": "spring/summer",
+    "style": [
+      "casual",
+      "streetwear"
+    ],
+    "tags": [
+      "куртки",
+      "джинсовка",
+      "деним",
+      "нагрудные карманы",
+      "прогулка"
+    ],
+    "imageUrl": "/clothes/capsule/indigo-denim-jacket.svg",
+    "material": "Хлопковый деним",
+    "embeddingSnippet": "Укороченная джинсовая куртка с двумя карманами и контрастной отстрочкой.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false
+    }
+  },
+  {
+    "id": "item-30",
+    "title": "Черный бархатный жакет с шалевым воротником",
+    "category": "outerwear",
+    "color": "Черный",
+    "season": "all",
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "tags": [
+      "жакеты",
+      "театр",
+      "вечеринка",
+      "бархат",
+      "смокинг",
+      "шалевый воротник"
+    ],
+    "imageUrl": "/clothes/capsule/black-velvet-blazer.svg",
+    "material": "Хлопковый бархат с вискозной подкладкой",
+    "embeddingSnippet": "Вечерний жакет с длинными шалевыми лацканами и одной пуговицей; носится поверх атласного топа.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false,
+      "windproof": false
+    }
+  },
+  {
+    "id": "item-31",
+    "title": "Карамельное шерстяное пальто с поясом",
+    "category": "outerwear",
+    "color": "Карамельный",
+    "season": "autumn/winter",
+    "style": [
+      "business",
+      "casual",
+      "classic"
+    ],
+    "tags": [
+      "тренчи и пальто",
+      "зима",
+      "пальто-халат",
+      "длина миди",
+      "пояс",
+      "шерсть"
+    ],
+    "imageUrl": "/clothes/capsule/camel-belted-coat.svg",
+    "material": "Шерстяное сукно с полиамидом",
+    "embeddingSnippet": "Длинное пальто на подкладке с широкими лацканами и поясом; вариант для сухой прохладной погоды.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false
+    }
+  },
+  {
+    "id": "item-32",
+    "title": "Хвойная утепленная парка с капюшоном",
+    "category": "outerwear",
+    "color": "Темно-зеленый",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "sport"
+    ],
+    "tags": [
+      "куртки",
+      "зима",
+      "снег",
+      "мороз",
+      "парка",
+      "утеплитель",
+      "капюшон"
+    ],
+    "imageUrl": "/clothes/capsule/pine-insulated-parka.svg",
+    "material": "Плотный полиамид, синтетический утеплитель",
+    "embeddingSnippet": "Удлиненная парка с высоким воротом, капюшоном и ветрозащитной планкой для холодных прогулок; швы не проклеены.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "temperature_max": 8,
+      "waterproof": false,
+      "windproof": true
+    }
+  },
+  {
+    "id": "item-33",
+    "title": "Горчичная мембранная куртка-дождевик",
+    "category": "outerwear",
+    "color": "Горчичный",
+    "season": "spring/summer",
+    "style": [
+      "casual",
+      "sport"
+    ],
+    "tags": [
+      "куртки",
+      "дождь",
+      "ливень",
+      "ветер",
+      "мембрана",
+      "проклеенные швы",
+      "капюшон"
+    ],
+    "imageUrl": "/clothes/capsule/ochre-rain-shell.svg",
+    "material": "Полиэстер с водонепроницаемой мембраной",
+    "embeddingSnippet": "Дождевик с проклеенными швами, регулируемым капюшоном и закрытой планкой молнией для дождя и ветра.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": true,
+      "windproof": true
+    }
+  },
+  {
+    "id": "item-34",
+    "title": "Терракотовый стеганый жилет",
+    "category": "outerwear",
+    "color": "Терракотовый",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "sport"
+    ],
+    "tags": [
+      "куртки",
+      "жилет",
+      "стежка",
+      "утепленный слой",
+      "межсезонье"
+    ],
+    "imageUrl": "/clothes/capsule/rust-quilted-vest.svg",
+    "material": "Полиамид и синтетический утеплитель",
+    "embeddingSnippet": "Стеганый жилет со стойкой для многослойного комплекта в сухой прохладный день; не заменяет куртку.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false,
+      "windproof": false
+    }
+  },
+  {
+    "id": "item-35",
+    "title": "Бордовые дерби на низком каблуке",
+    "category": "shoes",
+    "color": "Бордовый",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual"
+    ],
+    "tags": [
+      "туфли и лоферы",
+      "офис",
+      "деловая встреча",
+      "дерби",
+      "шнуровка",
+      "закрытые туфли"
+    ],
+    "imageUrl": "/clothes/capsule/burgundy-derbies.svg",
+    "material": "Гладкая кожа, резиновая подошва",
+    "embeddingSnippet": "Закрытые кожаные туфли дерби с открытой шнуровкой и устойчивым низким каблуком.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "item-36",
+    "title": "Кеды из небеленого канваса",
+    "category": "shoes",
+    "color": "Молочный",
+    "season": "spring/summer",
+    "style": [
+      "casual",
+      "streetwear"
+    ],
+    "tags": [
+      "кеды и кроссовки",
+      "кеды",
+      "прогулка",
+      "канвас",
+      "резиновый мыс"
+    ],
+    "imageUrl": "/clothes/capsule/ecru-canvas-sneakers.svg",
+    "material": "Хлопковый канвас, резина",
+    "embeddingSnippet": "Легкие низкие кеды с резиновым мысом и плоской подошвой для сухой городской погоды.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "item-37",
+    "title": "Синие беговые кроссовки с сеткой",
+    "category": "shoes",
+    "color": "Синий / Белый",
+    "season": "spring/summer",
+    "style": [
+      "sport"
+    ],
+    "tags": [
+      "кеды и кроссовки",
+      "бег",
+      "фитнес",
+      "сетка",
+      "амортизация",
+      "кроссовки"
+    ],
+    "imageUrl": "/clothes/capsule/blue-running-shoes.svg",
+    "material": "Сетчатый полиэстер, вспененная подошва",
+    "embeddingSnippet": "Легкие беговые кроссовки с сетчатым верхом и утолщенной амортизирующей подошвой.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "item-38",
+    "title": "Серебристые туфли с открытой пяткой",
+    "category": "shoes",
+    "color": "Серебристый",
+    "season": "spring/summer",
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "tags": [
+      "туфли и лоферы",
+      "вечеринка",
+      "ужин",
+      "открытая пятка",
+      "ремешок",
+      "заостренный мыс"
+    ],
+    "imageUrl": "/clothes/capsule/silver-slingbacks.svg",
+    "material": "Металлизированная кожа",
+    "embeddingSnippet": "Серебристые слингбэки с острым мысом, ремешком на пятке и невысоким каблуком для вечернего выхода.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false,
+      "open_shoes": true
+    }
+  },
+  {
+    "id": "item-39",
+    "title": "Коньячные пляжные сандалии на плоской подошве",
+    "category": "shoes",
+    "color": "Коньячный",
+    "season": "spring/summer",
+    "style": [
+      "beach",
+      "casual"
+    ],
+    "tags": [
+      "сандалии",
+      "пляж",
+      "набережная",
+      "отпуск",
+      "открытый носок",
+      "плоская подошва"
+    ],
+    "imageUrl": "/clothes/capsule/tan-flat-sandals.svg",
+    "material": "Кожаные ремешки, резиновая подошва",
+    "embeddingSnippet": "Открытые сандалии с перекрестными ремешками для сухой погоды; завершают пляжный комплект с льняными шортами.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "temperature_min": 18,
+      "waterproof": false,
+      "open_shoes": true
+    }
+  },
+  {
+    "id": "item-40",
+    "title": "Черные резиновые сапоги с рифленой подошвой",
+    "category": "shoes",
+    "color": "Черный",
+    "season": "spring/summer",
+    "style": [
+      "casual"
+    ],
+    "tags": [
+      "ботинки",
+      "дождь",
+      "лужи",
+      "резиновые сапоги",
+      "без утеплителя"
+    ],
+    "imageUrl": "/clothes/capsule/black-rubber-rain-boots.svg",
+    "material": "Литая резина, текстильная подкладка",
+    "embeddingSnippet": "Цельнолитые сапоги для дождя и луж, с высоким голенищем и рифленой подошвой; без утеплителя.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": true,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "item-41",
+    "title": "Шоколадные утепленные ботинки на шнуровке",
+    "category": "shoes",
+    "color": "Шоколадный",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "sport"
+    ],
+    "tags": [
+      "ботинки",
+      "зима",
+      "снег",
+      "теплая подкладка",
+      "глубокий протектор"
+    ],
+    "imageUrl": "/clothes/capsule/brown-insulated-boots.svg",
+    "material": "Нубук, шерстяная подкладка, резиновая подошва",
+    "embeddingSnippet": "Зимние ботинки с мягкой теплой подкладкой и рельефной подошвой для сухого снега; без мембраны.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "temperature_max": 8,
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "item-42",
+    "title": "Черные лодочки на устойчивом каблуке",
+    "category": "shoes",
+    "color": "Черный",
+    "season": "all",
+    "style": [
+      "business",
+      "evening",
+      "classic"
+    ],
+    "tags": [
+      "туфли и лоферы",
+      "офис",
+      "театр",
+      "лодочки",
+      "закрытый мыс",
+      "широкий каблук"
+    ],
+    "imageUrl": "/clothes/capsule/black-block-heel-pumps.svg",
+    "material": "Гладкая кожа",
+    "embeddingSnippet": "Закрытые туфли с миндалевидным мысом и широким каблуком для офиса и вечернего выхода.",
+    "uploadedAt": "2026-11-23",
+    "weather": {
+      "waterproof": false,
+      "open_shoes": false
+    }
+  },
+  {
+    "id": "item-43",
+    "title": "Коньячная каркасная сумка с клапаном",
+    "category": "accessories",
+    "color": "Коньячный",
+    "season": "all",
+    "style": [
+      "business",
+      "smart-casual"
+    ],
+    "tags": [
+      "сумки",
+      "офис",
+      "деловая встреча",
+      "сумка-портфель",
+      "короткая ручка"
+    ],
+    "imageUrl": "/clothes/capsule/cognac-structured-satchel.svg",
+    "material": "Гладкая кожа, хлопковая подкладка",
+    "embeddingSnippet": "Каркасная сумка с прямоугольным клапаном и короткой ручкой для деловых комплектов.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-44",
+    "title": "Шалфейная сумка через плечо",
+    "category": "accessories",
+    "color": "Шалфейный",
+    "season": "all",
+    "style": [
+      "casual",
+      "minimalism"
+    ],
+    "tags": [
+      "сумки",
+      "прогулка",
+      "кросс-боди",
+      "широкий ремень",
+      "молния"
+    ],
+    "imageUrl": "/clothes/capsule/sage-crossbody.svg",
+    "material": "Плотный полиамид",
+    "embeddingSnippet": "Компактная полукруглая сумка на регулируемом широком ремне для повседневных прогулок.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-45",
+    "title": "Темно-синяя спортивная бейсболка",
+    "category": "accessories",
+    "color": "Темно-синий",
+    "season": "spring/summer",
+    "style": [
+      "sport",
+      "casual"
+    ],
+    "tags": [
+      "головные уборы",
+      "бег",
+      "козырек",
+      "тренировка",
+      "вентиляционные отверстия"
+    ],
+    "imageUrl": "/clothes/capsule/navy-sport-cap.svg",
+    "material": "Полиэстер",
+    "embeddingSnippet": "Легкая бейсболка с изогнутым козырьком и вентиляционными отверстиями для теплых дней.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-46",
+    "title": "Золотистые серьги-капли",
+    "category": "accessories",
+    "color": "Золотистый",
+    "season": "all",
+    "style": [
+      "evening",
+      "chic"
+    ],
+    "tags": [
+      "украшения и ремни",
+      "серьги",
+      "вечеринка",
+      "ужин",
+      "гладкий металл",
+      "капли"
+    ],
+    "imageUrl": "/clothes/capsule/gold-drop-earrings.svg",
+    "material": "Латунь с золотистым покрытием",
+    "embeddingSnippet": "Пара гладких серег каплевидной формы без камней для лаконичного вечернего образа.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-47",
+    "title": "Плетеная пляжная шляпа с широкими полями",
+    "category": "accessories",
+    "color": "Соломенный",
+    "season": "spring/summer",
+    "style": [
+      "beach",
+      "casual"
+    ],
+    "tags": [
+      "головные уборы",
+      "пляж",
+      "отпуск",
+      "широкие поля",
+      "плетение"
+    ],
+    "imageUrl": "/clothes/capsule/straw-sun-hat.svg",
+    "material": "Пшеничная солома, хлопковая лента",
+    "embeddingSnippet": "Соломенная шляпа с широкими полями и темной лентой для пляжа и прогулок по набережной.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-48",
+    "title": "Плетеная пляжная сумка с синими ручками",
+    "category": "accessories",
+    "color": "Песочный / Синий",
+    "season": "spring/summer",
+    "style": [
+      "beach",
+      "casual"
+    ],
+    "tags": [
+      "сумки",
+      "пляж",
+      "отпуск",
+      "корзинка",
+      "ручки",
+      "полотенце"
+    ],
+    "imageUrl": "/clothes/capsule/woven-beach-tote.svg",
+    "material": "Рафия, хлопковые ручки",
+    "embeddingSnippet": "Широкая плетеная сумка для полотенца и пляжных принадлежностей с контрастными синими ручками.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-49",
+    "title": "Рыже-клетчатый шерстяной шарф",
+    "category": "accessories",
+    "color": "Рыжий / Кремовый",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "cozy"
+    ],
+    "tags": [
+      "платки и шарфы",
+      "зима",
+      "шарф",
+      "клетка",
+      "бахрома",
+      "теплый слой"
+    ],
+    "imageUrl": "/clothes/capsule/rust-wool-scarf.svg",
+    "material": "Шерсть с полиамидом",
+    "embeddingSnippet": "Длинный шарф в широкую клетку с бахромой; теплый аксессуар к пальто или парке.",
+    "uploadedAt": "2026-11-23"
+  },
+  {
+    "id": "item-50",
+    "title": "Ягодная шапка в рубчик",
+    "category": "accessories",
+    "color": "Ягодный",
+    "season": "autumn/winter",
+    "style": [
+      "casual",
+      "cozy"
+    ],
+    "tags": [
+      "головные уборы",
+      "зима",
+      "бини",
+      "отворот",
+      "шапка",
+      "резинка"
+    ],
+    "imageUrl": "/clothes/capsule/berry-ribbed-beanie.svg",
+    "material": "Шерсть с акрилом",
+    "embeddingSnippet": "Плотная вязаная шапка с широким отворотом для зимнего комплекта с паркой.",
+    "uploadedAt": "2026-11-23"
+  }
+]

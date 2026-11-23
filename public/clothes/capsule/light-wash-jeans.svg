@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Светло-голубые джинсы свободного кроя</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e2ebf0"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#9fbad5"/>
+      <stop offset=".48" stop-color="#88aacb"/>
+      <stop offset="1" stop-color="#7696b7"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#3b5878" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M121 66Q180 72 239 66L248 121 258 317Q227 329 190 323L180 141 170 323Q133 329 102 317L112 121Z" fill="url(#fabric)" stroke="#3b5878" stroke-width="2.2"/>
+    <path d="M117 88Q180 96 243 88M176 92V133M118 137 112 312M242 137 248 312M104 311Q139 322 169 316M191 316Q222 322 256 311" fill="none" stroke="#607fa0" stroke-width="2"/>
+    <path d="M125 106H161V140L145 149 126 141ZM199 106H235L234 141 215 149 199 140Z" fill="#6f8fb0" stroke="#3b5878" stroke-width="2"/>
+    <path d="M129 112H156M204 112H230" fill="none" stroke="#607fa0" stroke-width="2"/>
+  </g>
+</svg>

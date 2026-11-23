@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Серебристые туфли с открытой пяткой</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e9eaf1"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#ced2de"/>
+      <stop offset=".48" stop-color="#c2c7d6"/>
+      <stop offset="1" stop-color="#a8aebf"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="262" rx="110" ry="8" fill="#575e75" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M64 231 102 214 137 197 166 198 207 207 239 182 261 146 273 151 282 187 278 209 273 252 260 252 257 210 232 211Q212 225 186 234L115 240Z" fill="url(#fabric)" stroke="#575e75" stroke-width="2.2"/>
+    <path d="M240 182 261 146 273 151 251 180 275 166 279 175 248 194Z" fill="#9fa4b6" stroke="#575e75" stroke-width="2"/>
+    <path d="M66 231 115 240 186 234Q212 225 232 211L258 207 260 252H273L277 224 271 212 259 228 251 225 231 220Q213 235 183 241L116 247Z" fill="#64677a" stroke="#575e75" stroke-width="2"/>
+    <path d="M104 226 137 207 170 210 199 214" fill="none" stroke="#8a90a4" stroke-width="2"/>
+  </g>
+</svg>

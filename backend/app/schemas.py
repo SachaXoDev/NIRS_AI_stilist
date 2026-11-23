@@ -105,6 +105,7 @@ class HistoryMessage(BaseModel):
 
     sender: Literal["user", "assistant"]
     text: str = Field(max_length=4000)
+    has_outfit: bool = Field(default=False, validation_alias=AliasChoices("has_outfit", "hasOutfit"))
 
 
 RetrievalMode = Literal["bm25", "dense", "hybrid", "visual", "multimodal"]
@@ -166,7 +167,7 @@ class ResponseMeta(CamelModel):
     llm_provider: str
     llm_model: str
     llm_attempts: int = 0
-    retriever: str
+    retriever: str | None = None
     wardrobe_revision: str = ""
     occasion: str = ""
     # matchScore — прозрачная эвристика, а не вероятность и не «процент совместимости» модели

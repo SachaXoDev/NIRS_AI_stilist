@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Шоколадные утепленные ботинки на шнуровке</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#eee7df"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#9a7b6a"/>
+      <stop offset=".48" stop-color="#825c47"/>
+      <stop offset="1" stop-color="#755340"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#4c362b" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M65 247Q65 227 102 219L147 205 163 186 165 122Q170 107 186 105L209 124 232 118 246 103 267 107 274 176 282 206 290 250 275 276 134 281 84 277Q65 274 65 247Z" fill="url(#fabric)" stroke="#4c362b" stroke-width="2.2"/>
+    <path d="M168 126 165 122Q170 107 186 105L209 124 232 118 246 103 267 107 270 129Q226 151 200 138L182 125Z" fill="#c3aa91" stroke="#4c362b" stroke-width="2"/>
+    <path d="M149 204 163 186 165 123Q180 118 191 132L208 188 185 222Z" fill="#704f3e" stroke="#4c362b" stroke-width="2"/>
+    <path d="M80 232Q114 225 133 250M214 205Q229 159 269 150M241 228Q260 200 281 207" fill="none" stroke="#cabbb2" stroke-width="2"/>
+    <path d="M66 246Q98 260 149 252L218 239Q254 251 288 238L290 250 275 276 267 275 266 267 251 267 250 277 229 277 226 269 210 270 207 278 188 279 186 271 170 272 167 279 149 281 145 273 129 273 125 280 107 279 103 272 89 273 86 277Q65 274 66 246Z" fill="#3f3733" stroke="#4c362b" stroke-width="2"/>
+    <path d="M177 135 197 143M175 148 202 155M172 160 204 166M170 173 207 178M166 186 204 191M159 198 192 206" fill="none" stroke="#d2bc9c" stroke-width="3"/>
+  </g>
+</svg>

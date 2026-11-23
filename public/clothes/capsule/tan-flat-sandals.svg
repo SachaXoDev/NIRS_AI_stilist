@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Коньячные пляжные сандалии на плоской подошве</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#f1e8dc"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#cda075"/>
+      <stop offset=".48" stop-color="#c18a55"/>
+      <stop offset="1" stop-color="#af7a4c"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#74472e" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M112 97Q147 95 156 135L158 188 148 243Q151 280 118 288 86 292 86 257L87 223 69 171Q54 101 112 97Z M248 97Q213 95 204 135L202 188 212 243Q209 280 242 288 274 292 274 257L273 223 291 171Q306 101 248 97Z" fill="url(#fabric)" stroke="#74472e" stroke-width="2.2"/>
+    <path d="M66 145Q105 163 149 193L153 174Q115 148 66 127Z M73 175Q119 151 153 133L147 118Q108 137 68 158Z M294 145Q255 163 211 193L207 174Q245 148 294 127Z M287 175Q241 151 207 133L213 118Q252 137 292 158Z" fill="#a87448" stroke="#74472e" stroke-width="2"/>
+    <path d="M87 242Q117 215 151 234L148 249Q115 235 87 256Z M273 242Q243 215 209 234L212 249Q245 235 273 256Z" fill="#a87448" stroke="#74472e" stroke-width="2"/>
+    <path d="M92 266Q103 287 126 277M268 266Q257 287 234 277" fill="none" stroke="#e5ceb8" stroke-width="2"/>
+  </g>
+</svg>

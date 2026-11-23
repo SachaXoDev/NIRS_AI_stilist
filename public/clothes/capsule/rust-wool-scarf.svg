@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Рыже-клетчатый шерстяной шарф</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#efe6dc"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#c2886a"/>
+      <stop offset=".48" stop-color="#b46c47"/>
+      <stop offset="1" stop-color="#a66343"/>
+    </linearGradient>
+    <clipPath id="silhouette">
+      <path d="M116 294 132 177Q111 140 126 108 144 74 179 73 224 74 235 111 246 141 224 173L239 274 194 282 179 207 166 302Z"/>
+    </clipPath>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#784638" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M116 294 132 177Q111 140 126 108 144 74 179 73 224 74 235 111 246 141 224 173L239 274 194 282 179 207 166 302Z" fill="url(#fabric)" stroke="#784638" stroke-width="2.2"/>
+    <path d="M145 74 130 308M166 73 150 302M205 73 224 301M226 76 245 299M109 123H251M110 149H240M110 186H241M109 226H243M109 264H246" fill="none" stroke="#f4d5ad" stroke-width="8" clip-path="url(#silhouette)" opacity=".78"/>
+    <path d="M133 176Q158 211 179 207 202 200 224 173M116 294 113 311M127 296 124 313M138 297 135 314M149 299 146 316M160 301 157 318M195 281 198 297M206 280 209 296M217 278 220 294M228 276 231 292M238 274 241 290" fill="none" stroke="#784638" stroke-width="2"/>
+    <path d="M116 294 132 177Q111 140 126 108 144 74 179 73 224 74 235 111 246 141 224 173L239 274 194 282 179 207 166 302Z" fill="none" stroke="#784638" stroke-width="2.2"/>
+  </g>
+</svg>

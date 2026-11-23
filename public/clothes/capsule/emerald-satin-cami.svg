@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Изумрудный атласный топ на бретелях</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e3eee5"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#428e79"/>
+      <stop offset=".48" stop-color="#167359"/>
+      <stop offset="1" stop-color="#156651"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#113b36" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M139 132 145 89Q147 82 153 89L157 125Q180 147 204 124L208 89Q213 83 217 90L222 133Q223 153 230 169L222 214 234 282Q180 310 126 286L139 215 130 169Q139 151 139 132Z" fill="url(#fabric)" stroke="#113b36" stroke-width="2.2"/>
+    <path d="M138 139Q179 173 222 138M136 155Q176 181 227 155M141 182Q170 196 215 169M228 276Q178 298 132 281" fill="none" stroke="#9dc4b9" stroke-width="2"/>
+  </g>
+</svg>

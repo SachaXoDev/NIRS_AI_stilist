@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import type { WardrobeItem, ChatMessage, ChatThread, UserAccount, OutfitLook } from './types';
 import { INITIAL_WARDROBE } from './data/initialWardrobe';
+import capsuleExtra from '../rag/data/wardrobe_capsule_extra.json';
 import { INITIAL_CHAT_THREADS } from './data/initialChats';
 import { askStylist } from './services/stylistApi';
 import { getCurrentUser, logoutUser } from './services/authService';
@@ -15,6 +16,8 @@ import { GuestExitModal } from './components/GuestExitModal';
 import { SavedOutfitsView } from './components/SavedOutfitsView';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
+
+const BASE_CAPSULE: WardrobeItem[] = [...INITIAL_WARDROBE, ...(capsuleExtra as WardrobeItem[])];
 
 const WARDROBE_STORAGE_PREFIX = 'closet_wardrobe_user_';
 const THREADS_STORAGE_PREFIX = 'closet_threads_user_';
@@ -115,7 +118,7 @@ function loadUserWardrobe(user: UserAccount | null): WardrobeItem[] {
         console.error('Failed to parse wardrobe', e);
       }
     }
-    return INITIAL_WARDROBE;
+    return BASE_CAPSULE;
   }
 
   const key = getUserWardrobeKey(user.id);
@@ -394,7 +397,11 @@ function MainApp() {
   };
 
   const handleRestoreDefaultCapsule = () => {
-    setWardrobe(INITIAL_WARDROBE);
+    setWardrobe((current) => {
+      const existing = new Set(current.map((item) => item.id));
+      const additions = BASE_CAPSULE.filter((item) => !existing.has(item.id));
+      return additions.length ? [...current, ...additions] : current;
+    });
   };
 
   const activeThread = threads.find((t) => t.id === activeThreadId) || threads[0];
@@ -462,7 +469,7 @@ function MainApp() {
     setDrafts({});
   };
 
-  const requestReply = async (threadId: string, text: string) => {
+  const requestReply = async (threadId: string, text: string, history: ChatMessage[] = []) => {
     const requests = requestsRef.current;
     const controller = new AbortController();
     requests.set(threadId, controller);
@@ -485,6 +492,13 @@ function MainApp() {
       const response = await askStylist(text, wardrobe, undefined, {
         userId: currentUser?.id,
         signal: controller.signal,
+        history: history.slice(-12).map(({ sender, text, suggestedOutfit }) => ({
+          sender,
+          text: suggestedOutfit
+            ? `${text.slice(0, 200)}\nВ образе: ${suggestedOutfit.items.map((item) => item.title).join(', ')}`.slice(0, 500)
+            : text.slice(0, 500),
+          hasOutfit: Boolean(suggestedOutfit),
+        })),
         onText: (partial) => {
           if (!controller.signal.aborted) {
             setDrafts((prev) => ({ ...prev, [threadId]: { ...draft, text: partial } }));
@@ -511,8 +525,8 @@ function MainApp() {
   };
 
   const handleSendMessage = (text: string) => {
-    const currentId = activeThread?.id;
-    if (!currentId || requestsRef.current.has(currentId)) return;
+    if (!activeThread || requestsRef.current.has(activeThread.id)) return;
+    const currentId = activeThread.id;
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const userMsg: ChatMessage = {
@@ -543,7 +557,7 @@ function MainApp() {
       })
     );
 
-    void requestReply(currentId, text);
+    void requestReply(currentId, text, activeThread.messages);
   };
 
   const handleAddItem = (item: WardrobeItem) => {

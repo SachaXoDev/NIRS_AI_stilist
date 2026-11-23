@@ -28,6 +28,7 @@ def build_llm(settings: Settings) -> LLMClient:
             model=settings.llm_model,
             timeout_s=settings.llm_timeout_s,
             json_mode=settings.llm_json_mode,
+            outfit_schema=settings.llm_outfit_schema,
             extra_body=_extra_body(settings.llm_extra_body),
         )
     return MockLLM(stream_delay_s=settings.mock_stream_delay_s)

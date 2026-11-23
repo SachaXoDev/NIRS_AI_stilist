@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Черные резиновые сапоги с рифленой подошвой</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e5e9ea"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#595e62"/>
+      <stop offset=".48" stop-color="#32383d"/>
+      <stop offset="1" stop-color="#2d3339"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#1d252b" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M78 275Q76 256 100 246L146 230Q156 222 156 210L151 90Q149 76 170 75L246 78Q259 79 259 91L250 199 270 247 272 285 259 299H220L214 288 198 300 99 300Q78 295 78 275Z" fill="url(#fabric)" stroke="#1d252b" stroke-width="2.2"/>
+    <path d="M152 93Q205 111 258 94L259 91Q259 79 246 78L170 75Q149 76 152 93Z" fill="#2b3237" stroke="#1d252b" stroke-width="2"/>
+    <path d="M253 199Q231 222 231 279L266 281 270 247Z" fill="#2b3237" stroke="none" stroke-width="2"/>
+    <path d="M161 105 168 221Q164 245 131 252M244 108 235 198M84 273Q112 285 189 272" fill="none" stroke="#a9abae" stroke-width="2"/>
+    <path d="M79 281Q105 295 205 280L219 271 271 273 272 285 259 299H220L214 288 198 300H99Q83 299 79 281Z" fill="#23292d" stroke="#1d252b" stroke-width="2"/>
+    <path d="M106 291V299M124 291V299M142 291V299M160 290V299M178 288V299M230 282V298M249 280V298" fill="none" stroke="#838787" stroke-width="2"/>
+  </g>
+</svg>

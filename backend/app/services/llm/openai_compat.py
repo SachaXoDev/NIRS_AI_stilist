@@ -11,7 +11,7 @@ from typing import Any, AsyncIterator
 import httpx
 
 from app.services.llm.base import LLMError, Messages
-from app.services.prompts import PromptContext
+from app.services.prompts import PromptContext, outfit_response_schema
 
 
 class OpenAICompatLLM:
@@ -25,6 +25,7 @@ class OpenAICompatLLM:
         model: str,
         timeout_s: float = 30.0,
         json_mode: bool = True,
+        outfit_schema: bool = False,
         extra_body: dict[str, Any] | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
@@ -35,10 +36,13 @@ class OpenAICompatLLM:
             self._headers["Authorization"] = f"Bearer {api_key}"
         self._timeout = httpx.Timeout(timeout_s, connect=min(10.0, timeout_s))
         self._json_mode = json_mode
+        self._outfit_schema = outfit_schema
         self._extra_body = dict(extra_body or {})
         self._transport = transport
 
-    def _payload(self, messages: Messages, temperature: float, stream: bool) -> dict[str, Any]:
+    def _payload(
+        self, messages: Messages, temperature: float, stream: bool, context: PromptContext | None,
+    ) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.model,
             "messages": messages,
@@ -48,18 +52,23 @@ class OpenAICompatLLM:
         if self._json_mode:
             payload["response_format"] = {"type": "json_object"}
         payload.update(self._extra_body)
+        if self._outfit_schema and context is not None:
+            payload["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {"name": "stylist_outfit", "schema": outfit_response_schema(context.outcome)},
+            }
         return payload
 
     def _client(self) -> httpx.AsyncClient:
         return httpx.AsyncClient(timeout=self._timeout, transport=self._transport)
 
     async def complete(
-        self, messages: Messages, *, context: PromptContext, temperature: float
+        self, messages: Messages, *, context: PromptContext | None, temperature: float
     ) -> str:
         try:
             async with self._client() as client:
                 response = await client.post(
-                    self._url, headers=self._headers, json=self._payload(messages, temperature, False)
+                    self._url, headers=self._headers, json=self._payload(messages, temperature, False, context)
                 )
                 response.raise_for_status()
                 data = response.json()
@@ -73,7 +82,7 @@ class OpenAICompatLLM:
         return content
 
     async def stream(
-        self, messages: Messages, *, context: PromptContext, temperature: float
+        self, messages: Messages, *, context: PromptContext | None, temperature: float
     ) -> AsyncIterator[str]:
         try:
             async with self._client() as client:
@@ -81,7 +90,7 @@ class OpenAICompatLLM:
                     "POST",
                     self._url,
                     headers=self._headers,
-                    json=self._payload(messages, temperature, True),
+                    json=self._payload(messages, temperature, True, context),
                 ) as response:
                     if response.status_code >= 400:
                         body = (await response.aread()).decode("utf-8", "replace")

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Сиреневая беговая футболка</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#eee9f9"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#c5b2e2"/>
+      <stop offset=".48" stop-color="#b7a0db"/>
+      <stop offset="1" stop-color="#a08ac1"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#59466f" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M120 107 155 95Q180 112 205 95L240 107 271 155 239 177 224 159 230 283Q184 300 130 287L136 159 121 177 89 155Z" fill="url(#fabric)" stroke="#59466f" stroke-width="2.2"/>
+    <path d="M121 177 136 159 145 150 143 252 132 270 136 159ZM239 177 224 159 215 150 217 252 228 270 224 159Z" fill="#9882b7" stroke="none" stroke-width="2"/>
+    <path d="M156 99Q180 124 204 99M97 155 125 171M263 155 235 171M137 280Q186 289 225 278" fill="none" stroke="#8671a3" stroke-width="2"/>
+  </g>
+</svg>

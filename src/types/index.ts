@@ -110,6 +110,12 @@ export interface ChatMessage {
   isThinking?: boolean;
 }
 
+export interface StylistHistoryMessage {
+  sender: ChatMessage['sender'];
+  text: string;
+  hasOutfit?: boolean;
+}
+
 export interface ChatThread {
   id: string;
   title: string;

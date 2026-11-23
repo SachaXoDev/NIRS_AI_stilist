@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Оливковые чиносы с подворотами</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e7ebe0"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#9ea583"/>
+      <stop offset=".48" stop-color="#879066"/>
+      <stop offset="1" stop-color="#78825c"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#4a543e" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M124 76Q180 82 236 76L240 129 223 307 192 307 180 150 168 307H137L120 129Z" fill="url(#fabric)" stroke="#4a543e" stroke-width="2.2"/>
+    <path d="M135 291H170L168 307H137ZM190 291H225L223 307H192Z" fill="#737c59" stroke="#4a543e" stroke-width="2"/>
+    <path d="M122 94Q180 101 238 94M146 98 124 133M214 98 236 133M182 98V137M144 141 153 285M216 141 207 285" fill="none" stroke="#cdd0bf" stroke-width="2"/>
+    <circle cx="181" cy="86" r="3" fill="#cdd0bf"/>
+  </g>
+</svg>

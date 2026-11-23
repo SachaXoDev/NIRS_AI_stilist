@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Синие беговые кроссовки с сеткой</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e4ecf8"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#6c92c9"/>
+      <stop offset=".48" stop-color="#4979bc"/>
+      <stop offset="1" stop-color="#3f6ba8"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="262" rx="110" ry="8" fill="#203e67" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M57 228Q66 204 115 199L151 185 185 149 213 157 235 177 256 171 283 152 299 165 299 226 283 248Q266 264 206 256L94 254Q59 251 57 228Z" fill="url(#fabric)" stroke="#203e67" stroke-width="2.2"/>
+    <path d="M58 224Q105 238 168 225L216 219Q260 239 298 213L299 226 283 248Q266 264 206 256L94 254Q59 251 58 224Z" fill="#f0f1eb" stroke="#203e67" stroke-width="2"/>
+    <path d="M67 245 102 249 216 249Q265 264 291 236L283 248Q266 264 206 256L94 254Z" fill="#233b55" stroke="#203e67" stroke-width="2"/>
+    <path d="M120 199 151 185 185 149 199 165 168 200 209 197 222 215 165 225 135 220Z" fill="#3b66a0" stroke="none" stroke-width="2"/>
+    <path d="M245 177 226 199 236 217 280 210 296 174M68 234Q98 242 133 239M232 244Q270 251 287 232" fill="none" stroke="#b3c7e3" stroke-width="2"/>
+    <path d="M181 160 205 173M173 169 198 182M164 178 191 191M152 188 181 200" fill="none" stroke="#e7eefa" stroke-width="3.5"/>
+  </g>
+</svg>

@@ -19,6 +19,13 @@ class OccasionSpec:
 
 OCCASIONS: tuple[OccasionSpec, ...] = (
     OccasionSpec(
+        key="beach",
+        label="Пляж",
+        stems=("пляж", "beach"),
+        styles=frozenset({"beach", "пляж"}),
+        expansion=("пляж", "летний", "легкий", "сандалии"),
+    ),
+    OccasionSpec(
         key="business",
         label="Деловой выход",
         stems=("работ", "офис", "делов", "встреч", "презентац", "собеседован", "переговор",
@@ -98,6 +105,65 @@ COOL_MAX_C = 17
 HOT_MIN_C = 24
 
 
+_SMALL_TALK_REPLIES = {
+    **dict.fromkeys(
+        ("привет", "приветик", "здравствуй", "здравствуйте", "добрый день", "доброе утро", "добрый вечер"),
+        "Здравствуйте! Для какого повода или погоды подбираем образ?",
+    ),
+    **dict.fromkeys(
+        ("спасибо", "большое спасибо", "спасибо большое", "благодарю", "благодарю вас"),
+        "Пожалуйста! Если понадобится ещё один образ, обращайтесь.",
+    ),
+}
+
+
+def small_talk_reply(query: str) -> str | None:
+    """Распознаём только отдельную реплику, не начало запроса на подбор."""
+    phrase = " ".join(normalize(query).strip(" \t\r\n.!?,…").split())
+    return _SMALL_TALK_REPLIES.get(phrase)
+
+
+_ADVICE_RE = re.compile(r"\b(?:что такое|как (?:носить|сочетать|выбрать)|с чем носить|какие? (?:цвета|тренды)|объясни\w*|расскажи\w*)\b")
+_WARDROBE_RE = re.compile(r"\b(?:из (?:моих вещей|моей капсулы|(?:моего )?гардероба)|в мо[её]м гардеробе)\b")
+_OUTFIT_RE = re.compile(
+    r"\b(?:(?:собери\w*|подбери\w*|составь\w*|предложи\w*)[^.!?]*\b(?:образ\w*|лук\w*|комплект\w*|аутфит\w*)"
+    r"|(?:что|как) (?:надеть|одеться)|(?:образ|лук|комплект|аутфит)(?:\s+(?:в|для|на|под|к)\b|[.!?]*$))"
+)
+_REVISION_RE = re.compile(
+    r"\b(?:потеплее|полегче|прохладнее|теплее|наряднее|строже|попроще|удобнее|сделай его|замени\w*|"
+    r"другой (?:образ|вариант)|еще (?:один |вариант)|а если|а на|а в|а для|а без)\b"
+)
+_WARMER_RE = re.compile(r"\b(?:потеплее|теплее|добавь\w* (?:слой|пальто|тренч|куртку))\b")
+
+
+def is_outfit_query(query: str) -> bool:
+    """Совет по стилю не означает подбор из гардероба."""
+    text = normalize(query)
+    if small_talk_reply(query):
+        return False
+    if _WARDROBE_RE.search(text) or _OUTFIT_RE.search(text):
+        return True
+    if _ADVICE_RE.search(text):
+        return False
+    return _detect_temperature(text) is not None or any(
+        _has_stem(text, stem) for stems in WEATHER_STEMS.values() for stem in stems
+    )
+
+
+def outfit_revision(query: str, prior_request: str | None) -> tuple[str | None, bool]:
+    """Для короткой правки сохраняем повод, если пользователь его не менял."""
+    text = normalize(query)
+    if not prior_request or _ADVICE_RE.search(text) or not _REVISION_RE.search(text):
+        return None, False
+    occasion = _detect_occasion(text) or _detect_occasion(normalize(prior_request))
+    return occasion, bool(_WARMER_RE.search(text))
+
+
+def is_outfit_revision(query: str) -> bool:
+    text = normalize(query)
+    return bool(_REVISION_RE.search(text)) and not _ADVICE_RE.search(text)
+
+
 @dataclass
 class QueryAnalysis:
     occasion: str = DEFAULT_OCCASION
@@ -150,6 +216,8 @@ def _has_stem(text: str, stem: str) -> bool:
 
 
 def _detect_occasion(text: str) -> str | None:
+    if any(_has_stem(text, stem) for stem in OCCASION_BY_KEY["beach"].stems):
+        return "beach"
     best_key, best_hits = None, 0
     for spec in OCCASIONS:  # порядок в OCCASIONS задаёт приоритет при равенстве
         hits = sum(1 for s in spec.stems if _has_stem(text, s))
@@ -186,12 +254,12 @@ def analyze_query(
     wardrobe: list[WardrobeItem] | None = None,
 ) -> QueryAnalysis:
     query_text = normalize(query)
-    ctx_occasion = normalize(context.occasion) if context and context.occasion else ""
+    ctx_occasion = normalize(context.occasion).strip() if context and context.occasion else ""
     ctx_weather = normalize(context.weather) if context and context.weather else ""
 
     # Явный контекст из UI важнее, чем эвристика по тексту запроса.
     occasion = (
-        (_detect_occasion(ctx_occasion) if ctx_occasion else None)
+        (ctx_occasion if ctx_occasion in OCCASION_BY_KEY else _detect_occasion(ctx_occasion))
         or _detect_occasion(query_text)
         or DEFAULT_OCCASION
     )

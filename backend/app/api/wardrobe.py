@@ -13,7 +13,7 @@ from app.api.deps import get_service
 from app.rag.base import RagEngineError
 from app.schemas import WardrobeItem, WardrobeResponse, WardrobeSyncRequest
 from app.services.orchestrator import StylistService
-from app.storage.app_store import load_wardrobe_file
+from app.storage.app_store import load_base_capsule
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/wardrobe", tags=["wardrobe"])
@@ -49,4 +49,4 @@ async def get_wardrobe(
 
 @router.get("/base-capsule", response_model=list[WardrobeItem], summary="Базовая капсула бренда")
 def base_capsule() -> list[WardrobeItem]:
-    return load_wardrobe_file()
+    return load_base_capsule()

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Бордовые дерби на низком каблуке</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#efe5e8"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#8e5f73"/>
+      <stop offset=".48" stop-color="#743952"/>
+      <stop offset="1" stop-color="#6a334b"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="262" rx="110" ry="8" fill="#4c2235" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M78 235Q82 207 123 201L157 194 199 155Q205 147 219 160L231 172Q245 179 278 162L285 181 289 236 269 250H220L216 237 157 247 94 247Q80 247 78 235Z" fill="url(#fabric)" stroke="#4c2235" stroke-width="2.2"/>
+    <path d="M79 231Q115 240 159 230L216 223Q257 227 288 218L289 236 269 250H220L216 237 157 247 94 247Q80 247 79 231Z" fill="#352830" stroke="#4c2235" stroke-width="2"/>
+    <path d="M106 207Q143 213 148 231M214 161 232 191 218 222M177 179 206 195M165 188 188 204M240 203Q267 202 283 188" fill="none" stroke="#c5acb6" stroke-width="2"/>
+    <path d="M193 168 220 182M186 176 211 189M178 183 202 196" fill="none" stroke="#c0a3a9" stroke-width="2.5"/>
+  </g>
+</svg>

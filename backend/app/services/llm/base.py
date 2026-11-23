@@ -17,13 +17,13 @@ class LLMClient(Protocol):
     model: str
 
     async def complete(
-        self, messages: Messages, *, context: PromptContext, temperature: float
+        self, messages: Messages, *, context: PromptContext | None, temperature: float
     ) -> str:
         """Вернуть сырой текст ответа модели (ожидается JSON)."""
         ...
 
     def stream(
-        self, messages: Messages, *, context: PromptContext, temperature: float
+        self, messages: Messages, *, context: PromptContext | None, temperature: float
     ) -> AsyncIterator[str]:
         """То же, но чанками по мере генерации."""
         ...

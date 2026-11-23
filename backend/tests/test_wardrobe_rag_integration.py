@@ -168,6 +168,26 @@ def test_stream_sends_retrieval_diagnostics_before_text(make_client, rag_engine)
     assert dict(events)["result"]["suggestedOutfit"]
 
 
+@pytest.mark.parametrize("has_sandals", [True, False])
+def test_hot_beach_outfit_excludes_closed_shoes(make_client, rag_engine, has_sandals):
+    beach_ids = ["item-18", "item-27", "item-39"]
+    llm = ScriptedLLM([_answer(["item-18", "item-27", "item-40"]), _answer(beach_ids)])
+    client = make_client(engine=rag_engine, llm=llm)
+    ids = {"item-18", "item-27", "item-40", "item-24", "item-5"}
+    if has_sandals:
+        ids.add("item-39")
+    wardrobe = [item for item in client.get("/api/wardrobe/base-capsule").json() if item["id"] in ids]
+    result = _recommend(client, query="Подбери образ для пляжа в жару при +30°C",
+                        wardrobe=wardrobe, anchor_item_id="item-40", user_id="test-beach", debug=True)
+    assert result["retrieval"]["context"]["occasion"] == "beach"
+    if has_sandals:
+        assert result["source"] == "llm" and result["referencedItemIds"] == beach_ids
+        assert result["meta"]["llmAttempts"] == 2
+    else:
+        assert result["source"] == "none" and result["missingSlots"] == ["shoes"]
+        assert "suggestedOutfit" not in result and not llm.calls
+
+
 def test_engine_is_built_from_settings_like_in_integration_md(settings, tmp_path, monkeypatch):
     """Проверяем проводку `from_settings` (пути, аргументы конструкторов) без скачивания весов."""
     import wardrobe_rag.embedding as embedding

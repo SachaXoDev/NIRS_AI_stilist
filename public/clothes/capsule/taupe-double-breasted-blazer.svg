@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Двубортный жакет оттенка тауп</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#ede7df"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#b3a194"/>
+      <stop offset=".48" stop-color="#a18b7b"/>
+      <stop offset="1" stop-color="#8f7a6a"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#574535" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M117 105 156 90H204L243 105 263 138 275 281 242 285 224 171 229 306Q200 315 178 300 157 315 131 306L136 171 118 285 85 281 97 138Z" fill="url(#fabric)" stroke="#574535" stroke-width="2.2"/>
+    <path d="M142 97 159 90 186 155 172 222 127 126 146 126ZM218 97 201 90 186 155 172 222 233 126 214 126Z" fill="#897464" stroke="#574535" stroke-width="2"/>
+    <path d="M173 221 171 303M141 246 163 243M199 241 220 244M88 268 119 273M241 273 272 268" fill="none" stroke="#d8cec8" stroke-width="2"/>
+    <circle cx="183" cy="206" r="3" fill="#574535"/>
+    <circle cx="183" cy="229" r="3" fill="#574535"/>
+    <circle cx="183" cy="252" r="3" fill="#574535"/>
+    <circle cx="200" cy="206" r="3" fill="#574535"/>
+    <circle cx="200" cy="229" r="3" fill="#574535"/>
+    <circle cx="200" cy="252" r="3" fill="#574535"/>
+  </g>
+</svg>

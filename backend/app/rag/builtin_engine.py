@@ -226,7 +226,7 @@ class BuiltinEngine:
 
         required = list(CORE_SLOTS)
         rain = "rain" in analysis.weather
-        if rain or (analysis.temperature_c is not None and analysis.temperature_c <= 12):
+        if query.require_outerwear or rain or (analysis.temperature_c is not None and analysis.temperature_c <= 12):
             required.append("outerwear")
         missing = [slot for slot in required if not candidates_by_slot.get(slot)]
         if missing:

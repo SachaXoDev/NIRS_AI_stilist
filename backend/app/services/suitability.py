@@ -1,0 +1,45 @@
+"""Консервативные продуктовые правила; исследовательский поиск не меняется."""
+from __future__ import annotations
+
+from app.schemas import WardrobeItem
+from app.services.analysis import QueryAnalysis
+from app.services.textutils import normalize
+
+
+def unsuitable_reason(item: WardrobeItem, analysis: QueryAnalysis) -> str | None:
+    facts = item.weather
+    temperature = analysis.temperature_c
+    if facts and temperature is not None:
+        if facts.temperature_min is not None and temperature < facts.temperature_min:
+            return "ниже указанного для вещи диапазона температур"
+        if facts.temperature_max is not None and temperature > facts.temperature_max:
+            return "выше указанного для вещи диапазона температур"
+    if facts and item.category in {"shoes", "outerwear"}:
+        if "rain" in analysis.weather and facts.waterproof is False:
+            return "не подходит для дождя по данным вещи"
+        if item.category == "shoes" and facts.open_shoes and (
+            analysis.is_cold or "rain" in analysis.weather
+        ):
+            return "открытая обувь не подходит для холода или дождя"
+    if analysis.is_hot and item.season == "autumn/winter" and item.category != "accessories":
+        return "вещь зимнего сезона для жаркой погоды"
+
+    if analysis.occasion == "beach":
+        # Уместность для пляжа нельзя вывести из наличия обязательных слотов.
+        # Используем явную разметку или название, но не embeddingSnippet: там могут
+        # упоминаться другие вещи. Для пляжной обуви нужна открытая пара.
+        labels = [normalize(value).strip() for value in [item.title, *item.tags, *item.style]]
+        beach = any("пляж" in label or label == "beach" for label in labels)
+        if item.category == "shoes":
+            if facts and facts.open_shoes is False:
+                return "закрытая обувь для пляжа"
+            if not any(
+                word.startswith(("сандал", "босонож", "сланц", "вьетнам", "шлепан"))
+                for label in labels for word in label.split()
+            ) and not (facts and facts.open_shoes and beach):
+                return "нет признаков пляжной обуви"
+        elif not beach:
+            return "нет признаков пляжной вещи"
+        if item.season == "autumn/winter":
+            return "зимняя вещь для пляжа"
+    return None

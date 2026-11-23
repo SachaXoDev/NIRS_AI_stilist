@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Коралловая пляжная рубашка из льна</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#f8e9de"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#efa28f"/>
+      <stop offset=".48" stop-color="#eb8c75"/>
+      <stop offset="1" stop-color="#d47c68"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#8a483d" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M117 108 148 91 163 86H196L211 91 243 108 274 172 235 190 225 168 232 291Q218 309 181 301 142 312 128 291L135 168 125 190 86 172Z" fill="url(#fabric)" stroke="#8a483d" stroke-width="2.2"/>
+    <path d="M151 90 137 105 150 135 179 113 210 135 223 105 209 90 180 102Z" fill="#cb7663" stroke="#8a483d" stroke-width="2"/>
+    <path d="M180 114V300M198 151H219V177H198ZM92 167 126 183M268 167 234 183M140 238 136 286M223 244 227 287" fill="none" stroke="#b96958" stroke-width="2"/>
+    <circle cx="186" cy="148" r="3" fill="#8a483d"/>
+    <circle cx="186" cy="175" r="3" fill="#8a483d"/>
+    <circle cx="186" cy="202" r="3" fill="#8a483d"/>
+    <circle cx="186" cy="229" r="3" fill="#8a483d"/>
+    <circle cx="186" cy="256" r="3" fill="#8a483d"/>
+    <circle cx="186" cy="283" r="3" fill="#8a483d"/>
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Голубая рубашка из поплина</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e0ecf2"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#b5d2ea"/>
+      <stop offset=".48" stop-color="#a4c8e5"/>
+      <stop offset="1" stop-color="#8aaccb"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#385577" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M121 98 155 86H205L239 98 266 123 286 267 256 274 234 158 238 302Q180 314 122 302L126 158 104 274 74 267 94 123Z" fill="url(#fabric)" stroke="#385577" stroke-width="2.2"/>
+    <path d="M156 86 139 96 153 127 180 107 207 127 221 96 204 86 180 102Z" fill="#80a2c1" stroke="#385577" stroke-width="2"/>
+    <path d="M180 108V308M77 255 101 259M259 259 283 255M195 147H221V175Q208 181 195 175Z" fill="none" stroke="#6c8cac" stroke-width="2"/>
+    <circle cx="186" cy="128" r="3" fill="#385577"/>
+    <circle cx="186" cy="153" r="3" fill="#385577"/>
+    <circle cx="186" cy="178" r="3" fill="#385577"/>
+    <circle cx="186" cy="203" r="3" fill="#385577"/>
+    <circle cx="186" cy="228" r="3" fill="#385577"/>
+    <circle cx="186" cy="253" r="3" fill="#385577"/>
+    <circle cx="186" cy="278" r="3" fill="#385577"/>
+  </g>
+</svg>

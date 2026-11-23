@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-23T12:48:20.847877+00:00",
+  "dataset": {
+    "schema_version": 1,
+    "split": "real_photo_cross_view_instance_smoke",
+    "user_id": "photo-pilot",
+    "corpus": "corpus.json",
+    "mrr_k": 3,
+    "required_slots": [
+      "outerwear"
+    ],
+    "provenance": {
+      "kind": "separate_real_photos_same_instance",
+      "annotation_status": "identity_labels_from_museum_accessions",
+      "images": "provenance.json",
+      "limitations": "Four historical museum coats in one slot. This measures cross-view instance matching, not semantic generalization, street-photo robustness, or outfit quality. Query and index are separate photographs but can share a studio setup and photographer. Interpret Hit@1 and per-query ranks; the default retriever returns only two outerwear candidates, so Hit@3 effectively measures Hit@2 and MRR@3 only sees those two ranks."
+    }
+  },
+  "query_count": 4,
+  "repeats": 1,
+  "warmup_per_query_mode": 0,
+  "mrr_k": 3,
+  "latency_protocol": "Serial in-process wall-clock retrieval only, after declared warmups. No LLM, UI, indexing or model initialization included.",
+  "statistical_unit": "Query-slot pairs; repeated calls are repeated measurements, not independent new queries.",
+  "runtime": {
+    "python": "3.12.0",
+    "system": "macOS-15.3.2-arm64-arm-64bit"
+  },
+  "metadata": {
+    "initialization_and_sync_ms": 32402.76049997192,
+    "sync": {
+      "user_id": "photo-pilot",
+      "revision": "7b34ef4f07f4081fb31c8d6a5c55ebb5d9d51185888d7ab6aa6adc90c85422a9",
+      "indexed_count": 4,
+      "image_count": 4,
+      "added_count": 4,
+      "updated_count": 0,
+      "deleted_count": 0,
+      "unchanged_count": 0,
+      "warnings": [],
+      "timings_ms": {
+        "prepare_ms": 24717.88683399791,
+        "text_embedding_ms": 3499.4734170031734,
+        "image_embedding_ms": 2573.067124991212,
+        "persist_ms": 131.1989160021767,
+        "total_ms": 30922.29216702981
+      }
+    },
+    "models": {
+      "models": {
+        "text": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+        "image": "sentence-transformers/clip-ViT-B-32",
+        "visual_text": "sentence-transformers/clip-ViT-B-32-multilingual-v1"
+      },
+      "revisions": {
+        "text": "4328cf26390c98c5e3c738b4460a05b95f4911f5",
+        "image": "327ab6726d33c0e22f920c83f2ff9e4bd38ca37f",
+        "visual_text": "58edf8cada9e398793dca955574a48cbb7f18be2"
+      },
+      "device": "cpu",
+      "offline": true
+    },
+    "model_fingerprint": "3dd91d47be2542103e17e84332216e8869bfd003b55dcba16c8186264cb34f50",
+    "python": "3.12.0 (v3.12.0:0fb18b02c8, Oct  2 2023, 09:45:56) [Clang 13.0.0 (clang-1300.0.29.30)]",
+    "platform": "macOS-15.3.2-arm64-arm-64bit",
+    "corpus_file": "corpus.json",
+    "cpu": "arm",
+    "logical_cpus": 8,
+    "omp_threads": "2",
+    "mkl_threads": null,
+    "packages": {
+      "wardrobe-rag": "0.1.0",
+      "chromadb": "1.5.9",
+      "rank-bm25": "0.2.2",
+      "sentence-transformers": "5.7.0",
+      "transformers": "5.24.0",
+      "torch": "2.15.0",
+      "torchvision": "0.29.2",
+      "resvg-py": "0.5.0"
+    },
+    "corpus_revision": "7b34ef4f07f4081fb31c8d6a5c55ebb5d9d51185888d7ab6aa6adc90c85422a9"
+  },
+  "modes": {
+    "visual": {
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "mrr@3": 1.0
+      },
+      "pooled_metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "mrr@3": 1.0
+      },
+      "by_slot": {
+        "outerwear": {
+          "hit_rate@1": 1.0,
+          "hit_rate@3": 1.0,
+          "mrr@3": 1.0
+        }
+      },
+      "full_slot_coverage": {
+        "@1": 1.0,
+        "@3": 1.0
+      },
+      "candidate_slot_coverage_with_fallback": 1.0,
+      "query_slot_pairs": 4,
+      "retrieval_calls": 4,
+      "latency_ms": {
+        "samples": 4,
+        "median": 420.5652915115934,
+        "p95": 1653.6408607120388,
+        "mean": 676.1439480033005,
+        "minimum": 53.50404197815806,
+        "maximum": 1809.941167011857
+      },
+      "component_timings_ms": {
+        "model_prepare": {
+          "samples": 4,
+          "median": 0.15845851157791913,
+          "p95": 0.34069733228534455,
+          "mean": 0.1730519870761782,
+          "minimum": 0.01962494570761919,
+          "maximum": 0.35566597944125533
+        },
+        "embedding_visual": {
+          "samples": 4,
+          "median": 413.2449169701431,
+          "p95": 1539.2203187831906,
+          "mean": 638.7677709863055,
+          "minimum": 51.32674996275455,
+          "maximum": 1677.2545000421815
+        },
+        "visual_search": {
+          "samples": 4,
+          "median": 4.089666472282261,
+          "p95": 18.15922230598516,
+          "mean": 7.455541242961772,
+          "minimum": 1.4345410163514316,
+          "maximum": 20.208291010931134
+        },
+        "fusion_constraints": {
+          "samples": 4,
+          "median": 0.18699996871873736,
+          "p95": 0.8147561515215782,
+          "mean": 0.3355937369633466,
+          "minimum": 0.04912511212751269,
+          "maximum": 0.919249898288399
+        },
+        "total": {
+          "samples": 4,
+          "median": 419.16368799866177,
+          "p95": 1651.0374375822717,
+          "mean": 674.7081460052868,
+          "minimum": 53.26645798049867,
+          "maximum": 1807.2387500433251
+        }
+      },
+      "first_observed_call_ms": 1809.941167011857,
+      "warnings": []
+    }
+  },
+  "dataset_sha256": "4ff02cf6b8cf737731f35cb8923d266a3c34f3909e3de268b6df312cafed2503",
+  "corpus_sha256": "1428822e8c1d13e72e76b08dcab46c4cf48b2f82b1764da72e32844c23d4a4fb"
+}

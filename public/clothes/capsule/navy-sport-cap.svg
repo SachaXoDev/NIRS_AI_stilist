@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Темно-синяя спортивная бейсболка</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e6ebf3"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#647597"/>
+      <stop offset=".48" stop-color="#40557e"/>
+      <stop offset="1" stop-color="#3a4e74"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="300" rx="97" ry="8" fill="#253654" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M53 226Q59 211 97 194L141 183Q144 156 168 133 197 105 232 111 276 116 296 173L301 209Q279 236 217 232L160 225Q119 240 82 243 56 242 53 226Z" fill="url(#fabric)" stroke="#253654" stroke-width="2.2"/>
+    <path d="M53 226Q59 211 97 194L141 183Q152 202 179 213L160 225Q119 240 82 243 56 242 53 226Z" fill="#374b70" stroke="#253654" stroke-width="2"/>
+    <path d="M145 180Q184 217 295 200M160 148Q177 129 201 120 228 130 239 205M215 118Q253 123 268 200M60 228Q88 232 132 215" fill="none" stroke="#afb8c9" stroke-width="2"/>
+    <circle cx="205" cy="116" r="5" fill="#253654"/>
+    <circle cx="173" cy="153" r="3" fill="#afb8c9"/>
+    <circle cx="221" cy="153" r="3" fill="#afb8c9"/>
+    <circle cx="258" cy="151" r="3" fill="#afb8c9"/>
+  </g>
+</svg>

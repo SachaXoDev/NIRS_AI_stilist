@@ -1,6 +1,8 @@
 """Контракт HTTP API на встроенном движке и mock/сценарной LLM (без сети и моделей)."""
 import json
 
+import pytest
+
 from app.services.llm.base import LLMError
 
 from tests.conftest import ScriptedLLM
@@ -179,13 +181,15 @@ def test_request_validation(client):
 # --- LLM: исправление и фолбэк ----------------------------------------------------------
 
 
-def test_valid_llm_answer_is_used_as_is(make_client):
-    llm = ScriptedLLM([_answer(["item-8", "item-4", "item-1", "item-2"], text="Строгий офисный комплект.")])
+def test_valid_llm_selection_is_used_but_prose_is_grounded_in_card(make_client):
+    llm = ScriptedLLM([_answer(["item-8", "item-4", "item-1", "item-2"], text="Красные сапоги.",
+                               title="Красные сапоги", description="Красные сапоги.")])
     data = _recommend(make_client(llm=llm), query="образ в офис")
-    assert data["text"] == "Строгий офисный комплект."
+    assert all(item["title"] in data["text"] for item in data["suggestedOutfit"]["items"])
+    assert "сапоги" not in json.dumps(data, ensure_ascii=False).lower()
     assert data["source"] == "llm" and data["meta"]["llmAttempts"] == 1
     assert data["referencedItemIds"] == ["item-2", "item-1", "item-4", "item-8"], "порядок: сверху вниз"
-    assert data["suggestedOutfit"]["title"] == "Деловой минимализм"
+    assert data["suggestedOutfit"]["description"] == data["text"]
     assert data["meta"]["llmProvider"] == "scripted"
 
 
@@ -245,11 +249,13 @@ def test_llm_outage_falls_back_without_500(make_client):
     assert any("LLM недоступна" in warning for warning in data["warnings"])
 
 
-def test_small_talk_returns_text_without_outfit(make_client):
-    llm = ScriptedLLM(['{"text": "Рад помочь! Обращайтесь.", "outfit": null}'])
-    data = _recommend(make_client(llm=llm), query="спасибо!")
-    assert data["text"] == "Рад помочь! Обращайтесь."
-    assert "suggestedOutfit" not in data and data["source"] == "llm"
+@pytest.mark.parametrize("query", ["Привет!", "С чем носить широкие брюки?", "Что такое капсульный гардероб?"])
+def test_conversation_works_with_empty_wardrobe(make_client, query):
+    llm = ScriptedLLM([_answer(["item-1", "item-4", "item-8"], text="Совет по стилю.")])
+    result = _recommend(make_client(llm=llm), query=query, wardrobe=[], debug=True)
+    assert "suggestedOutfit" not in result and result["missingSlots"] == []
+    assert result["source"] == "llm" and "retriever" not in result["meta"]
+    assert "retrieval" not in result
 
 
 def test_repairs_can_be_disabled(make_client):
@@ -265,13 +271,11 @@ def test_stream_event_order_and_text_deltas(client):
     events = _events(client, query="Дождь и +12°C")
     names = [name for name, _ in events]
     assert names[:3] == ["status", "retrieval", "status"]
-    assert names[-2:] == ["status", "result"] and "delta" in names
-    assert names.index("retrieval") < names.index("delta") < names.index("result")
+    assert names[-3:] == ["status", "delta", "result"]
     result = events[-1][1]
     streamed = "".join(data["text"] for name, data in events if name == "delta")
     assert streamed == result["text"], "дельты складываются ровно в итоговый текст"
     assert result["suggestedOutfit"]["items"] and result["source"] == "mock"
-    assert result["timings"]["llmFirstTextMs"] <= result["timings"]["llmMs"]
     retrieval = events[1][1]
     assert retrieval["engine"] == "builtin-bm25" and "item-6" in retrieval["candidate_ids_by_slot"]["outerwear"]
     assert "candidates_by_slot" not in retrieval
@@ -288,13 +292,48 @@ def test_stream_repairs_invalid_streamed_answer(make_client):
     llm = ScriptedLLM([_answer(["item-1", "item-4"], text="Черновик."), _answer(["item-1", "item-4", "item-8"], text="Исправлено.")])
     events = _events(make_client(llm=llm), query="образ в офис")
     result = events[-1][1]
-    assert result["text"] == "Исправлено." and result["meta"]["llmAttempts"] == 2
+    assert result["meta"]["llmAttempts"] == 2
+    assert [data["text"] for event, data in events if event == "delta"] == [result["text"]]
 
 
 def test_stream_for_incomplete_wardrobe(client):
-    events = _events(client, query="образ", wardrobe=[], user_id="guest-2")
+    events = _events(client, query="Привет! Подбери образ в офис", wardrobe=[], user_id="guest-2")
     assert [name for name, _ in events] == ["status", "delta", "result"]
     assert events[-1][1]["source"] == "none"
+    assert events[-1][1]["missingSlots"] == ["tops", "bottoms", "shoes"]
+
+
+def test_stream_greeting_with_incomplete_wardrobe(make_client, capsule_json):
+    llm = ScriptedLLM(['{"text": "Здравствуйте! Обсудим стиль?", "outfit": null}'])
+    events = _events(make_client(llm=llm), query="привет", wardrobe=[capsule_json[0]])
+    name, result = events[-1]
+    assert name == "result" and "suggestedOutfit" not in result
+    assert result["missingSlots"] == [] and result["source"] == "llm"
+    assert all(event != "retrieval" for event, _ in events)
+    assert "".join(payload["text"] for event, payload in events if event == "delta") == result["text"]
+
+_OFFICE_HISTORY = [
+    {"sender": "user", "text": "Подбери образ в офис"},
+    {"sender": "assistant", "text": "Рубашка, брюки и лоферы.", "hasOutfit": True},
+]
+
+
+def test_warmer_followup_requires_outerwear_and_keeps_occasion(make_client):
+    llm = ScriptedLLM([_answer(["item-1", "item-4", "item-8"]), _answer(["item-5", "item-4", "item-8", "item-6"])])
+    result = _events(make_client(llm=llm), query="А можно потеплее?", history=_OFFICE_HISTORY, debug=True)[-1][1]
+    assert result["source"] == "llm" and result["retrieval"]["context"]["occasion"] == "business"
+    assert {item["category"] for item in result["suggestedOutfit"]["items"]} == {"tops", "bottoms", "shoes", "outerwear"}
+
+
+def test_warmer_followup_rechecks_current_wardrobe(client, capsule_json):
+    result = _recommend(client, query="А можно потеплее?", history=_OFFICE_HISTORY,
+                        wardrobe=[item for item in capsule_json if item["category"] != "outerwear"])
+    assert result["missingSlots"] == ["outerwear"] and "suggestedOutfit" not in result
+
+
+def test_conversation_outage_does_not_trigger_outfit_fallback(make_client):
+    result = _events(make_client(llm=ScriptedLLM([LLMError("offline")])), query="Что такое оверсайз?")[-1][1]
+    assert result["source"] == "fallback" and "suggestedOutfit" not in result and not result["missingSlots"]
 
 
 # --- гардероб ---------------------------------------------------------------------------
@@ -319,7 +358,7 @@ def test_wardrobe_sync_is_full_snapshot(client, capsule_json):
 
 def test_base_capsule_endpoint(client):
     items = client.get("/api/wardrobe/base-capsule").json()
-    assert [item["id"] for item in items] == BASE_IDS
+    assert [item["id"] for item in items] == [f"item-{i}" for i in range(1, 51)]
 
 
 # --- админка ----------------------------------------------------------------------------

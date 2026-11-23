@@ -16,13 +16,18 @@ from typing import Any
 from app.schemas import WardrobeItem
 
 DEMO_USER_ID = "demo"
-_BASE_CAPSULE_PATH = Path(__file__).resolve().parents[3] / "rag" / "data" / "wardrobe_seed.json"
+_SEED_PATH = Path(__file__).resolve().parents[3] / "rag" / "data" / "wardrobe_seed.json"
+_EXTRA_CAPSULE_PATH = _SEED_PATH.with_name("wardrobe_capsule_extra.json")
 
 
-def load_wardrobe_file(path: str | Path | None = None) -> list[WardrobeItem]:
-    """Прочитать JSON-массив вещей. Без аргумента — базовая капсула бренда (10 вещей)."""
-    raw = json.loads(Path(path or _BASE_CAPSULE_PATH).read_text(encoding="utf-8"))
+def load_wardrobe_file(path: str | Path) -> list[WardrobeItem]:
+    """Прочитать и провалидировать JSON-массив вещей."""
+    raw = json.loads(Path(path).read_text(encoding="utf-8"))
     return [WardrobeItem.model_validate(item) for item in raw]
+
+
+def load_base_capsule() -> list[WardrobeItem]:
+    return load_wardrobe_file(_SEED_PATH) + load_wardrobe_file(_EXTRA_CAPSULE_PATH)
 
 
 class AppStore:

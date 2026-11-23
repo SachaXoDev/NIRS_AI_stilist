@@ -34,6 +34,10 @@ const QUICK_PROMPTS = [
     title: 'Выходной в городе',
     text: 'Собери расслабленный повседневный монохромный образ для выходного дня.',
   },
+  {
+    title: 'Пляж и +30°C',
+    text: 'Подбери образ для пляжа в жару при +30°C.',
+  },
 ];
 
 export const ChatArea = ({
@@ -132,7 +136,7 @@ export const ChatArea = ({
           <div className="flex max-w-3xl mx-auto justify-start">
             <div role="status" className="bg-[#FCFAF7] dark:bg-[#221F1C] border border-[#DFD9CF] dark:border-[#332F2A] p-3 text-xs text-[#6B6359] dark:text-[#A69D92] flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#1E1B18] dark:bg-[#F7F5F0] animate-pulse" />
-              <span>Подбираем вещи и формулу образа...</span>
+              <span>Стилист готовит ответ...</span>
             </div>
           </div>
         )}

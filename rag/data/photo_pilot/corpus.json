@@ -1,0 +1,34 @@
+[
+  {
+    "id": "met-157668",
+    "title": "Silk coat (1868)",
+    "category": "outerwear",
+    "color": "pale gold",
+    "material": "silk",
+    "imageUrl": "assets/met-157668-index.jpg"
+  },
+  {
+    "id": "met-157728",
+    "title": "Silk coat (1876)",
+    "category": "outerwear",
+    "color": "ivory",
+    "material": "silk",
+    "imageUrl": "assets/met-157728-index.jpg"
+  },
+  {
+    "id": "met-158255",
+    "title": "Wool coat (1885)",
+    "category": "outerwear",
+    "color": "gray-brown",
+    "material": "wool",
+    "imageUrl": "assets/met-158255-index.jpg"
+  },
+  {
+    "id": "met-157916",
+    "title": "Rouff evening coat (ca. 1900)",
+    "category": "outerwear",
+    "color": "black and gold",
+    "material": "silk, rhinestones",
+    "imageUrl": "assets/met-157916-index.jpg"
+  }
+]

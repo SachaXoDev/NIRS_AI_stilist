@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Ягодная шапка в рубчик</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#efe5ee"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#a4708e"/>
+      <stop offset=".48" stop-color="#8f4e74"/>
+      <stop offset="1" stop-color="#81476a"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="300" rx="97" ry="8" fill="#56324b" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M100 226Q96 167 120 133 148 96 180 95 213 96 240 133 264 167 260 226L269 254Q271 273 253 280 180 296 107 280 89 273 91 254Z" fill="url(#fabric)" stroke="#56324b" stroke-width="2.2"/>
+    <path d="M163 105Q127 141 125 222M170 104Q147 148 143 220M177 102Q167 153 164 217M184 102Q191 150 194 217M191 104Q211 148 215 220M198 105Q233 141 235 222" fill="none" stroke="#d0b5c5" stroke-width="2"/>
+    <path d="M100 226Q180 208 260 226L269 254Q271 273 253 280 180 296 107 280 89 273 91 254Z" fill="#7c4566" stroke="#56324b" stroke-width="2"/>
+    <path d="M104 228l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M116 226l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M128 224l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M140 222l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M152 221l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M164 220l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M176 219l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M188 220l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M200 220l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M212 221l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M224 222l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M236 223l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M248 225l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+    <path d="M260 229l-1 50" fill="none" stroke="#d0b5c5" stroke-width="1.7"/>
+  </g>
+</svg>

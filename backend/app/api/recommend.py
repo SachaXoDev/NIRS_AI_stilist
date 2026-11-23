@@ -42,7 +42,7 @@ def _sse(event: str, data: dict) -> str:
 
 @router.post(
     "/recommend-outfit/stream",
-    summary="То же, но потоком Server-Sent Events (эффект печатания)",
+    summary="То же, но с этапами и текстом через Server-Sent Events",
     response_class=StreamingResponse,
     responses={
         200: {

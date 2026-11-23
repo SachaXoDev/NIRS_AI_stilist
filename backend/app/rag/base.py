@@ -48,6 +48,7 @@ class RetrievalQuery:
     anchor_item_id: str | None = None
     exclude_item_ids: list[str] = field(default_factory=list)
     query_image: str | None = None
+    require_outerwear: bool = False
 
 
 @dataclass

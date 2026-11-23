@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Терракотовый стеганый жилет</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#f2e5db"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#c4826b"/>
+      <stop offset=".48" stop-color="#b66548"/>
+      <stop offset="1" stop-color="#a55b43"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#703b32" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M159 76Q180 70 201 76L207 102 239 119Q225 157 234 191L242 299Q180 316 118 299L126 191Q135 157 121 119L153 102Z" fill="url(#fabric)" stroke="#703b32" stroke-width="2.2"/>
+    <path d="M153 102Q180 111 207 102M180 74V307M126 181Q150 193 178 188M182 188Q210 193 234 181M125 205Q150 217 178 212M182 212Q210 217 235 205M123 231Q150 244 178 238M182 238Q210 244 237 231M120 257Q150 270 178 264M182 264Q210 270 240 257M119 283Q150 295 178 290M182 290Q210 295 241 283" fill="none" stroke="#e0beb2" stroke-width="2"/>
+    <path d="M137 219 158 234M223 219 202 234" fill="none" stroke="#703b32" stroke-width="4"/>
+  </g>
+</svg>

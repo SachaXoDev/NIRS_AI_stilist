@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Горчичная мембранная куртка-дождевик</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#f5ebd7"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#d9b361"/>
+      <stop offset=".48" stop-color="#d0a13c"/>
+      <stop offset="1" stop-color="#b98f35"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#72541f" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M145 117Q129 100 141 76 153 52 180 50 207 52 219 76 231 100 215 117L242 129 262 156 282 269 252 282 231 179 234 305Q180 319 126 305L129 179 108 282 78 269 98 156 118 129Z" fill="url(#fabric)" stroke="#72541f" stroke-width="2.2"/>
+    <path d="M151 95Q154 66 180 63 206 66 209 95L199 112H161Z" fill="#b18832" stroke="#72541f" stroke-width="2"/>
+    <path d="M153 112L180 124 207 112 201 133 186 141V310H174V141L159 133Z" fill="#b18832" stroke="#72541f" stroke-width="2"/>
+    <path d="M133 214 164 244 161 251 131 224ZM227 214 196 244 199 251 229 224Z" fill="#b18832" stroke="#72541f" stroke-width="2"/>
+    <path d="M84 260 109 271M251 271 276 260M127 294Q180 306 233 294M159 116 149 146M201 116 211 146" fill="none" stroke="#ebd8ad" stroke-width="2"/>
+    <circle cx="149" cy="147" r="3" fill="#72541f"/>
+    <circle cx="211" cy="147" r="3" fill="#72541f"/>
+  </g>
+</svg>

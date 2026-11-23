@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Кремовая водолазка из мериноса</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#eeeae0"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#f3e1c0"/>
+      <stop offset=".48" stop-color="#f0dab1"/>
+      <stop offset="1" stop-color="#d3bd99"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#76634e" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M155 73H205L210 109 237 120 254 151 276 275 241 285 222 170 225 296Q180 309 135 296L138 170 119 285 84 275 106 151 123 120 150 109Z" fill="url(#fabric)" stroke="#76634e" stroke-width="2.2"/>
+    <path d="M151 106Q180 114 209 106M135 280Q180 294 225 280M87 260 122 270M238 270 273 260" fill="none" stroke="#b19c7e" stroke-width="2"/>
+    <path d="M159 79V104M159 119V278" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M166 79V104M166 119V278" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M173 79V104M173 119V278" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M180 79V104M180 119V278" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M187 79V104M187 119V278" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M194 79V104M194 119V278" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M201 79V104M201 119V278" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M143 128V277" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M151 128V277" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M209 128V277" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+    <path d="M217 128V277" fill="none" stroke="#b19c7e" stroke-width="1.1"/>
+  </g>
+</svg>

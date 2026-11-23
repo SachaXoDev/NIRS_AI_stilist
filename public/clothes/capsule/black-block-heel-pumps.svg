@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Черные лодочки на устойчивом каблуке</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e9e7ef"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#615f69"/>
+      <stop offset=".48" stop-color="#3c3946"/>
+      <stop offset="1" stop-color="#363340"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="262" rx="110" ry="8" fill="#24212b" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M70 227Q74 209 117 207L151 195Q169 193 199 203 238 210 251 173L269 155Q275 153 282 166L284 217 276 257H256L251 225 232 224Q216 225 193 239L103 247Q73 245 70 227Z" fill="url(#fabric)" stroke="#24212b" stroke-width="2.2"/>
+    <path d="M252 217 284 214 276 257H256Z" fill="#34313d" stroke="#24212b" stroke-width="2"/>
+    <path d="M72 234Q115 242 187 231 212 219 232 217L251 218 252 225 232 224Q216 225 193 239L103 247Q81 246 72 234Z" fill="#222028" stroke="#24212b" stroke-width="2"/>
+    <path d="M112 215 150 202Q169 199 199 209 239 217 262 174M256 250H276" fill="none" stroke="#adacb1" stroke-width="2"/>
+  </g>
+</svg>

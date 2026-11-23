@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Коньячная каркасная сумка с клапаном</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#f1e6dc"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#bd8b68"/>
+      <stop offset=".48" stop-color="#ad7045"/>
+      <stop offset="1" stop-color="#9e663f"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="300" rx="97" ry="8" fill="#70462c" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M73 137Q73 123 89 123H271Q287 123 287 137L296 269Q296 281 281 281H79Q64 281 64 269Z" fill="url(#fabric)" stroke="#70462c" stroke-width="2.2"/>
+    <path d="M134 123V108Q134 76 162 76H198Q226 76 226 108V123H214V108Q214 90 197 90H163Q146 90 146 108V123Z" fill="#99623d" stroke="#70462c" stroke-width="2"/>
+    <path d="M73 137Q73 123 89 123H271Q287 123 287 137L291 180Q251 215 180 211 109 215 69 180Z" fill="#99623d" stroke="#70462c" stroke-width="2"/>
+    <path d="M76 173Q121 202 180 201 239 202 284 173M78 269H282" fill="none" stroke="#ddc3b1" stroke-width="2"/>
+    <path d="M160 190H200V218H160Z" fill="#c7a16a" stroke="#70462c" stroke-width="2"/>
+    <path d="M171 199H189V210H171Z" fill="#9a693e" stroke="#70462c" stroke-width="2"/>
+  </g>
+</svg>

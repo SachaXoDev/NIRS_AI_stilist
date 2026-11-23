@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Укороченная куртка из денима индиго</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#e2e8ee"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#637c98"/>
+      <stop offset=".48" stop-color="#3e5d80"/>
+      <stop offset="1" stop-color="#375475"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#203754" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M119 104 155 89H205L241 104 262 135 274 278 240 286 224 165 226 272Q180 286 134 272L136 165 120 286 86 278 98 135Z" fill="url(#fabric)" stroke="#203754" stroke-width="2.2"/>
+    <path d="M153 89 139 99 150 132 180 111 210 132 221 99 207 89 180 104Z" fill="#345071" stroke="#203754" stroke-width="2"/>
+    <path d="M140 155H169V184L155 193 140 184ZM191 155H220V184L205 193 191 184Z" fill="#345071" stroke="#203754" stroke-width="2"/>
+    <path d="M138 149H171V162H138ZM189 149H222V162H189Z" fill="#345071" stroke="#203754" stroke-width="2"/>
+    <path d="M180 111V276M134 263Q180 273 226 263M98 134 135 146 178 141M182 141 225 146 262 134M89 262 121 271M239 271 271 262" fill="none" stroke="#d1a77e" stroke-width="1.6" stroke-dasharray="3 3"/>
+    <circle cx="185" cy="136" r="3" fill="#d1a77e"/>
+    <circle cx="185" cy="161" r="3" fill="#d1a77e"/>
+    <circle cx="185" cy="186" r="3" fill="#d1a77e"/>
+    <circle cx="185" cy="211" r="3" fill="#d1a77e"/>
+    <circle cx="185" cy="236" r="3" fill="#d1a77e"/>
+    <circle cx="185" cy="261" r="3" fill="#d1a77e"/>
+  </g>
+</svg>

@@ -1,0 +1,5 @@
+mode,query_id,slot,repeats,latency_median_ms,hit_rate@1,hit_rate@3,mrr@3,relevant_ids,ranked_ids_first_repeat
+visual,met-157668-alternate-view,outerwear,1,1809.941167011857,1.0,1.0,1.0,"[""met-157668""]","[""met-157668"", ""met-157728""]"
+visual,met-157728-alternate-view,outerwear,1,767.939125013072,1.0,1.0,1.0,"[""met-157728""]","[""met-157728"", ""met-157668""]"
+visual,met-158255-alternate-view,outerwear,1,73.19145801011473,1.0,1.0,1.0,"[""met-158255""]","[""met-158255"", ""met-157916""]"
+visual,met-157916-alternate-view,outerwear,1,53.50404197815806,1.0,1.0,1.0,"[""met-157916""]","[""met-157916"", ""met-157668""]"

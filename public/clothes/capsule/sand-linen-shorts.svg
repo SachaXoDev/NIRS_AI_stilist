@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="400" viewBox="0 0 360 400" role="img" aria-labelledby="item-title">
+  <title id="item-title">Песочные льняные шорты</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fcfaf6"/>
+      <stop offset="1" stop-color="#f3ecdf"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2=".8">
+      <stop stop-color="#dfc7a4"/>
+      <stop offset=".48" stop-color="#d7ba8f"/>
+      <stop offset="1" stop-color="#c2a57d"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="400" fill="url(#background)"/>
+  <circle cx="180" cy="202" r="138" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="180" cy="335" rx="105" ry="8" fill="#806445" opacity=".09"/>
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M120 110Q179 120 240 110L254 254Q219 264 190 251L180 201 170 251Q139 264 106 254Z" fill="url(#fabric)" stroke="#806445" stroke-width="2.2"/>
+    <path d="M118 124Q180 137 242 124M139 131 119 164M221 131 241 164M110 243Q144 252 170 242M190 242Q218 251 250 243M166 120V129M195 120V129" fill="none" stroke="#aa8d69" stroke-width="2"/>
+    <path d="M180 137C150 112 150 157 180 137 209 112 211 151 180 137L167 171M180 137 197 166" fill="none" stroke="#806445" stroke-width="2"/>
+  </g>
+</svg>
