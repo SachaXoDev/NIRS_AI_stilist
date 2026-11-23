@@ -1,0 +1,251 @@
+[
+  {
+    "case": "add_rain_layer",
+    "request": {
+      "user_id": "slot-example-rain",
+      "query": "Добавь куртку в дождь к этому образу",
+      "slot": "outerwear",
+      "operation": "add",
+      "outfit_item_ids": [
+        "item-1",
+        "item-4",
+        "item-8"
+      ],
+      "context": {
+        "occasion": "деловая встреча",
+        "temperature_c": 10,
+        "rain": false
+      }
+    },
+    "result": {
+      "user_id": "slot-example-rain",
+      "slot": "outerwear",
+      "candidates": [
+        {
+          "item": {
+            "id": "item-33",
+            "title": "Горчичная мембранная куртка-дождевик",
+            "category": "outerwear",
+            "color": "Горчичный",
+            "season": "spring/summer",
+            "style": [
+              "casual",
+              "sport"
+            ],
+            "tags": [
+              "куртки",
+              "дождь",
+              "ливень",
+              "ветер",
+              "мембрана",
+              "проклеенные швы",
+              "капюшон"
+            ],
+            "imageUrl": "/clothes/capsule/ochre-rain-shell.svg",
+            "brand": null,
+            "material": "Полиэстер с водонепроницаемой мембраной",
+            "embeddingSnippet": "Дождевик с проклеенными швами, регулируемым капюшоном и закрытой планкой молнией для дождя и ветра.",
+            "uploadedAt": "2026-11-23",
+            "imagePath": null,
+            "weather": {
+              "temperature_min": null,
+              "temperature_max": null,
+              "waterproof": true,
+              "windproof": true,
+              "open_shoes": null
+            }
+          },
+          "score": 0.01639344262295082,
+          "bm25_score": 3.0916851077353136,
+          "bm25_rank": 1,
+          "dense_distance": 0.16663283109664917,
+          "dense_rank": 1,
+          "visual_distance": null,
+          "visual_rank": null,
+          "bm25_contribution": 0.005737704918032787,
+          "dense_contribution": 0.010655737704918034,
+          "visual_contribution": 0.0,
+          "anchored": false,
+          "fallback": false
+        }
+      ],
+      "kept_item_ids": [
+        "item-1",
+        "item-4",
+        "item-8"
+      ],
+      "replaced_item_id": null,
+      "context": {
+        "occasion": "деловая встреча",
+        "weather": null,
+        "vibe": null,
+        "temperature_c": 10.0,
+        "rain": true,
+        "wind": null
+      },
+      "warnings": [
+        "Filtered 2 items by explicit exclusions or curated weather attributes",
+        "Weather suitability is unverified for items with missing curated attributes: item-33"
+      ],
+      "timings_ms": {
+        "model_prepare": 0.05800000508315861,
+        "bm25": 2.9855999891879037,
+        "embedding_text": 99.64719999697991,
+        "dense_search": 4.998300006263889,
+        "fusion_constraints": 0.06890000076964498,
+        "total": 171.41320000519045
+      },
+      "wardrobe_revision": "3f686cd3dc76d7f6c18ba0ffbfab93445c4ee22eb7fcdb4fa13b6e22540fb116",
+      "model_fingerprint": "3dd91d47be2542103e17e84332216e8869bfd003b55dcba16c8186264cb34f50"
+    }
+  },
+  {
+    "case": "replace_heels",
+    "request": {
+      "user_id": "slot-example-shoes",
+      "query": "Замени туфли на что-нибудь без каблука, остальное оставь",
+      "slot": "shoes",
+      "operation": "replace",
+      "outfit_item_ids": [
+        "item-1",
+        "item-4",
+        "item-42"
+      ],
+      "context": {
+        "occasion": "встреча в стиле smart casual",
+        "temperature_c": 17
+      }
+    },
+    "result": {
+      "user_id": "slot-example-shoes",
+      "slot": "shoes",
+      "candidates": [
+        {
+          "item": {
+            "id": "item-36",
+            "title": "Кеды из небеленого канваса",
+            "category": "shoes",
+            "color": "Молочный",
+            "season": "spring/summer",
+            "style": [
+              "casual",
+              "streetwear"
+            ],
+            "tags": [
+              "кеды и кроссовки",
+              "кеды",
+              "прогулка",
+              "канвас",
+              "резиновый мыс",
+              "плоская подошва"
+            ],
+            "imageUrl": "/clothes/capsule/ecru-canvas-sneakers.svg",
+            "brand": null,
+            "material": "Хлопковый канвас, резина",
+            "embeddingSnippet": "Легкие низкие кеды с резиновым мысом и плоской подошвой для сухой городской погоды.",
+            "uploadedAt": "2026-11-23",
+            "imagePath": null,
+            "weather": {
+              "temperature_min": null,
+              "temperature_max": null,
+              "waterproof": false,
+              "windproof": null,
+              "open_shoes": false
+            }
+          },
+          "score": 0.01639344262295082,
+          "bm25_score": 1.06412131396686,
+          "bm25_rank": 1,
+          "dense_distance": 0.27256667613983154,
+          "dense_rank": 1,
+          "visual_distance": null,
+          "visual_rank": null,
+          "bm25_contribution": 0.005737704918032787,
+          "dense_contribution": 0.010655737704918034,
+          "visual_contribution": 0.0,
+          "anchored": false,
+          "fallback": false
+        }
+      ],
+      "kept_item_ids": [
+        "item-1",
+        "item-4"
+      ],
+      "replaced_item_id": "item-42",
+      "context": {
+        "occasion": "встреча в стиле smart casual",
+        "weather": null,
+        "vibe": null,
+        "temperature_c": 17.0,
+        "rain": null,
+        "wind": null
+      },
+      "warnings": [
+        "Filtered 1 items by explicit exclusions or curated weather attributes",
+        "Flat footwear required; candidates without an explicit flat-sole annotation were excluded",
+        "Weather suitability is unverified for items with missing curated attributes: item-36"
+      ],
+      "timings_ms": {
+        "model_prepare": 0.051399998483248055,
+        "bm25": 1.5968999941833317,
+        "embedding_text": 83.92559998901561,
+        "dense_search": 3.8902999949641526,
+        "fusion_constraints": 0.05400000372901559,
+        "total": 90.67619999404997
+      },
+      "wardrobe_revision": "1138b7d9e89476ac853bcf8229dceb091ab28230092f70679bb96895965bd1fd",
+      "model_fingerprint": "3dd91d47be2542103e17e84332216e8869bfd003b55dcba16c8186264cb34f50"
+    }
+  },
+  {
+    "case": "no_flat_alternative",
+    "request": {
+      "user_id": "slot-example-empty",
+      "query": "Замени туфли на обувь без каблука",
+      "slot": "shoes",
+      "operation": "replace",
+      "replace_item_id": "item-42",
+      "outfit_item_ids": [
+        "item-1",
+        "item-4",
+        "item-42"
+      ],
+      "context": {
+        "occasion": "деловая встреча"
+      }
+    },
+    "result": {
+      "user_id": "slot-example-empty",
+      "slot": "shoes",
+      "candidates": [],
+      "kept_item_ids": [
+        "item-1",
+        "item-4"
+      ],
+      "replaced_item_id": "item-42",
+      "context": {
+        "occasion": "деловая встреча",
+        "weather": null,
+        "vibe": null,
+        "temperature_c": null,
+        "rain": null,
+        "wind": null
+      },
+      "warnings": [
+        "Filtered 1 items by explicit exclusions or curated weather attributes",
+        "Flat footwear required; candidates without an explicit flat-sole annotation were excluded",
+        "BM25 found no lexical overlap; its fusion contribution is zero",
+        "No eligible retrieved candidates for required slots: shoes"
+      ],
+      "timings_ms": {
+        "model_prepare": 0.05129999772179872,
+        "bm25": 0.5701000045519322,
+        "dense_search": 0.0,
+        "fusion_constraints": 0.015199999324977398,
+        "total": 1.5364999999292195
+      },
+      "wardrobe_revision": "df9defa677e56031e7b7a91f94d0b1f860d52b3a660ba14eb72f6c0c45ede26e",
+      "model_fingerprint": "3dd91d47be2542103e17e84332216e8869bfd003b55dcba16c8186264cb34f50"
+    }
+  }
+]

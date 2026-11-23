@@ -1,0 +1,347 @@
+{
+  "institution": "The Metropolitan Museum of Art, The Costume Institute",
+  "license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "policy_url": "https://www.metmuseum.org/hubs/open-access",
+  "rights_verification": "For each object, the The Met Collection API marked isPublicDomain=true and named both file sources. Both Commons pages link to the same object and contain the CC0 waiver.",
+  "selection": "Twelve visually checked front/back pairs retained before inference. All are coats; several have similar silhouettes, pale fabrics and lace. Each of the other eleven items is a same-category negative for each query.",
+  "processing": "Download separate front and back Commons thumbnails, honor EXIF orientation, RGB JPEG, cap longest side at 768 px without upscaling. No crop, recoloring or generated views.",
+  "pairs": [
+    {
+      "id": "met-103888",
+      "met_object_id": 103888,
+      "title": "Coat",
+      "date": "1860–69",
+      "material": "cotton",
+      "credit_line": "Gift of Elizabeth Mills Brown, 1977",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103888",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103888",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103888-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/1977.24_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Coat_MET_1977.24_F.jpg/500px-Coat_MET_1977.24_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_1977.24_F.jpg",
+        "source_sha256": "e649df1d9a655909adea214596dca2a672ced1d030b5e3c143455f9ea62be492",
+        "sha256": "4999e99f9e79ac0a31ca929872429ba839474f6513136e4e3fcf23c16cdce5c6"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103888-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/1977.24_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Coat_MET_1977.24_B.jpg/500px-Coat_MET_1977.24_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_1977.24_B.jpg",
+        "source_sha256": "bb31cf7286b5d02fe1305d0309b022654979939ba1fea24a0ba375890ba0b0d8",
+        "sha256": "da73320f4697b78ba0985d83283174b1e3d24193d7cd75bb4ec4a90f5c4f2230"
+      }
+    },
+    {
+      "id": "met-103895",
+      "met_object_id": 103895,
+      "title": "Coat",
+      "date": "1880–89",
+      "material": "wool",
+      "credit_line": "Purchase, Irene Lewisohn Bequest, 1976",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103895",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103895",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103895-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/1976.333_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Coat_MET_1976.333_F.jpg/500px-Coat_MET_1976.333_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_1976.333_F.jpg",
+        "source_sha256": "9345ac4100072ab6a81408d2bcc2ef2e536198e4c57983aadbb40da50b789fde",
+        "sha256": "6963a39c5c3191dc484a7ce59ce2956bf51841b7b86455fe9ddf3fdf78f45049"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103895-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/1976.333_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Coat_MET_1976.333_B.jpg/500px-Coat_MET_1976.333_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_1976.333_B.jpg",
+        "source_sha256": "34ff2e9a493ae41a8b4b34d4cdc63bd0992b8e68e95c2736e1f70f30c0b587aa",
+        "sha256": "8905da9345ad07ef69d61ea9f19516207e9fe78c1009d525b40a84ead30f2701"
+      }
+    },
+    {
+      "id": "met-103915",
+      "met_object_id": 103915,
+      "title": "Coat",
+      "date": "1885–95",
+      "material": "cotton",
+      "credit_line": "Gift of Orme Wilson and R. Thornton Wilson, in memory of their mother, Mrs. Caroline Schermerhorn Astor Wilson, 1949",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103915",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103915",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103915-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/49.3.53_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Coat_MET_49.3.53_F.jpg/500px-Coat_MET_49.3.53_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_49.3.53_F.jpg",
+        "source_sha256": "a5315efbbe11b5a10bc466daf8cf0a8e3058920d6176c95761e5f020e41807c3",
+        "sha256": "54b81a395dd1d6a254a6db66f9b9dffcb3c95c0b82896066b1fe613c63365219"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103915-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/49.3.53_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Coat_MET_49.3.53_B.jpg/500px-Coat_MET_49.3.53_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_49.3.53_B.jpg",
+        "source_sha256": "b7e000a5813c3a3a406f8638ae5c733f0e9de26b3c70045dd8af6bc95c2af78a",
+        "sha256": "8b0607ea8060d021259b38cf8fd4ab09dbe4e55b595ba5722a471e8090fea094"
+      }
+    },
+    {
+      "id": "met-103916",
+      "met_object_id": 103916,
+      "title": "Coat",
+      "date": "ca. 1877",
+      "material": "[no medium available]",
+      "credit_line": "Gift of Mrs. Julian Clarence Levi, 1937",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103916",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103916",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103916-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI37.13.5ab_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Coat_MET_CI37.13.5ab_F.jpg/500px-Coat_MET_CI37.13.5ab_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI37.13.5ab_F.jpg",
+        "source_sha256": "1a5cd8435c0e892299f0af56ccbc72d9b2312a79af46d1a02019fcfaac07fbc8",
+        "sha256": "be91b4eabaeff725839891f3ff048f168751779b844bb64452e682cee0485466"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103916-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI37.13.5ab_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Coat_MET_CI37.13.5ab_B.jpg/500px-Coat_MET_CI37.13.5ab_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI37.13.5ab_B.jpg",
+        "source_sha256": "27f09423e8bd6db61327e616f816e0580063ca7926e5a939875fc052ae13cfac",
+        "sha256": "5b9e358787bdf99b59c8ede5fd8e185caaabb9cb4862f2fd0c3f0c4e2c620146"
+      }
+    },
+    {
+      "id": "met-103917",
+      "met_object_id": 103917,
+      "title": "Coat",
+      "date": "ca. 1877",
+      "material": "[no medium available]",
+      "credit_line": "Gift of Mrs. Julian Clarence Levi, 1937",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103917",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103917",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103917-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI37.13.6_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Coat_MET_CI37.13.6_F.jpg/500px-Coat_MET_CI37.13.6_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI37.13.6_F.jpg",
+        "source_sha256": "e731e208dcbb6307a3583942179589f25a6182fa7b5c17eb9db0a4d27e5101d7",
+        "sha256": "cd2fab1071f50d4fb0e7d79c5db1b4e319857ab44d0c8ba2690e6f394d58756f"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103917-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI37.13.6_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Coat_MET_CI37.13.6_B.jpg/500px-Coat_MET_CI37.13.6_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI37.13.6_B.jpg",
+        "source_sha256": "e3bc598a2a0187d114f10a8fb986b1e5f3d01fcd7be86cd433bc4975ebf8f96f",
+        "sha256": "2db682f39487821b8891955823f6395ab0077ca3c69f73748d7c299c3379946d"
+      }
+    },
+    {
+      "id": "met-103925",
+      "met_object_id": 103925,
+      "title": "Coat",
+      "date": "1894",
+      "material": "cotton",
+      "credit_line": "Gift of Mrs. William C. Beer, 1938",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103925",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103925",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103925-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI38.63.20_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Coat_MET_CI38.63.20_F.jpg/500px-Coat_MET_CI38.63.20_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI38.63.20_F.jpg",
+        "source_sha256": "0ba64c1abb8778d39ca9ad08e61fffa40bfa8ed4c219b990771b2ba24ae8feb1",
+        "sha256": "2bf732ebad8f41e11e50a14524ab6848eb5c2d4153a9ec07e82459e35e831c7e"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103925-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI38.63.20_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Coat_MET_CI38.63.20_B.jpg/500px-Coat_MET_CI38.63.20_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI38.63.20_B.jpg",
+        "source_sha256": "eb40c66bfd67b1ee9cf42ac4ffbb55a89b58a5fec7cff96db4081a2512054549",
+        "sha256": "a111b14631fe0914c817d9716ef851bc146c3614327b09759b0f7f7ae284ce30"
+      }
+    },
+    {
+      "id": "met-103931",
+      "met_object_id": 103931,
+      "title": "Coat",
+      "date": "ca. 1886",
+      "material": "cotton",
+      "credit_line": "Gift of Mrs. Robert B. Noyes, 1940",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103931",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103931",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103931-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI40.116.6_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Coat_MET_CI40.116.6_F.jpg/500px-Coat_MET_CI40.116.6_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI40.116.6_F.jpg",
+        "source_sha256": "0063bf1ad10f8668ab3c6f203500917e1dce68a87863c6be73c501c1e8fa75da",
+        "sha256": "994437af8a816b900602fcdc3a1103dc148274fa858c8cda1ab1b7099eccb898"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103931-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI40.116.6_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Coat_MET_CI40.116.6_B.jpg/500px-Coat_MET_CI40.116.6_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI40.116.6_B.jpg",
+        "source_sha256": "03d942792583b86c9a4029ea28afb2c69950e8b6eade3877bb35b3beb021a721",
+        "sha256": "cbb394d257fcbba23a5e62151cb45068b7aa1aba4cac8b295a7336bd83a50f1e"
+      }
+    },
+    {
+      "id": "met-103934",
+      "met_object_id": 103934,
+      "title": "Coat",
+      "date": "ca. 1882",
+      "material": "silk",
+      "credit_line": "Gift of Miss Ella J. Dederick, 1941",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103934",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103934",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103934-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI41.64.1_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Coat_MET_CI41.64.1_F.jpg/500px-Coat_MET_CI41.64.1_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI41.64.1_F.jpg",
+        "source_sha256": "60a8590fa36dd6c1013c64e1a593d02357791b07b868525bfd343657e2230c11",
+        "sha256": "02e5249ae3e0e3b7c6833a95285ac9f723aa691e442e02004c8d466f3359b0a7"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103934-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI41.64.1_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Coat_MET_CI41.64.1_B.jpg/500px-Coat_MET_CI41.64.1_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI41.64.1_B.jpg",
+        "source_sha256": "381abdebaeb94c451fe7ce39b4ddc892cbb5bae3bd1ac1de54f1670d95257287",
+        "sha256": "71c5ec89f13cb7f1855fdadc9f328a89b4191b560a757ffa17cbf515fc267bd8"
+      }
+    },
+    {
+      "id": "met-103948",
+      "met_object_id": 103948,
+      "title": "Coat",
+      "date": "ca. 1889",
+      "material": "linen",
+      "credit_line": "Gift of Mrs. B. H. Rindeman, 1946",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103948",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103948",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103948-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI46.36_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_MET_CI46.36_F.jpg/500px-Coat_MET_CI46.36_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI46.36_F.jpg",
+        "source_sha256": "958b5b2e6b2eec8737b5879187aa8079c414a80c0a4a1dbe77451bc162764e6f",
+        "sha256": "20553bef3ce6c23de6382cc00298ee339e26ef03bb156167db48e298147e1910"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103948-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI46.36_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Coat_MET_CI46.36_B.jpg/500px-Coat_MET_CI46.36_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI46.36_B.jpg",
+        "source_sha256": "36e0c4c6a34503c0651890360dcaddeebbed68049380220db8d50c4d16221556",
+        "sha256": "62462fe230616f6844b3d49333f5e21e8f063e918f8dc5a54cdea80eeeb87e37"
+      }
+    },
+    {
+      "id": "met-103954",
+      "met_object_id": 103954,
+      "title": "Coat",
+      "date": "1850s",
+      "material": "silk",
+      "credit_line": "Gift of Mr. and Mrs. Daniel Thompson, 1952",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103954",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103954",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103954-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI52.48.6_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Coat_MET_CI52.48.6_F.jpg/500px-Coat_MET_CI52.48.6_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI52.48.6_F.jpg",
+        "source_sha256": "223f8d4256fb734868923933af22fb3efde6474ef641912f0eb45c2853f09b19",
+        "sha256": "da396f1a1b4ddfeb07166be5df8ddcf9a78a787a891cec923e6298123a3b1df1"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103954-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI52.48.6_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Coat_MET_CI52.48.6_B.jpg/500px-Coat_MET_CI52.48.6_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI52.48.6_B.jpg",
+        "source_sha256": "136b4ffccfeccc8e6ba0586d2f1c8c44dd54a236fc516cd88ec630739e36017a",
+        "sha256": "0009f7816205ae4eb4fe5d12f14578bd1540ef2c16adc942c045a7367c3e90cf"
+      }
+    },
+    {
+      "id": "met-103956",
+      "met_object_id": 103956,
+      "title": "Coat",
+      "date": "1863",
+      "material": "cotton",
+      "credit_line": "Gift of Mr. Henry S. Hendricks, 1953",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103956",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103956",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103956-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI53.31.4_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Coat_MET_CI53.31.4_F.jpg/500px-Coat_MET_CI53.31.4_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI53.31.4_F.jpg",
+        "source_sha256": "e0f974f916028c9b20eb6cf2bc5fdadd02a0e9d64736141eb923aa60aea026fc",
+        "sha256": "9a1d23ba793fd9d4ed7f5562df79bb8dda62beb55c3a054cb0e7b50e44a84363"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103956-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI53.31.4_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Coat_MET_CI53.31.4_B.jpg/500px-Coat_MET_CI53.31.4_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI53.31.4_B.jpg",
+        "source_sha256": "329035d0901c4e788b31baae22c1c6d9c8e9a0e4bd4fcbc0ec96c3ceb04524b6",
+        "sha256": "3b9ba2886a032d3a0d65635b4d39ebc124619b5bc02eead3874ae847402fee20"
+      }
+    },
+    {
+      "id": "met-103967",
+      "met_object_id": 103967,
+      "title": "Coat",
+      "date": "ca. 1860",
+      "material": "wool, silk",
+      "credit_line": "Gift of Mrs. John G. Pennypacker, 1965",
+      "object_url": "https://www.metmuseum.org/art/collection/search/103967",
+      "object_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/103967",
+      "index_photo": {
+        "role": "index",
+        "file": "assets/met-103967-index.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI65.1.1_F.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Coat_MET_CI65.1.1_F.jpg/500px-Coat_MET_CI65.1.1_F.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI65.1.1_F.jpg",
+        "source_sha256": "f75e2235065357c38b7f15bf516f04d093ee8d778eef37cf1a61b18b4cd4fe9f",
+        "sha256": "c917892b47bb42f70aaef24f6c9dd996fd290a9ccfb0ffb6ff5eb10eab7ca3ff"
+      },
+      "query_photo": {
+        "role": "query",
+        "file": "assets/met-103967-query.jpg",
+        "source_url": "https://images.metmuseum.org/CRDImages/ci/original/CI65.1.1_B.jpg",
+        "download_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Coat_MET_CI65.1.1_B.jpg/500px-Coat_MET_CI65.1.1_B.jpg",
+        "commons_file_page": "https://commons.wikimedia.org/wiki/File:Coat_MET_CI65.1.1_B.jpg",
+        "source_sha256": "5224aeebea47f59dd5e2d21d9e8565bbf8c7b09cd9beb70a95b3ad1696cc1154",
+        "sha256": "2d62078014caf41ece3e7375fae18de73a96c121769f830ac5eadc131958555b"
+      }
+    }
+  ]
+}

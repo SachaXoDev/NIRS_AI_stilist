@@ -13,7 +13,7 @@ from time import perf_counter
 from .embedding import SentenceTransformerEmbedder
 from .images import ImageLoader
 from .indexing import IndexingPipeline
-from .schemas import RetrievalRequest, WardrobeItem
+from .schemas import RetrievalRequest, SlotSearchRequest, WardrobeItem
 from .store import ChromaWardrobeStore
 
 
@@ -56,6 +56,9 @@ def parser():
     search.add_argument("--wind", action="store_true", default=None)
     search.add_argument("--anchor")
     search.add_argument("--output")
+    slot_search = sub.add_parser("search-slot", help="Rank candidates for one add/replace operation")
+    slot_search.add_argument("--request", required=True, help="JSON SlotSearchRequest")
+    slot_search.add_argument("--output")
     evaluate = sub.add_parser("evaluate")
     evaluate.add_argument("--dataset", default="data/queries_test.json")
     evaluate.add_argument("--corpus", help="Override corpus declared by the dataset manifest")
@@ -82,13 +85,15 @@ def main(argv=None):
     try:
         started = perf_counter()
         if args.command == "export-schemas":
-            from .schemas import RetrievalResult, SelectionValidation, SyncResult, QueryContext
+            from .schemas import QueryContext, RetrievalResult, SelectionValidation, SlotSearchResult, SyncResult
             destination = Path(args.output)
             destination.mkdir(parents=True, exist_ok=True)
-            for model in (WardrobeItem, RetrievalRequest, RetrievalResult, SelectionValidation, SyncResult, QueryContext):
+            models = (WardrobeItem, RetrievalRequest, RetrievalResult, SelectionValidation, SyncResult,
+                      QueryContext, SlotSearchRequest, SlotSearchResult)
+            for model in models:
                 (destination / f"{model.__name__}.schema.json").write_text(
                     json.dumps(model.model_json_schema(), ensure_ascii=False, indent=2), encoding="utf-8")
-            print(json.dumps({"output": str(destination), "schemas": 6}))
+            print(json.dumps({"output": str(destination), "schemas": len(models)}))
             return 0
         if args.command == "prepare-visual-queries":
             from PIL import Image, ImageEnhance
@@ -130,6 +135,8 @@ def main(argv=None):
                                        mode=args.mode, alpha=args.alpha, visual_weight=args.visual_weight,
                                        anchor_item_id=args.anchor, context=context)
             response = service.retrieve(request)
+        elif args.command == "search-slot":
+            response = service.retrieve_slot(SlotSearchRequest.model_validate(_json(args.request)))
         else:
             from .evaluation import evaluate, load_corpus, load_dataset, validate_dataset
             dataset = load_dataset(args.dataset)
@@ -158,7 +165,7 @@ def main(argv=None):
             print(json.dumps(summary, ensure_ascii=False, indent=2))
             return 0
         output = response.model_dump_json(indent=2)
-        if args.command == "search" and args.output:
+        if args.command in {"search", "search-slot"} and args.output:
             Path(args.output).parent.mkdir(parents=True, exist_ok=True)
             Path(args.output).write_text(output, encoding="utf-8")
         print(output)

@@ -86,6 +86,37 @@ class RetrievalRequest(Contract):
         return self
 
 
+class SlotSearchRequest(Contract):
+    """Search for a single change to an existing outfit from this user's wardrobe."""
+
+    user_id: str = Field(min_length=1, max_length=200)
+    query: str = Field(min_length=1, max_length=10000)
+    slot: Category
+    operation: Literal["add", "replace"]
+    outfit_item_ids: list[str] = Field(min_length=1, max_length=8)
+    replace_item_id: str | None = None
+    context: QueryContext = Field(default_factory=QueryContext)
+    exclude_item_ids: list[str] = Field(default_factory=list)
+    exclude_colors: list[str] = Field(default_factory=list)
+    exclude_materials: list[str] = Field(default_factory=list)
+    without_heel: bool = False
+    mode: Literal["bm25", "dense", "hybrid", "multimodal"] = "hybrid"
+    alpha: float = Field(default=0.65, ge=0, le=1)
+    visual_weight: float = Field(default=0.35, ge=0, le=1)
+
+    @model_validator(mode="after")
+    def validate_edit(self) -> SlotSearchRequest:
+        if len(set(self.outfit_item_ids)) != len(self.outfit_item_ids):
+            raise ValueError("outfit_item_ids must be unique")
+        if self.replace_item_id is not None and (
+            self.operation != "replace" or self.replace_item_id not in self.outfit_item_ids
+        ):
+            raise ValueError("replace_item_id must belong to the outfit and requires operation=replace")
+        if self.without_heel and self.slot != "shoes":
+            raise ValueError("without_heel applies to the shoes slot")
+        return self
+
+
 class VectorHit(Contract):
     item_id: str
     distance: float
@@ -128,6 +159,19 @@ class RetrievalResult(Contract):
     wardrobe_revision: str
     model_fingerprint: str
     score_method: str = "weighted_rrf"
+
+
+class SlotSearchResult(Contract):
+    user_id: str
+    slot: Category
+    candidates: list[Candidate]
+    kept_item_ids: list[str]
+    replaced_item_id: str | None = None
+    context: QueryContext
+    warnings: list[str] = Field(default_factory=list)
+    timings_ms: dict[str, float] = Field(default_factory=dict)
+    wardrobe_revision: str
+    model_fingerprint: str
 
 
 class SyncResult(Contract):

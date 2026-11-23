@@ -89,6 +89,37 @@ export interface RetrievalResult {
   score_method: string;
 }
 
+// Library contract for a single edit. Chat and the final card use the backend contract.
+export interface SlotSearchRequest {
+  user_id: string;
+  query: string;
+  slot: ClothingCategory;
+  operation: 'add' | 'replace';
+  outfit_item_ids: string[];
+  replace_item_id?: string | null;
+  context?: RetrievalResult['context'];
+  exclude_item_ids?: string[];
+  exclude_colors?: string[];
+  exclude_materials?: string[];
+  without_heel?: boolean;
+  mode?: Exclude<RetrievalMode, 'visual'>;
+  alpha?: number;
+  visual_weight?: number;
+}
+
+export interface SlotSearchResult {
+  user_id: string;
+  slot: ClothingCategory;
+  candidates: RetrievalCandidate[];
+  kept_item_ids: string[];
+  replaced_item_id: string | null;
+  context: RetrievalResult['context'];
+  warnings: string[];
+  timings_ms: Record<string, number>;
+  wardrobe_revision: string;
+  model_fingerprint: string;
+}
+
 export interface OutfitLook {
   id: string;
   title: string;

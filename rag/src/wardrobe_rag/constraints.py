@@ -66,6 +66,19 @@ def inferred_exclusions(request: RetrievalRequest) -> tuple[list[str], list[str]
     return colors, materials
 
 
+_FLAT_SHOE = re.compile(r"\b(?:без\s+каблук\w*|плоск\w*\s+подошв\w*|на\s+плоском\s+ходу|flat[ -]sole|no[ -]heel|heel[- ]free)\b")
+_HEEL = re.compile(r"\b(?:на|с)\s+(?:\w+\s+){0,2}каблук(?:е|ом)\b|\bheels\b")
+
+
+def requests_flat_shoes(query: str) -> bool:
+    return bool(_FLAT_SHOE.search(query.casefold().replace("ё", "е")))
+
+
+def is_documented_flat(item: WardrobeItem) -> bool:
+    parts = [part.casefold().replace("ё", "е") for part in (item.title, *item.tags)]
+    return any(_FLAT_SHOE.search(part) for part in parts) and not any(_HEEL.search(part) for part in parts)
+
+
 def item_violations(
     item: WardrobeItem, request: RetrievalRequest, context: QueryContext,
 ) -> list[str]:

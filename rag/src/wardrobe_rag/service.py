@@ -7,7 +7,9 @@ from typing import Any, Sequence
 
 from .constraints import assemble_outfit, validate_selection
 from .retrieval import RetrievalEngine
-from .schemas import RetrievalRequest, RetrievalResult, SelectionValidation, SyncResult, WardrobeItem
+from .schemas import (
+    RetrievalRequest, RetrievalResult, SelectionValidation, SlotSearchRequest, SlotSearchResult, SyncResult, WardrobeItem,
+)
 
 
 class RAGService:
@@ -20,6 +22,9 @@ class RAGService:
 
     def retrieve(self, request: RetrievalRequest | dict[str, Any]) -> RetrievalResult:
         return self.retriever.retrieve(request)
+
+    def retrieve_slot(self, request: SlotSearchRequest | dict[str, Any]) -> SlotSearchResult:
+        return self.retriever.retrieve_slot(request)
 
     def validate_selection(self, selected_item_ids: Sequence[str], result: RetrievalResult) -> SelectionValidation:
         store = self.retriever.store

@@ -4,14 +4,20 @@ from __future__ import annotations
 
 import math
 from contextlib import nullcontext
+from dataclasses import dataclass
 from time import perf_counter
 from typing import Any, Callable, Protocol, Sequence
 
 from rank_bm25 import BM25Okapi
 
 from .config import RAGConfig
-from .constraints import item_violations, required_slots, resolve_context, weather_warnings
-from .schemas import CATEGORIES, Candidate, RetrievalRequest, RetrievalResult, VectorHit, WardrobeItem
+from .constraints import (
+    is_documented_flat, item_violations, requests_flat_shoes, required_slots, resolve_context, weather_warnings,
+)
+from .schemas import (
+    CATEGORIES, Candidate, Category, RetrievalRequest, RetrievalResult, SlotSearchRequest, SlotSearchResult,
+    VectorHit, WardrobeItem,
+)
 from .text import build_document, tokenize
 
 
@@ -27,6 +33,13 @@ class Embedder(Protocol):
     def encode_text(self, texts: list[str]) -> Any: ...
     def encode_visual_text(self, texts: list[str]) -> Any: ...
     def encode_images(self, images: list[Any]) -> Any: ...
+
+
+@dataclass(frozen=True)
+class _SlotScope:
+    target: Category
+    kept: list[WardrobeItem]
+    flat_only: bool
 
 
 def _vector(encoded: Any) -> list[float]:
@@ -68,7 +81,46 @@ class RetrievalEngine:
         with session:
             return self._retrieve(request)
 
-    def _retrieve(self, request: RetrievalRequest) -> RetrievalResult:
+    def retrieve_slot(self, edit: SlotSearchRequest | dict[str, Any]) -> SlotSearchResult:
+        edit = SlotSearchRequest.model_validate(edit)
+        session = self.store.read_session() if hasattr(self.store, "read_session") else nullcontext()
+        with session:
+            items = self.store.get_items(edit.user_id)
+            by_id = {item.id: item for item in items}
+            if set(edit.outfit_item_ids) - by_id.keys():
+                raise ValueError("The existing outfit contains IDs outside this user's current wardrobe")
+            in_slot = [item_id for item_id in edit.outfit_item_ids if by_id[item_id].category == edit.slot]
+            replaced = edit.replace_item_id
+            if edit.operation == "replace":
+                if replaced is None and len(in_slot) == 1:
+                    replaced = in_slot[0]
+                if replaced is None or replaced not in in_slot:
+                    raise ValueError("Choose one existing item from the requested slot to replace")
+            elif len(in_slot) >= (2 if edit.slot == "accessories" else 1):
+                raise ValueError("The requested slot is full; use operation=replace")
+
+            kept = [by_id[item_id] for item_id in edit.outfit_item_ids if item_id != replaced]
+            request = RetrievalRequest(
+                user_id=edit.user_id, query=edit.query, mode=edit.mode,
+                context=edit.context, alpha=edit.alpha, visual_weight=edit.visual_weight,
+                exclude_item_ids=list(dict.fromkeys([*edit.outfit_item_ids, *edit.exclude_item_ids])),
+                exclude_colors=edit.exclude_colors, exclude_materials=edit.exclude_materials,
+            )
+            # Weather explicitly mentioned in this edit supersedes the prior context.
+            current = resolve_context(RetrievalRequest(user_id=edit.user_id, query=edit.query))
+            request.context = edit.context.model_copy(update=current.model_dump(exclude_none=True))
+            flat_only = edit.slot == "shoes" and (edit.without_heel or requests_flat_shoes(edit.query))
+            scope = _SlotScope(edit.slot, kept, flat_only)
+            result = self._retrieve(request, scope=scope, items=items)
+            return SlotSearchResult(
+                user_id=edit.user_id, slot=edit.slot, candidates=result.candidates_by_slot[edit.slot],
+                kept_item_ids=[item.id for item in kept], replaced_item_id=replaced,
+                context=result.context, warnings=result.warnings, timings_ms=result.timings_ms,
+                wardrobe_revision=result.wardrobe_revision, model_fingerprint=result.model_fingerprint,
+            )
+
+    def _retrieve(self, request: RetrievalRequest, *, scope: _SlotScope | None = None,
+                  items: list[WardrobeItem] | None = None) -> RetrievalResult:
         started = perf_counter()
         timings: dict[str, float] = {}
         warnings: list[str] = []
@@ -79,40 +131,55 @@ class RetrievalEngine:
             stored_fingerprint = self.store.get_fingerprint()
             if stored_fingerprint and stored_fingerprint != model_fingerprint:
                 raise ValueError("Embedding model fingerprint changed; use the indexed encoders or reindex in a fresh data directory")
-        items = self.store.get_items(request.user_id)
+        items = self.store.get_items(request.user_id) if items is None else items
         revision = self.store.get_revision(request.user_id)
         context = resolve_context(request)
-        slots = required_slots(request, context, self.config)
+        slots = [scope.target] if scope else required_slots(request, context, self.config)
         by_id = {item.id: item for item in items}
         if len(by_id) != len(items):
             raise ValueError("Store returned duplicate IDs within one user's snapshot")
         if request.anchor_item_id is not None and request.anchor_item_id not in by_id:
             raise ValueError("anchor_item_id is not present in this user's wardrobe")
-        allowed = {item.id: item for item in items if not item_violations(item, request, context)}
+        pool = [item for item in items if item.category == scope.target] if scope else items
+        allowed = {item.id: item for item in pool if not item_violations(item, request, context)}
         if request.anchor_item_id is not None and request.anchor_item_id not in allowed:
             raise ValueError("anchor_item_id conflicts with explicit item or weather constraints")
-        filtered_count = len(items) - len(allowed)
+        filtered_count = len(pool) - len(allowed)
         if filtered_count:
             warnings.append(f"Filtered {filtered_count} items by explicit exclusions or curated weather attributes")
         if not items:
             warnings.append("The user's wardrobe is empty; no demo-catalog items were substituted")
+        if scope and scope.flat_only:
+            allowed = {item_id: item for item_id, item in allowed.items() if is_documented_flat(item)}
+            warnings.append("Flat footwear required; candidates without an explicit flat-sole annotation were excluded")
 
-        search_text = " ".join(filter(None, [request.query, context.occasion, context.weather, context.vibe]))
+        search_parts = [request.query, context.occasion, context.weather, context.vibe]
+        if scope:
+            if context.temperature_c is not None:
+                search_parts.append(f"{context.temperature_c:g} °C")
+            if context.rain:
+                search_parts.append("дождь защита от дождя")
+            if context.wind:
+                search_parts.append("ветер ветрозащита")
+            retained = "; ".join(" ".join(filter(None, [i.title, i.color, i.material, " ".join(i.style)])) for i in scope.kept)
+            if retained:
+                search_parts.append(f"Сочетать с {retained}")
+        search_text = " ".join(filter(None, search_parts))
         use_bm25 = request.mode in {"bm25", "hybrid", "multimodal"} and bool(search_text)
         use_dense = request.mode in {"dense", "hybrid", "multimodal"} and bool(search_text)
         use_visual = request.mode in {"visual", "multimodal"}
 
         bm25_scores: dict[str, float] = {}
-        if use_bm25 and items:
+        if use_bm25 and pool:
             phase = perf_counter()
-            documents = [tokenize(build_document(item)) for item in items]
+            documents = [tokenize(build_document(item)) for item in pool]
             query_tokens = tokenize(search_text)
             if any(documents) and query_tokens:
                 scores = BM25Okapi(documents).get_scores(query_tokens)
                 query_set = set(query_tokens)
                 # No-overlap documents never receive a spurious RRF rank, even at zero IDF.
                 bm25_scores = {
-                    item.id: float(score) for item, tokens, score in zip(items, documents, scores)
+                    item.id: float(score) for item, tokens, score in zip(pool, documents, scores)
                     if item.id in allowed and query_set.intersection(tokens)
                 }
             timings["bm25"] = (perf_counter() - phase) * 1000
@@ -144,9 +211,9 @@ class RetrievalEngine:
         dense_search_ms = 0.0
         visual_search_ms = 0.0
         fusion_ms = 0.0
-        for category in CATEGORIES:
+        for category in ((scope.target,) if scope else CATEGORIES):
             anchor_category = by_id[request.anchor_item_id].category if request.anchor_item_id else None
-            if category == "accessories" and not self.config.include_accessories and anchor_category != "accessories":
+            if not scope and category == "accessories" and not self.config.include_accessories and anchor_category != "accessories":
                 candidates_by_slot[category] = []
                 continue
             category_items = {item.id: item for item in allowed.values() if item.category == category}
@@ -201,7 +268,7 @@ class RetrievalEngine:
             selected_ids = {candidate.item.id for candidate in selected}
             # Guarantee slot coverage without fabricating retrieval scores. Evaluators
             # must ignore fallback=True rows when computing ranked HitRate/MRR.
-            for item_id in sorted(category_items):
+            for item_id in (() if scope else sorted(category_items)):
                 if len(selected) >= self.config.top_k[category]:
                     break
                 if item_id not in selected_ids:
@@ -227,7 +294,7 @@ class RetrievalEngine:
         warnings.extend(weather_warnings(all_candidates, context))
         if request.mode == "multimodal":
             warnings.append("Multimodal RRF weights: BM25=(1-alpha), text=alpha*(1-visual_weight), image=alpha*visual_weight; unavailable Dense channels redistribute within the Dense group")
-        if context.temperature_c is not None or context.rain is True:
+        if scope is None and (context.temperature_c is not None or context.rain is True):
             warnings.append("Outerwear requirement uses an explicit demo heuristic (temperature threshold/rain), not a physiological comfort guarantee")
         timings["total"] = (perf_counter() - started) * 1000
         return RetrievalResult(

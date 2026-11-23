@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "split": "expanded_museum_cross_view",
+  "user_id": "expanded-museum-pilot",
+  "corpus": "corpus.json",
+  "mrr_k": 12,
+  "required_slots": [
+    "outerwear"
+  ],
+  "provenance": {
+    "kind": "separate_real_photos_same_instance",
+    "annotation_status": "identity_labels_from_met_object_ids",
+    "images": "provenance.json",
+    "limitations": "Twelve 19th-century museum coats in one slot. Catalogue front views and query back views are independent exposures. Lighting and backdrop often match within a pair. This is not an estimate of accuracy on modern wardrobes or street photography."
+  },
+  "queries": [
+    {
+      "id": "met-103888-back",
+      "query": "",
+      "query_image": "assets/met-103888-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103888"
+        ]
+      }
+    },
+    {
+      "id": "met-103895-back",
+      "query": "",
+      "query_image": "assets/met-103895-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103895"
+        ]
+      }
+    },
+    {
+      "id": "met-103915-back",
+      "query": "",
+      "query_image": "assets/met-103915-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103915"
+        ]
+      }
+    },
+    {
+      "id": "met-103916-back",
+      "query": "",
+      "query_image": "assets/met-103916-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103916"
+        ]
+      }
+    },
+    {
+      "id": "met-103917-back",
+      "query": "",
+      "query_image": "assets/met-103917-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103917"
+        ]
+      }
+    },
+    {
+      "id": "met-103925-back",
+      "query": "",
+      "query_image": "assets/met-103925-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103925"
+        ]
+      }
+    },
+    {
+      "id": "met-103931-back",
+      "query": "",
+      "query_image": "assets/met-103931-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103931"
+        ]
+      }
+    },
+    {
+      "id": "met-103934-back",
+      "query": "",
+      "query_image": "assets/met-103934-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103934"
+        ]
+      }
+    },
+    {
+      "id": "met-103948-back",
+      "query": "",
+      "query_image": "assets/met-103948-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103948"
+        ]
+      }
+    },
+    {
+      "id": "met-103954-back",
+      "query": "",
+      "query_image": "assets/met-103954-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103954"
+        ]
+      }
+    },
+    {
+      "id": "met-103956-back",
+      "query": "",
+      "query_image": "assets/met-103956-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103956"
+        ]
+      }
+    },
+    {
+      "id": "met-103967-back",
+      "query": "",
+      "query_image": "assets/met-103967-query.jpg",
+      "relevant_by_slot": {
+        "outerwear": [
+          "met-103967"
+        ]
+      }
+    }
+  ]
+}

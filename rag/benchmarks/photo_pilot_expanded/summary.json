@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-23T13:42:44.261222+00:00",
+  "dataset": {
+    "schema_version": 1,
+    "split": "expanded_museum_cross_view",
+    "user_id": "expanded-museum-pilot",
+    "corpus": "corpus.json",
+    "mrr_k": 12,
+    "required_slots": [
+      "outerwear"
+    ],
+    "provenance": {
+      "kind": "separate_real_photos_same_instance",
+      "annotation_status": "identity_labels_from_met_object_ids",
+      "images": "provenance.json",
+      "limitations": "Twelve 19th-century museum coats in one slot. Catalogue front views and query back views are independent exposures. Lighting and backdrop often match within a pair. This is not an estimate of accuracy on modern wardrobes or street photography."
+    }
+  },
+  "query_count": 12,
+  "repeats": 1,
+  "warmup_per_query_mode": 1,
+  "mrr_k": 12,
+  "latency_protocol": "Serial in-process wall-clock retrieval only, after declared warmups. No LLM, UI, indexing or model initialization included.",
+  "statistical_unit": "Query-slot pairs; repeated calls are repeated measurements, not independent new queries.",
+  "runtime": {
+    "python": "3.14.3",
+    "system": "Windows-10-10.0.19045-SP0"
+  },
+  "metadata": {
+    "sync": {
+      "user_id": "expanded-museum-pilot",
+      "revision": "b3fef5813e620028659e14f8dc2d4ed78e57d9c38c5db75ba22d6e9ed4eb4654",
+      "indexed_count": 12,
+      "image_count": 12,
+      "added_count": 12,
+      "updated_count": 0,
+      "deleted_count": 0,
+      "unchanged_count": 0,
+      "warnings": [],
+      "timings_ms": {
+        "prepare_ms": 14302.844299993012,
+        "text_embedding_ms": 294.1176999884192,
+        "image_embedding_ms": 642.2440000023926,
+        "persist_ms": 140.14810000662692,
+        "total_ms": 15379.449100000784
+      }
+    },
+    "init_and_index_ms": 15380.413499995484,
+    "models": {
+      "models": {
+        "text": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+        "image": "sentence-transformers/clip-ViT-B-32",
+        "visual_text": "sentence-transformers/clip-ViT-B-32-multilingual-v1"
+      },
+      "revisions": {
+        "text": "4328cf26390c98c5e3c738b4460a05b95f4911f5",
+        "image": "327ab6726d33c0e22f920c83f2ff9e4bd38ca37f",
+        "visual_text": "58edf8cada9e398793dca955574a48cbb7f18be2"
+      },
+      "device": "cpu",
+      "offline": true
+    },
+    "model_fingerprint": "3dd91d47be2542103e17e84332216e8869bfd003b55dcba16c8186264cb34f50",
+    "candidate_depth": 12,
+    "platform": "Windows-10-10.0.19045-SP0",
+    "versions": {
+      "chromadb": "1.5.9",
+      "sentence-transformers": "5.7.0",
+      "transformers": "5.23.0",
+      "torch": "2.15.0"
+    }
+  },
+  "modes": {
+    "visual": {
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "mrr@12": 1.0
+      },
+      "pooled_metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "mrr@12": 1.0
+      },
+      "by_slot": {
+        "outerwear": {
+          "hit_rate@1": 1.0,
+          "hit_rate@3": 1.0,
+          "mrr@12": 1.0
+        }
+      },
+      "full_slot_coverage": {
+        "@1": 1.0,
+        "@3": 1.0
+      },
+      "candidate_slot_coverage_with_fallback": 1.0,
+      "query_slot_pairs": 12,
+      "retrieval_calls": 12,
+      "latency_ms": {
+        "samples": 12,
+        "median": 76.43514998926548,
+        "p95": 82.45620500165387,
+        "mean": 76.8250583326638,
+        "minimum": 72.405400002026,
+        "maximum": 84.75350000662729
+      },
+      "component_timings_ms": {
+        "model_prepare": {
+          "samples": 12,
+          "median": 0.053949996072333306,
+          "p95": 0.06632999866269529,
+          "mean": 0.055924998984361686,
+          "minimum": 0.04939999780617654,
+          "maximum": 0.07150000601541251
+        },
+        "embedding_visual": {
+          "samples": 12,
+          "median": 69.09689999883994,
+          "p95": 74.928545000148,
+          "mean": 69.92149999981241,
+          "minimum": 65.38549999822862,
+          "maximum": 76.66439999593422
+        },
+        "visual_search": {
+          "samples": 12,
+          "median": 4.470649997529108,
+          "p95": 5.3084600061993115,
+          "mean": 4.414133333436136,
+          "minimum": 2.864399997633882,
+          "maximum": 5.387000011978671
+        },
+        "fusion_constraints": {
+          "samples": 12,
+          "median": 0.1542000100016594,
+          "p95": 0.21479001006809995,
+          "mean": 0.17103334175772034,
+          "minimum": 0.14530002954415977,
+          "maximum": 0.2204000047640875
+        },
+        "total": {
+          "samples": 12,
+          "median": 75.254399998812,
+          "p95": 81.19175500469282,
+          "mean": 75.62333333529143,
+          "minimum": 71.12500000221189,
+          "maximum": 83.39060000434984
+        }
+      },
+      "first_observed_call_ms": 87.32229999441188,
+      "warnings": []
+    }
+  },
+  "dataset_sha256": "d6716b475fa5b9a185181c9a4cacf71ee966841dc293dd41262365699260a8bc",
+  "corpus_sha256": "0931baa1b8be624930e98c02b34bd1b0924ba8259966f0c9135cad5c9d2e2869"
+}

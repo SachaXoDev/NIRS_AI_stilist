@@ -1,0 +1,48 @@
+[
+  {
+    "name": "add_rain_layer",
+    "wardrobe_ids": ["item-1", "item-4", "item-8", "item-28", "item-29", "item-33"],
+    "request": {
+      "user_id": "slot-example-rain",
+      "query": "Добавь куртку в дождь к этому образу",
+      "slot": "outerwear",
+      "operation": "add",
+      "outfit_item_ids": ["item-1", "item-4", "item-8"],
+      "context": {"occasion": "деловая встреча", "temperature_c": 10, "rain": false}
+    },
+    "expected_ids": ["item-33"],
+    "kept_ids": ["item-1", "item-4", "item-8"],
+    "expected_replaced_id": null
+  },
+  {
+    "name": "replace_heels",
+    "wardrobe_ids": ["item-1", "item-4", "item-7", "item-35", "item-36", "item-42"],
+    "request": {
+      "user_id": "slot-example-shoes",
+      "query": "Замени туфли на что-нибудь без каблука, остальное оставь",
+      "slot": "shoes",
+      "operation": "replace",
+      "outfit_item_ids": ["item-1", "item-4", "item-42"],
+      "context": {"occasion": "встреча в стиле smart casual", "temperature_c": 17}
+    },
+    "expected_ids": ["item-36"],
+    "kept_ids": ["item-1", "item-4"],
+    "expected_replaced_id": "item-42"
+  },
+  {
+    "name": "no_flat_alternative",
+    "wardrobe_ids": ["item-1", "item-4", "item-7", "item-35", "item-42"],
+    "request": {
+      "user_id": "slot-example-empty",
+      "query": "Замени туфли на обувь без каблука",
+      "slot": "shoes",
+      "operation": "replace",
+      "replace_item_id": "item-42",
+      "outfit_item_ids": ["item-1", "item-4", "item-42"],
+      "context": {"occasion": "деловая встреча"}
+    },
+    "expected_ids": [],
+    "kept_ids": ["item-1", "item-4"],
+    "expected_replaced_id": "item-42"
+  }
+]
