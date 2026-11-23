@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { UserAccount, UserRole, WardrobeItem } from '../types';
 import { getUsers, updateUserRole } from '../services/authService';
+import { USE_REAL_BACKEND } from '../services/backendConfig';
+import { fetchAdminSettings } from '../services/adminApi';
+import type { AdminSettings } from '../services/adminApi';
+import { AdminSettingsForm } from './AdminSettingsForm';
 import {
   ShieldAlert,
   Users,
   Database,
-  Sliders,
-  CheckCircle2,
   RefreshCw,
-  Terminal,
   Activity,
   Layers,
   ArrowUpRight,
@@ -32,18 +33,25 @@ export function AdminPanel({
   onLogout,
 }: AdminPanelProps) {
   const [users, setUsers] = useState<UserAccount[]>(() => getUsers());
-  const [llmModel, setLlmModel] = useState('qwen-2.5-32b-instruct');
-  const [vectorDb, setVectorDb] = useState('Qdrant (Vector Cluster 01)');
-  const [similarityThreshold, setSimilarityThreshold] = useState(0.82);
-  const [topK, setTopK] = useState(5);
-  const [hybridAlpha, setHybridAlpha] = useState(0.7); // 70% dense vectors, 30% sparse BM25
-  const [systemPrompt, setSystemPrompt] = useState(
-    'Вы — ведущий стилист бренда 12 STOREEZ. Подбирайте образы исключительно из предоставленного контекста капсулы гардероба пользователя. Соблюдайте правила колористики, многослойности (Smart Layering) и эстетики минимализма.'
-  );
-
-  const [isSaved, setIsSaved] = useState(false);
-  const [reindexing, setReindexing] = useState(false);
+  const [config, setConfig] = useState<AdminSettings>();
+  const [configError, setConfigError] = useState('');
+  const [configVersion, setConfigVersion] = useState(0);
+  const [saving, setSaving] = useState(false);
   const [adminTab, setAdminTab] = useState<'overview' | 'users' | 'rag' | 'prompt'>('overview');
+
+  useEffect(() => {
+    if (!USE_REAL_BACKEND) return;
+    const controller = new AbortController();
+    const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(10_000)]);
+    void fetchAdminSettings(signal)
+      .then((loaded) => { if (!controller.signal.aborted) setConfig(loaded); })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setConfigError(error instanceof Error ? error.message : 'Не удалось загрузить настройки.');
+        }
+      });
+    return () => { controller.abort(); };
+  }, [configVersion]);
 
   const handleRoleToggle = (userId: string, currentRole: UserRole) => {
     const nextRole: UserRole = currentRole === 'admin' ? 'user' : 'admin';
@@ -51,19 +59,13 @@ export function AdminPanel({
     setUsers(updated);
   };
 
-  const handleSaveConfig = () => {
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2500);
+  const reloadConfig = () => {
+    setConfig(undefined);
+    setConfigError('');
+    setConfigVersion((version) => version + 1);
   };
 
-  const handleReindex = () => {
-    setReindexing(true);
-    setTimeout(() => {
-      setReindexing(false);
-      setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2000);
-    }, 1200);
-  };
+  const connectionStatus = !USE_REAL_BACKEND ? 'Автономный режим' : config ? 'Сервер подключён' : configError ? 'Ошибка подключения' : 'Подключение…';
 
   return (
     <div className="flex-1 flex flex-col h-full bg-[#F6F4F0] dark:bg-[#181614] overflow-y-auto">
@@ -95,14 +97,16 @@ export function AdminPanel({
             <LogOut className="w-3.5 h-3.5" />
             <span>Выйти</span>
           </button>
-          <button
-            onClick={handleReindex}
-            disabled={reindexing}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[#1E1B18] text-white dark:bg-[#FFFFFF] dark:text-[#181614] rounded-lg tracking-wider uppercase font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${reindexing ? 'animate-spin' : ''}`} />
-            {reindexing ? 'Обновление базы...' : 'Синхронизировать гардероб'}
-          </button>
+          {USE_REAL_BACKEND && (
+            <button
+              onClick={reloadConfig}
+              disabled={saving || (!config && !configError)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[#1E1B18] text-white dark:bg-white dark:text-[#181614] rounded-lg tracking-wider uppercase font-medium cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Обновить настройки
+            </button>
+          )}
         </div>
       </div>
 
@@ -110,6 +114,7 @@ export function AdminPanel({
       <div className="px-6 border-b border-[#DFD9CF] dark:border-[#2E2A26] bg-[#F6F4F0] dark:bg-[#181614] flex gap-6">
         <button
           onClick={() => setAdminTab('overview')}
+          disabled={saving}
           className={`py-3 text-xs uppercase tracking-[0.14em] font-medium border-b-2 transition-colors cursor-pointer ${
             adminTab === 'overview'
               ? 'border-[#1E1B18] text-[#1E1B18] dark:border-white dark:text-white'
@@ -120,6 +125,7 @@ export function AdminPanel({
         </button>
         <button
           onClick={() => setAdminTab('users')}
+          disabled={saving}
           className={`py-3 text-xs uppercase tracking-[0.14em] font-medium border-b-2 transition-colors cursor-pointer ${
             adminTab === 'users'
               ? 'border-[#1E1B18] text-[#1E1B18] dark:border-white dark:text-white'
@@ -130,6 +136,7 @@ export function AdminPanel({
         </button>
         <button
           onClick={() => setAdminTab('rag')}
+          disabled={saving}
           className={`py-3 text-xs uppercase tracking-[0.14em] font-medium border-b-2 transition-colors cursor-pointer ${
             adminTab === 'rag'
               ? 'border-[#1E1B18] text-[#1E1B18] dark:border-white dark:text-white'
@@ -140,6 +147,7 @@ export function AdminPanel({
         </button>
         <button
           onClick={() => setAdminTab('prompt')}
+          disabled={saving}
           className={`py-3 text-xs uppercase tracking-[0.14em] font-medium border-b-2 transition-colors cursor-pointer ${
             adminTab === 'prompt'
               ? 'border-[#1E1B18] text-[#1E1B18] dark:border-white dark:text-white'
@@ -193,20 +201,20 @@ export function AdminPanel({
                   {threadsCount}
                 </div>
                 <div className="mt-1 text-[11px] text-[#6E665A] dark:text-[#9E9487]">
-                  Сервис: <strong>Готов к подбору образов</strong>
+                  Сервис: <strong>{connectionStatus}</strong>
                 </div>
               </div>
 
               <div className="p-4 rounded-xl border border-[#DFD9CF] dark:border-[#2E2A26] bg-white dark:bg-[#1E1C19] shadow-xs">
                 <div className="flex items-center justify-between text-xs text-[#7C7469] dark:text-[#A4998C] mb-2 uppercase tracking-wider">
-                  <span>Точность попадания в стиль</span>
+                  <span>Движок поиска</span>
                   <Zap className="w-4 h-4 text-purple-600" />
                 </div>
-                <div className="text-2xl font-semibold text-[#1E1B18] dark:text-white">
-                  96.4%
+                <div className="text-sm font-semibold text-[#1E1B18] dark:text-white break-words">
+                  {config?.retriever ?? '—'}
                 </div>
                 <div className="mt-1 text-[11px] text-[#6E665A] dark:text-[#9E9487]">
-                  Скорость ответа: <strong>~0.3 секунды</strong>
+                  Модель: <strong>{config?.llmModel ?? '—'}</strong>
                 </div>
               </div>
             </div>
@@ -249,10 +257,9 @@ export function AdminPanel({
 
                 <div className="mt-4 pt-4 border-t border-[#DFD9CF] dark:border-[#2D2925] flex items-center justify-between text-xs text-[#7C7469] dark:text-[#9F9589]">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Сервис онлайн-стилиста работает без задержек</span>
+                    <span className={`w-2 h-2 rounded-full ${config ? 'bg-emerald-500' : 'bg-[#8A8175]'}`} />
+                    <span>{connectionStatus}</span>
                   </div>
-                  <span className="font-mono text-[11px]">Доступность: 99.98%</span>
                 </div>
               </div>
 
@@ -264,13 +271,6 @@ export function AdminPanel({
                     Быстрые операции
                   </h3>
                   <div className="space-y-2">
-                    <button
-                      onClick={handleReindex}
-                      className="w-full py-2 px-3 text-xs text-left rounded-lg border border-[#DFD9CF] dark:border-[#322D28] hover:bg-[#FAF8F5] dark:hover:bg-[#25221F] text-[#1E1B18] dark:text-white flex items-center justify-between transition-colors cursor-pointer"
-                    >
-                      <span>Синхронизировать вещи гардероба ({wardrobe.length} шт.)</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-[#8C8275]" />
-                    </button>
                     <button
                       onClick={() => setAdminTab('users')}
                       className="w-full py-2 px-3 text-xs text-left rounded-lg border border-[#DFD9CF] dark:border-[#322D28] hover:bg-[#FAF8F5] dark:hover:bg-[#25221F] text-[#1E1B18] dark:text-white flex items-center justify-between transition-colors cursor-pointer"
@@ -289,7 +289,7 @@ export function AdminPanel({
                 </div>
 
                 <div className="mt-4 p-3 rounded-lg bg-[#FAF8F5] dark:bg-[#24211E] border border-[#E5DFD5] dark:border-[#332E29] text-[11px] text-[#6E665A] dark:text-[#A69B8E]">
-                  💡 <em>Для демонстрации:</em> разделение ролей позволяет куратору гибко задавать тон рекомендаций и правила сочетания коллекций.
+                  Роли клиентов хранятся локально. Серверные настройки защищены отдельным токеном куратора.
                 </div>
               </div>
             </div>
@@ -378,157 +378,16 @@ export function AdminPanel({
           </div>
         )}
 
-        {/* VIEW 3: RAG PIPELINE CONFIG */}
-        {adminTab === 'rag' && (
-          <div className="space-y-6 max-w-3xl animate-in fade-in duration-200">
-            <div>
-              <h2 className="text-base font-semibold text-[#1E1B18] dark:text-white">
-                Правила комплектации образов и параметры стилизации
-              </h2>
-              <p className="text-xs text-[#6F675C] dark:text-[#A89E91]">
-                Управление глубиной подбора, гармонией сочетаний и точностью соответствия запросу.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl border border-[#DFD9CF] dark:border-[#2E2A26] bg-white dark:bg-[#1E1C19] space-y-5">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#1E1B18] dark:text-white mb-1.5">
-                  Стилистический интеллект (Модель генерации)
-                </label>
-                <select
-                  value={llmModel}
-                  onChange={(e) => setLlmModel(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-[#FAF8F5] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#38332E] rounded-lg text-[#1E1B18] dark:text-white focus:outline-none"
-                >
-                  <option value="qwen-2.5-32b-instruct">12 STOREEZ Expert Engine (Ориентирован на премиальный капсульный гардероб)</option>
-                  <option value="llama-3.3-70b-versatile">Atelier Versatile Studio (Универсальный крой и цветосочетания)</option>
-                  <option value="gpt-4o-mini">Boutique Fast Mode (Быстрый лаконичный ответ)</option>
-                  <option value="deepseek-r1-distill">Editorial Stylist (Глубокий анализ драпировок и многослойности)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-[#1E1B18] dark:text-white mb-1.5">
-                  База каталога и коллекций
-                </label>
-                <input
-                  type="text"
-                  value={vectorDb}
-                  onChange={(e) => setVectorDb(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-[#FAF8F5] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#38332E] rounded-lg text-[#1E1B18] dark:text-white font-mono focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <div className="flex justify-between text-xs font-medium text-[#1E1B18] dark:text-white mb-1">
-                    <span>Широта подборки (предметов в луке)</span>
-                    <span className="font-mono">{topK} предметов</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="3"
-                    max="10"
-                    step="1"
-                    value={topK}
-                    onChange={(e) => setTopK(Number(e.target.value))}
-                    className="w-full accent-[#1E1B18] dark:accent-white"
-                  />
-                  <span className="text-[10px] text-[#7C7469] dark:text-[#9F9589]">
-                    Количество элементов для сборки законченного образа
-                  </span>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs font-medium text-[#1E1B18] dark:text-white mb-1">
-                    <span>Строгость сочетаемости (порог совместимости)</span>
-                    <span className="font-mono">{similarityThreshold}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.60"
-                    max="0.95"
-                    step="0.01"
-                    value={similarityThreshold}
-                    onChange={(e) => setSimilarityThreshold(Number(e.target.value))}
-                    className="w-full accent-[#1E1B18] dark:accent-white"
-                  />
-                  <span className="text-[10px] text-[#7C7469] dark:text-[#9F9589]">
-                    Отсекает вещи, диссонирующие по фактуре и палитре
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-xs font-medium text-[#1E1B18] dark:text-white mb-1">
-                  <span>Фокус поиска: гармония силуэта vs точный повод</span>
-                  <span className="font-mono">{Math.round(hybridAlpha * 100)}% Образ / {Math.round((1 - hybridAlpha) * 100)}% Повод</span>
-                </div>
-                <input
-                  type="range"
-                  min="0.0"
-                  max="1.0"
-                  step="0.05"
-                  value={hybridAlpha}
-                  onChange={(e) => setHybridAlpha(Number(e.target.value))}
-                  className="w-full accent-[#1E1B18] dark:accent-white"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-between">
-                <button
-                  onClick={handleSaveConfig}
-                  className="px-5 py-2.5 bg-[#1E1B18] text-white dark:bg-white dark:text-[#181614] text-xs uppercase tracking-wider font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 cursor-pointer shadow-xs"
-                >
-                  <Sliders className="w-3.5 h-3.5" />
-                  Применить параметры
-                </button>
-                {isSaved && (
-                  <span className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium animate-in fade-in">
-                    <CheckCircle2 className="w-4 h-4" /> Параметры сохранены
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* VIEW 4: SYSTEM PROMPT */}
-        {adminTab === 'prompt' && (
-          <div className="space-y-4 max-w-3xl animate-in fade-in duration-200">
-            <div>
-              <h2 className="text-base font-semibold text-[#1E1B18] dark:text-white">
-                Тон коммуникации и стилистические правила 12 STOREEZ
-              </h2>
-              <p className="text-xs text-[#6F675C] dark:text-[#A89E91]">
-                Правила подачи рекомендаций: лаконичность, тактичность, эстетика вневременной классики.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl border border-[#DFD9CF] dark:border-[#2E2A26] bg-white dark:bg-[#1E1C19] space-y-4">
-              <textarea
-                rows={8}
-                value={systemPrompt}
-                onChange={(e) => setSystemPrompt(e.target.value)}
-                className="w-full p-3.5 text-xs bg-[#FAF8F5] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#38332E] rounded-lg text-[#1E1B18] dark:text-white font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#1E1B18] dark:focus:ring-white"
-              />
-
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={handleSaveConfig}
-                  className="px-5 py-2.5 bg-[#1E1B18] text-white dark:bg-white dark:text-[#181614] text-xs uppercase tracking-wider font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 cursor-pointer shadow-xs"
-                >
-                  <Terminal className="w-3.5 h-3.5" />
-                  Сохранить правила стилиста
-                </button>
-                {isSaved && (
-                  <span className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium animate-in fade-in">
-                    <CheckCircle2 className="w-4 h-4" /> Правила обновлены
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+        {(adminTab === 'rag' || adminTab === 'prompt') && (
+          config ? (
+            <AdminSettingsForm key={adminTab} tab={adminTab} config={config} onSaved={setConfig} onSaving={setSaving} />
+          ) : (
+            <p role={configError ? 'alert' : 'status'} className="text-sm text-[#6F675C] dark:text-[#A89E91]">
+              {!USE_REAL_BACKEND
+                ? 'Серверные настройки недоступны в автономном режиме. Включите VITE_USE_REAL_BACKEND и запустите FastAPI.'
+                : configError || 'Загружаем настройки сервера…'}
+            </p>
+          )
         )}
       </div>
     </div>

@@ -26,11 +26,12 @@ RULES_PROMPT = f"""
     "title": "короткое название образа, до 60 символов",
     "description": "одно предложение о настроении и силуэте",
     "occasion": "повод",
-    "item_ids": ["id вещи", "id вещи"],
+    "item_ids": ["ID верха", "ID низа", "ID обуви"],
     "stylistReasoning": "1–2 предложения: почему вещи сочетаются (силуэт, фактура, цвет)",
     "confidenceTips": ["совет по стилизации", "ещё один совет"]
   }}
 }}
+Массив item_ids выше показывает порядок основных слотов, а не ограничение длины: добавь верхнюю одежду, если она обязательна.
 """.strip()
 
 REPAIR_PROMPT = (
@@ -88,13 +89,12 @@ def _candidate_payload(candidate: SlotCandidate) -> dict[str, Any]:
     item = candidate.item
     payload: dict[str, Any] = {
         "id": item.id,
-        "slot": item.category,
+        # Слот уже указан в заголовке группы.
         "title": item.title,
         "color": item.color,
         "season": item.season,
         "material": item.material,
         "style": item.style,
-        "tags": item.tags,
     }
     if item.weather is not None:
         payload["weather"] = item.weather.model_dump(exclude_none=True)
@@ -104,11 +104,11 @@ def _candidate_payload(candidate: SlotCandidate) -> dict[str, Any]:
 
 def build_user_prompt(ctx: PromptContext) -> str:
     outcome = ctx.outcome
-    candidates = [
-        _candidate_payload(candidate)
+    candidates = {
+        slot: [_candidate_payload(candidate) for candidate in outcome.candidates_by_slot[slot]]
         for slot in SLOTS
-        for candidate in outcome.candidates_by_slot.get(slot, [])
-    ]
+        if outcome.candidates_by_slot.get(slot)
+    }
     lines = [
         f"Запрос клиента: «{ctx.query}»",
         "",
@@ -121,10 +121,18 @@ def build_user_prompt(ctx: PromptContext) -> str:
     lines += [
         "",
         f"Обязательные слоты: {json.dumps(outcome.required_slots, ensure_ascii=False)}",
+        "Для подбора образа сначала выбери ровно один id из каждой обязательной группы ниже.",
         f"Якорная вещь: {json.dumps(outcome.anchor_item_id, ensure_ascii=False)}",
         "",
-        "Кандидаты (JSON; внутри слота отсортированы по релевантности запросу):",
-        json.dumps(candidates, ensure_ascii=False),
+        "Кандидаты по слотам (внутри каждой группы — от наиболее релевантных):",
+        *(f"{slot}: {json.dumps(group, ensure_ascii=False)}" for slot, group in candidates.items()),
+        "",
+        "Проверь обязательные слоты: из каждого ряда выбери ровно один ID:",
+        *(f"{slot}: " + ", ".join(json.dumps(item["id"], ensure_ascii=False) for item in candidates[slot])
+          for slot in outcome.required_slots if slot in candidates),
+        'Пример допустимого состава: "item_ids": '
+        + json.dumps([item.id for item in ctx.assembly.items], ensure_ascii=False),
+        "Сначала выбери ID для всех обязательных слотов, затем напиши текст о выбранных вещах. Верни JSON.",
     ]
     return "\n".join(lines)
 

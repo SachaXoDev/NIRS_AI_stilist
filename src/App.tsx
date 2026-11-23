@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { WardrobeItem, ChatMessage, ChatThread, UserAccount, OutfitLook } from './types';
 import { INITIAL_WARDROBE } from './data/initialWardrobe';
 import { INITIAL_CHAT_THREADS } from './data/initialChats';
@@ -339,7 +339,16 @@ function MainApp() {
     }
   }, [currentUser]);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const requestsRef = useRef(new Map<string, AbortController>());
+  const [drafts, setDrafts] = useState<Partial<Record<string, ChatMessage>>>({});
+
+  useEffect(() => {
+    const requests = requestsRef.current;
+    return () => {
+      requests.forEach((controller) => controller.abort());
+      requests.clear();
+    };
+  }, []);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
   const [isGuestExitModalOpen, setIsGuestExitModalOpen] = useState(false);
@@ -415,6 +424,9 @@ function MainApp() {
   };
 
   const handleDeleteThread = (threadId: string) => {
+    requestsRef.current.get(threadId)?.abort();
+    requestsRef.current.delete(threadId);
+    clearDraft(threadId);
     setThreads((prev) => {
       const remaining = prev.filter((t) => t.id !== threadId);
       if (activeThreadId === threadId && remaining.length > 0) {
@@ -435,8 +447,72 @@ function MainApp() {
     setMobileViewingList(false);
   };
 
-  const handleSendMessage = async (text: string) => {
-    const currentId = activeThreadId;
+  const clearDraft = (threadId: string) => {
+    setDrafts((prev) => {
+      const next = { ...prev };
+      delete next[threadId];
+      return next;
+    });
+  };
+
+  const cancelRequests = () => {
+    const requests = requestsRef.current;
+    requests.forEach((controller) => controller.abort());
+    requests.clear();
+    setDrafts({});
+  };
+
+  const requestReply = async (threadId: string, text: string) => {
+    const requests = requestsRef.current;
+    const controller = new AbortController();
+    requests.set(threadId, controller);
+    const draft: ChatMessage = {
+      id: `ai-${crypto.randomUUID()}`,
+      sender: 'assistant',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      text: '',
+    };
+    setDrafts((prev) => ({ ...prev, [threadId]: draft }));
+
+    const commitReply = (message: ChatMessage) => {
+      if (controller.signal.aborted) return;
+      setThreads((prev) => prev.map((thread) => thread.id === threadId
+        ? { ...thread, updatedAt: message.timestamp, messages: [...thread.messages, message] }
+        : thread));
+    };
+
+    try {
+      const response = await askStylist(text, wardrobe, undefined, {
+        userId: currentUser?.id,
+        signal: controller.signal,
+        onText: (partial) => {
+          if (!controller.signal.aborted) {
+            setDrafts((prev) => ({ ...prev, [threadId]: { ...draft, text: partial } }));
+          }
+        },
+      });
+      commitReply({
+        ...draft,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: response.text,
+        suggestedOutfit: response.suggestedOutfit,
+        referencedItemIds: response.referencedItemIds,
+      });
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      console.error(error);
+      commitReply({ ...draft, text: 'Не удалось получить ответ стилиста. Пожалуйста, повторите запрос.' });
+    } finally {
+      if (requests.get(threadId) === controller) {
+        requests.delete(threadId);
+        clearDraft(threadId);
+      }
+    }
+  };
+
+  const handleSendMessage = (text: string) => {
+    const currentId = activeThread?.id;
+    if (!currentId || requestsRef.current.has(currentId)) return;
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const userMsg: ChatMessage = {
@@ -467,45 +543,7 @@ function MainApp() {
       })
     );
 
-    setIsLoading(true);
-
-    try {
-      const response = await askStylist(text, wardrobe);
-      const aiMsg: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        sender: 'assistant',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: response.text,
-        suggestedOutfit: response.suggestedOutfit,
-        referencedItemIds: response.referencedItemIds,
-      };
-
-      setThreads((prev) =>
-        prev.map((t) => {
-          if (t.id === currentId) {
-            return {
-              ...t,
-              updatedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              messages: [...t.messages, aiMsg],
-            };
-          }
-          return t;
-        })
-      );
-    } catch (error) {
-      console.error(error);
-      const errorMsg: ChatMessage = {
-        id: `error-${Date.now()}`,
-        sender: 'assistant',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: 'Не удалось получить ответ стилиста. Пожалуйста, повторите запрос.',
-      };
-      setThreads((prev) =>
-        prev.map((t) => (t.id === currentId ? { ...t, messages: [...t.messages, errorMsg] } : t))
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    void requestReply(currentId, text);
   };
 
   const handleAddItem = (item: WardrobeItem) => {
@@ -521,12 +559,12 @@ function MainApp() {
     setSelectedItem(updatedItem);
   };
 
-  const handleAskAboutItem = async (item: WardrobeItem, occasion?: string) => {
+  const handleAskAboutItem = (item: WardrobeItem, occasion?: string) => {
     const contextPrompt = occasion
       ? `Подбери законченный образ для ${occasion} с вещью «${item.title}». С чем из моей капсулы она комбинируется гармоничнее всего?`
       : `Подбери законченный образ с вещью «${item.title}». С чем из моей капсулы она комбинируется гармоничнее всего?`;
 
-    const newId = `thread-${Date.now()}`;
+    const newId = `thread-${crypto.randomUUID()}`;
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const userMsg: ChatMessage = {
@@ -550,36 +588,7 @@ function MainApp() {
     setCurrentScreen('atelier');
     setAtelierTab('chat');
     setMobileViewingList(false);
-    setIsLoading(true);
-
-    try {
-      const response = await askStylist(contextPrompt, wardrobe);
-      const aiMsg: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        sender: 'assistant',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: response.text,
-        suggestedOutfit: response.suggestedOutfit,
-        referencedItemIds: response.referencedItemIds,
-      };
-
-      setThreads((prev) =>
-        prev.map((t) => (t.id === newId ? { ...t, messages: [...t.messages, aiMsg] } : t))
-      );
-    } catch (e) {
-      console.error(e);
-      const errorMsg: ChatMessage = {
-        id: `err-${Date.now()}`,
-        sender: 'assistant',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: 'Не удалось получить ответ стилиста. Пожалуйста, повторите запрос.',
-      };
-      setThreads((prev) =>
-        prev.map((t) => (t.id === newId ? { ...t, messages: [...t.messages, errorMsg] } : t))
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    void requestReply(newId, contextPrompt);
   };
 
   const handleLogoutClick = () => {
@@ -593,6 +602,7 @@ function MainApp() {
   };
 
   const executeDirectLogout = () => {
+    cancelRequests();
     // Если гость согласился выйти без сохранения — чистим всё
     if (currentUser && currentUser.id.startsWith('guest-')) {
       const guestThreadKey = getUserThreadsKey(currentUser.id);
@@ -611,6 +621,7 @@ function MainApp() {
 
   // Когда гость нажимает "Зарегистрироваться и сохранить всё" в модалке выхода
   const handleGuestConvertedToUser = (registeredUser: UserAccount) => {
+    cancelRequests();
     // Сохраняем текущий гардероб и текущие чаты гостя под ключом нового пользователя
     const userWardrobeKey = getUserWardrobeKey(registeredUser.id);
     const userThreadKey = getUserThreadsKey(registeredUser.id);
@@ -694,7 +705,7 @@ function MainApp() {
                     <ChatArea
                       chatTitle={activeThread.title}
                       messages={activeThread.messages}
-                      isLoading={isLoading}
+                      draft={drafts[activeThread.id]}
                       onSendMessage={handleSendMessage}
                       onCreateNewChat={() => handleCreateNewThread()}
                       onSelectItem={(item) => setSelectedItem(item)}

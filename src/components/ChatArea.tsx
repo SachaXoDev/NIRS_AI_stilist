@@ -6,7 +6,7 @@ import { Send, Menu, CloudDrizzle } from 'lucide-react';
 interface ChatAreaProps {
   chatTitle: string;
   messages: ChatMessage[];
-  isLoading: boolean;
+  draft?: ChatMessage;
   onSendMessage: (text: string) => void;
   onCreateNewChat: () => void;
   onSelectItem: (item: WardrobeItem) => void;
@@ -39,7 +39,7 @@ const QUICK_PROMPTS = [
 export const ChatArea = ({
   chatTitle,
   messages,
-  isLoading,
+  draft,
   onSendMessage,
   onSelectItem,
   onOpenChatListModal,
@@ -48,14 +48,11 @@ export const ChatArea = ({
 }: ChatAreaProps) => {
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const isLoading = Boolean(draft);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
+    messagesEndRef.current?.scrollIntoView({ behavior: draft ? 'instant' : 'smooth' });
+  }, [messages, draft]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +84,7 @@ export const ChatArea = ({
 
       {/* Messages Scroll View */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-12 py-6 sm:py-8 space-y-6">
-        {messages.map((message) => {
+        {(draft?.text ? [...messages, draft] : messages).map((message) => {
           const isUser = message.sender === 'user';
           return (
             <div
@@ -131,9 +128,9 @@ export const ChatArea = ({
         })}
 
         {/* Loading Indicator */}
-        {isLoading && (
+        {isLoading && !draft?.text && (
           <div className="flex max-w-3xl mx-auto justify-start">
-            <div className="bg-[#FCFAF7] dark:bg-[#221F1C] border border-[#DFD9CF] dark:border-[#332F2A] p-3 text-xs text-[#6B6359] dark:text-[#A69D92] flex items-center gap-2">
+            <div role="status" className="bg-[#FCFAF7] dark:bg-[#221F1C] border border-[#DFD9CF] dark:border-[#332F2A] p-3 text-xs text-[#6B6359] dark:text-[#A69D92] flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#1E1B18] dark:bg-[#F7F5F0] animate-pulse" />
               <span>Подбираем вещи и формулу образа...</span>
             </div>

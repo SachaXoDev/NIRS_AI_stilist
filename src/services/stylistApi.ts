@@ -1,6 +1,7 @@
 import type { WardrobeItem, OutfitLook, ClothingCategory, RetrievalResult } from '../types';
 import { INITIAL_WARDROBE } from '../data/initialWardrobe';
 import { getCurrentUser } from './authService';
+import { BACKEND_URL, USE_REAL_BACKEND } from './backendConfig';
 
 /**
  * Service representing the AI Stylist API.
@@ -12,8 +13,6 @@ import { getCurrentUser } from './authService';
  *   VITE_BACKEND_URL=http://localhost:8000
  */
 
-const USE_REAL_BACKEND = import.meta.env.VITE_USE_REAL_BACKEND === 'true';
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 const BACKEND_TIMEOUT_MS = 90_000;
 
 // Видимая пометка: ответ собран не сервером, а локальным симулятором.
@@ -32,21 +31,68 @@ interface StylistResponse {
   retrieval?: RetrievalResult;
 }
 
+interface StylistRequestOptions {
+  signal?: AbortSignal;
+  userId?: string;
+  onText?: (text: string) => void;
+}
+
+async function readStylistStream(res: Response, onText?: StylistRequestOptions['onText']): Promise<StylistResponse> {
+  if (!res.ok || !res.body || !res.headers.get('Content-Type')?.includes('text/event-stream')) {
+    throw new Error(`Invalid stylist stream (${res.status})`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let text = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) throw new Error('Stylist stream ended before result');
+      buffer += decoder.decode(value, { stream: true });
+
+      // Network chunks need not end on an SSE frame or on a UTF-8 character.
+      let boundary = /\r?\n\r?\n/.exec(buffer);
+      while (boundary) {
+        const lines = buffer.slice(0, boundary.index).split(/\r?\n/);
+        buffer = buffer.slice(boundary.index + boundary[0].length);
+        const event = lines.find((line) => line.startsWith('event:'))?.slice(6).trim();
+        if (event === 'delta' || event === 'result' || event === 'error') {
+          const data = JSON.parse(lines.filter((line) => line.startsWith('data:'))
+            .map((line) => line.slice(5).replace(/^ /, '')).join('\n'));
+          if (event === 'error') throw new Error(data.message || 'Stylist stream failed');
+          if (typeof data?.text !== 'string') throw new Error(`Invalid stylist ${event}`);
+          if (event === 'result') return data as StylistResponse;
+          text += data.text;
+          onText?.(text);
+        }
+        boundary = /\r?\n\r?\n/.exec(buffer);
+      }
+    }
+  } finally {
+    void reader.cancel().catch(() => {});
+    reader.releaseLock();
+  }
+}
+
 export async function askStylist(
   userQuery: string,
   wardrobe: WardrobeItem[],
-  context?: { occasion?: string; weather?: string; vibe?: string }
+  context?: { occasion?: string; weather?: string; vibe?: string },
+  options: StylistRequestOptions = {},
 ): Promise<StylistResponse> {
   let backendFailed = false;
 
   if (USE_REAL_BACKEND) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), BACKEND_TIMEOUT_MS);
+    const timeout = AbortSignal.timeout(BACKEND_TIMEOUT_MS);
+    const signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout;
     try {
-      const res = await fetch(`${BACKEND_URL}/api/recommend-outfit`, {
+      const res = await fetch(`${BACKEND_URL}/api/recommend-outfit/stream`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+        signal,
         body: JSON.stringify({
           query: userQuery,
           // Гардероб живёт в localStorage, поэтому серверу нужен полный снимок вещей:
@@ -54,22 +100,22 @@ export async function askStylist(
           wardrobe,
           wardrobe_ids: wardrobe.map((i) => i.id),
           // Демо-идентификатор, не защищённая сессия: разделяет гардеробы пользователей.
-          user_id: getCurrentUser()?.id ?? 'anonymous',
+          user_id: options.userId ?? getCurrentUser()?.id ?? 'anonymous',
           context,
         }),
       });
-      if (!res.ok) throw new Error(`API error ${res.status}`);
-      return await res.json();
+      return await readStylistStream(res, options.onText);
     } catch (err) {
+      options.signal?.throwIfAborted();
+      options.onText?.('');
       backendFailed = true;
       console.warn('Real backend unavailable, falling back to client-side RAG simulator:', err);
-    } finally {
-      clearTimeout(timer);
     }
   }
 
   // Client-side RAG Simulation with semantic keyword matching & outfit synthesis
   await new Promise((r) => setTimeout(r, 1000 + Math.random() * 600));
+  options.signal?.throwIfAborted();
 
   const queryLower = userQuery.toLowerCase();
   const occasion = context?.occasion?.toLowerCase() || '';

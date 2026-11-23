@@ -16,7 +16,7 @@ from typing import Any
 from app.schemas import WardrobeItem
 
 DEMO_USER_ID = "demo"
-_BASE_CAPSULE_PATH = Path(__file__).resolve().parent.parent / "data" / "base_capsule.json"
+_BASE_CAPSULE_PATH = Path(__file__).resolve().parents[3] / "rag" / "data" / "wardrobe_seed.json"
 
 
 def load_wardrobe_file(path: str | Path | None = None) -> list[WardrobeItem]:

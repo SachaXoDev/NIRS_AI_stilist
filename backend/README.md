@@ -87,7 +87,14 @@ VITE_USE_REAL_BACKEND=true
 VITE_BACKEND_URL=http://localhost:8000
 ```
 
-и перезапустите `npm run dev`. Без этого файла фронтенд работает на клиентском симуляторе, как раньше. Если бэкенд включён, но недоступен, фронтенд отвечает симулятором и дописывает об этом в текст ответа.
+и перезапустите `npm run dev`. Чат отправляет запрос на `/api/recommend-outfit/stream`:
+текст появляется по мере генерации, карточка — после итогового события `result`.
+Без этого файла фронтенд работает на клиентском симуляторе. Если поток недоступен
+или оборвался, фронтенд помечает запасной ответ как симуляцию.
+
+Панель куратора читает настройки с сервера. Чтобы сохранить изменения, задайте
+`ADMIN_TOKEN` в `backend/.env` и введите тот же токен в панели. Без токена на сервере
+настройки доступны только для чтения.
 
 ## API
 
@@ -198,11 +205,39 @@ app/
 
 Что тестами **не** покрыто и проверяется вручную на машине показа: работа с настоящими весами моделей и ответы настоящей Qwen.
 
+## Проверенный запуск на Mac M2 (8 ГБ)
+
+На машине показа использовалась `qwen2.5:1.5b` (официальный GGUF Q4_K_M из
+`Qwen/Qwen2.5-1.5B-Instruct-GGUF`, импорт в Ollama с `num_ctx 4096`). После
+установки модели и заполнения кеша поиска интернет и внешний ключ не нужны.
+Запустите Ollama, затем сервер из `backend/`:
+
+```bash
+# Терминал 1
+OLLAMA_NUM_PARALLEL=1 OLLAMA_MAX_LOADED_MODELS=1 OLLAMA_CONTEXT_LENGTH=4096 ollama serve
+# Терминал 2, из backend/; используйте окружение с установленным wardrobe_rag
+OMP_NUM_THREADS=2 VECLIB_MAXIMUM_THREADS=2 HF_HUB_OFFLINE=1 \
+  .venv-real/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+В `backend/.env`: `LLM_PROVIDER=openai`, `LLM_BASE_URL=http://127.0.0.1:11434/v1`,
+`LLM_MODEL=qwen2.5:1.5b`, `LLM_API_KEY=ollama` (заглушка), `LLM_TEMPERATURE=0.2`,
+`LLM_JSON_MODE=true`, `LLM_TIMEOUT_S=35`, `LLM_EXTRA_BODY={"max_tokens":768}`,
+`RAG_ENGINE=wardrobe_rag`, `RAG_MODE=hybrid`, `RAG_OFFLINE=true`, `RAG_DEVICE=cpu`.
+После успешного `/health` запустите Vite из корня с arm64 Node.js 22 и `.env.local`
+из раздела выше. Для проверки в браузере: гость → «Гардероб» → «Базовая капсула» →
+«Стилист» → «Деловая встреча». В финальном SSE `result` проверьте `source: "llm"`
+и `meta.retriever: "wardrobe_rag"`: сама карточка не отличает модель от фолбэка.
+
+Перед показом закройте тяжёлые приложения и проверьте запас места под swap.
+При остатке около 400 МиБ синхронизация гардероба уже завершалась ошибкой `ENOSPC`.
+Проверка гарантирует состав карточки, но не проверяет каждое утверждение в тексте модели.
+
 ## Чек-лист перед показом
 
 1. `pip install -e ../rag` и `init-models` выполнены; в `.env` — `RAG_ENGINE=wardrobe_rag`, `RAG_OFFLINE=true`.
 2. `/health` показывает `"engine": "wardrobe_rag"` и нужную модель LLM.
-3. Запрос «Москва: +6°C, ветрено, деловая встреча» с `"debug": true`: в `retrieval` есть вклады каналов, в образе есть верхняя одежда, `source` = `llm`.
-4. Гардероб без обуви → `missingSlots: ["shoes"]`, карточки нет.
-5. Фронтенд с `VITE_USE_REAL_BACKEND=true` получает ответ сервера (в ответе нет приписки про симулятор).
-6. Отключите интернет или остановите Ollama и убедитесь, что приходит `source: "fallback"`, а не ошибка.
+3. Запрос «Москва: +6°C, ветрено, деловая встреча» с `"debug": true` и массивом `wardrobe` из [`wardrobe_demo_weather.json`](../rag/data/wardrobe_demo_weather.json): есть верхняя одежда, `source: "llm"`. Для вещей без погодных атрибутов возможны предупреждения.
+4. Гардероб из [`wardrobe_demo_missing_shoes.json`](../rag/data/wardrobe_demo_missing_shoes.json) → `missingSlots: ["shoes"]`, карточки нет.
+5. В браузере дождитесь проверенной карточки и подтвердите `source: "llm"` и `meta.retriever: "wardrobe_rag"` в финальном SSE `result`.
+6. Остановите Ollama и повторите запрос с полным гардеробом: ожидается `source: "fallback"`. Отключение интернета само по себе не отключает локальную Ollama.
