@@ -1,12 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
-import type { ChatMessage, WardrobeItem, OutfitLook } from '../types';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import type { ChatMessage, ChatThread, WardrobeItem, OutfitLook } from '../types';
 import { OutfitCard } from './OutfitCard';
 import { Send, Menu } from 'lucide-react';
 import { WeatherPicker } from './WeatherPicker';
+import { getChatSuggestions } from '../services/chatSuggestions';
 
 interface ChatAreaProps {
   chatTitle: string;
   messages: ChatMessage[];
+  threads: readonly ChatThread[];
+  wardrobe: readonly WardrobeItem[];
   draft?: ChatMessage;
   onSendMessage: (text: string) => void;
   onCreateNewChat: () => void;
@@ -17,28 +20,11 @@ interface ChatAreaProps {
   onToggleSaveOutfit?: (outfit: OutfitLook) => void;
 }
 
-const QUICK_PROMPTS = [
-  {
-    title: 'Деловая встреча',
-    text: 'Подбери лаконичный образ для деловой встречи в офисе.',
-  },
-  {
-    title: 'Ужин в ресторане',
-    text: 'Посоветуй сдержанный вечерний комплект с акцентом на фактуры.',
-  },
-  {
-    title: 'Выходной в городе',
-    text: 'Собери расслабленный повседневный монохромный образ для выходного дня.',
-  },
-  {
-    title: 'Пляж и +30°C',
-    text: 'Подбери образ для пляжа в жару при +30°C.',
-  },
-];
-
 export const ChatArea = ({
   chatTitle,
   messages,
+  threads,
+  wardrobe,
   draft,
   onSendMessage,
   onSelectItem,
@@ -51,10 +37,21 @@ export const ChatArea = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isLoading = Boolean(draft);
+  const suggestions = useMemo(() => getChatSuggestions(threads, messages, wardrobe), [threads, messages, wardrobe]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: draft ? 'instant' : 'smooth' });
   }, [messages, draft]);
+
+  const insertWeather = (text: string) => {
+    const previous = weatherPromptRef.current;
+    weatherPromptRef.current = text;
+    setInputText((draftText) => {
+      const note = previous && draftText.endsWith(previous) ? draftText.slice(0, -previous.length) : draftText;
+      return note.trim() ? `${note.trimEnd()} ${text}` : text;
+    });
+    inputRef.current?.focus();
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,18 +144,11 @@ export const ChatArea = ({
       <div className="p-4 sm:p-6 border-t border-[#DFD9CF] dark:border-night-divider bg-[#F6F4F0] dark:bg-night-canvas">
         <div className="max-w-3xl mx-auto space-y-3">
           {/* Quick Ideas */}
-          <WeatherPicker disabled={isLoading} onUse={(text) => {
-            const previous = weatherPromptRef.current;
-            weatherPromptRef.current = text;
-            setInputText((draftText) => {
-              const note = previous && draftText.endsWith(previous) ? draftText.slice(0, -previous.length) : draftText;
-              return note.trim() ? `${note.trimEnd()} ${text}` : text;
-            });
-            inputRef.current?.focus();
-          }}>
-            {QUICK_PROMPTS.map((prompt) => (
+          <WeatherPicker disabled={isLoading} onUse={insertWeather}>
+            {suggestions.map((prompt) => (
               <button
-                key={prompt.title}
+                type="button"
+                key={prompt.text}
                 disabled={isLoading}
                 onClick={() => onSendMessage(prompt.text)}
                 className="shrink-0 cursor-pointer whitespace-nowrap border border-[#DFD9CF] bg-[#ECE7DF] px-3 py-1.5 text-[11px] text-[#38332E] transition-colors hover:bg-[#E2DCCF] disabled:opacity-40 dark:border-night-divider dark:bg-night-field dark:text-night-secondary dark:hover:bg-night-hover"

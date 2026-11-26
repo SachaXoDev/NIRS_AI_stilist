@@ -15,6 +15,7 @@ export const INITIAL_CHAT_THREADS: ChatThread[] = [
   {
     id: 'thread-active',
     title: 'Консультация стилиста',
+    autoTitlePending: true,
     createdAt: 'Сегодня, 14:30',
     updatedAt: '14:30',
     messages: [

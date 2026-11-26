@@ -127,7 +127,8 @@ export function WeatherPicker({ disabled, onUse, children }: WeatherPickerProps)
           )}
         </section>
       )}
-      <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
+      <div role="group" aria-label="Быстрые подсказки" tabIndex={0}
+        className="flex min-w-0 items-center gap-1.5 overflow-x-auto overscroll-x-contain pb-1">
         <button type="button" disabled={disabled} aria-expanded={open} aria-controls={open ? 'weather-picker' : undefined}
           onClick={() => {
             if (open) close();

@@ -46,54 +46,6 @@ function getUserWardrobeKey(userId?: string | null): string {
   return `${WARDROBE_STORAGE_PREFIX}${userId || 'anonymous'}`;
 }
 
-function generateSmartTopic(prompt: string): string {
-  const lower = prompt.toLowerCase();
-
-  if (lower.includes('дожд') || lower.includes('прохлад') || lower.includes('погод') || lower.includes('ветер') || lower.includes('осень') || lower.includes('весна')) {
-    return 'Образ по погоде';
-  }
-  if (lower.includes('офис') || lower.includes('работ') || lower.includes('встреч') || lower.includes('делов') || lower.includes('переговор')) {
-    return 'Деловой Smart-Casual';
-  }
-  if (lower.includes('вечер') || lower.includes('ужин') || lower.includes('театр') || lower.includes('свидан') || lower.includes('ресторан')) {
-    return 'Вечерний выход';
-  }
-  if (lower.includes('поездк') || lower.includes('самолет') || lower.includes('путешеств') || lower.includes('аэропорт') || lower.includes('чемодан')) {
-    return 'Образ в поездку';
-  }
-  if (lower.includes('коктейл') || lower.includes('праздник') || lower.includes('вечеринк') || lower.includes('день рождени')) {
-    return 'Коктейльный дресс-код';
-  }
-  if (lower.includes('кашемир') || lower.includes('шерст') || lower.includes('шелк')) {
-    return 'Кашемир и шелк';
-  }
-  if (lower.includes('тренч') || lower.includes('пальто')) {
-    return 'Верхняя одежда';
-  }
-  if (lower.includes('блейзер') || lower.includes('жакет')) {
-    return 'Капсула с жакетом';
-  }
-  if (lower.includes('брюк') || lower.includes('палаццо')) {
-    return 'Образ с брюками';
-  }
-  if (lower.includes('джинс') || lower.includes('деним')) {
-    return 'Городской деним';
-  }
-
-  // Если запрос общий или абстрактный — очищаем от вводных слов и берем 2-3 ключевых слова
-  const clean = prompt
-    .replace(/^(подбери|собери|посоветуй|подскажи|что|надеть|как|сочетать|образ|лук|пожалуйста)\s+/i, '')
-    .trim();
-
-  const words = clean.split(/\s+/).filter(Boolean);
-  if (words.length > 0 && words.length <= 4) {
-    const formatted = words.join(' ');
-    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
-  }
-
-  return 'Повседневный лук';
-}
-
 function getUserThreadsKey(userId?: string | null): string {
   return `${THREADS_STORAGE_PREFIX}${userId || 'anonymous'}`;
 }
@@ -140,6 +92,7 @@ function createDefaultThreadForUser(userName?: string): ChatThread {
   return {
     id: `thread-${Date.now()}`,
     title: 'Консультация стилиста',
+    autoTitlePending: true,
     createdAt: 'Только что',
     updatedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     messages: [
@@ -406,11 +359,12 @@ function MainApp() {
 
   const activeThread = threads.find((t) => t.id === activeThreadId) || threads[0];
 
-  const handleCreateNewThread = (customPrompt?: string) => {
+  const handleCreateNewThread = () => {
     const newId = `thread-${Date.now()}`;
     const newThread: ChatThread = {
       id: newId,
-      title: customPrompt ? customPrompt.slice(0, 32) + '...' : 'Новый диалог',
+      title: 'Новый диалог',
+      autoTitlePending: true,
       createdAt: 'Только что',
       updatedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       messages: [
@@ -445,7 +399,7 @@ function MainApp() {
 
   const handleRenameThread = (threadId: string, newTitle: string) => {
     setThreads((prev) =>
-      prev.map((t) => (t.id === threadId ? { ...t, title: newTitle } : t))
+      prev.map((t) => (t.id === threadId ? { ...t, title: newTitle, autoTitlePending: false } : t))
     );
   };
 
@@ -481,11 +435,19 @@ function MainApp() {
     };
     setDrafts((prev) => ({ ...prev, [threadId]: draft }));
 
-    const commitReply = (message: ChatMessage) => {
+    const commitReply = (message: ChatMessage, useReplyTitle = false) => {
       if (controller.signal.aborted) return;
-      setThreads((prev) => prev.map((thread) => thread.id === threadId
-        ? { ...thread, updatedAt: message.timestamp, messages: [...thread.messages, message] }
-        : thread));
+      const outfitTitle = useReplyTitle ? message.suggestedOutfit?.title.trim() : undefined;
+      setThreads((prev) => prev.map((thread) => {
+        if (thread.id !== threadId) return thread;
+        const autoTitle = useReplyTitle && thread.autoTitlePending;
+        return {
+          ...thread,
+          ...(autoTitle ? { title: outfitTitle || 'Совет стилиста', autoTitlePending: !outfitTitle } : {}),
+          updatedAt: message.timestamp,
+          messages: [...thread.messages, message],
+        };
+      }));
     };
 
     try {
@@ -513,7 +475,7 @@ function MainApp() {
         text: response.text,
         suggestedOutfit: response.suggestedOutfit,
         referencedItemIds: response.referencedItemIds,
-      });
+      }, true);
     } catch (error) {
       if (controller.signal.aborted) return;
       console.error(error);
@@ -538,26 +500,9 @@ function MainApp() {
       text,
     };
 
-    setThreads((prev) =>
-      prev.map((t) => {
-        if (t.id === currentId) {
-          // Если это был дефолтный диалог или новый чат — даем ему емкую тему по контексту
-          const isInitialTitle =
-            t.title === 'Новый диалог' ||
-            t.title === 'Консультация стилиста' ||
-            t.title.trim() === '';
-          const smartTitle = isInitialTitle ? generateSmartTopic(text) : t.title;
-
-          return {
-            ...t,
-            title: smartTitle,
-            updatedAt: timeStr,
-            messages: [...t.messages, userMsg],
-          };
-        }
-        return t;
-      })
-    );
+    setThreads((prev) => prev.map((thread) => thread.id === currentId
+      ? { ...thread, updatedAt: timeStr, messages: [...thread.messages, userMsg] }
+      : thread));
 
     void requestReply(currentId, text, activeThread.messages);
   };
@@ -593,6 +538,7 @@ function MainApp() {
     const newThread: ChatThread = {
       id: newId,
       title: `Образ: ${item.title}`,
+      autoTitlePending: true,
       createdAt: 'Только что',
       updatedAt: timeStr,
       messages: [userMsg],
@@ -721,6 +667,8 @@ function MainApp() {
                     <ChatArea
                       chatTitle={activeThread.title}
                       messages={activeThread.messages}
+                      threads={threads}
+                      wardrobe={wardrobe}
                       draft={drafts[activeThread.id]}
                       onSendMessage={handleSendMessage}
                       onCreateNewChat={() => handleCreateNewThread()}

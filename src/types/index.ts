@@ -172,6 +172,7 @@ export interface StylistHistoryMessage {
 export interface ChatThread {
   id: string;
   title: string;
+  autoTitlePending?: boolean;
   createdAt: string;
   updatedAt: string;
   messages: ChatMessage[];
