@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import type { ChatMessage, WardrobeItem, OutfitLook } from '../types';
 import { OutfitCard } from './OutfitCard';
-import { Send, Menu, CloudDrizzle } from 'lucide-react';
+import { Send, Menu } from 'lucide-react';
+import { WeatherPicker } from './WeatherPicker';
 
 interface ChatAreaProps {
   chatTitle: string;
@@ -17,11 +18,6 @@ interface ChatAreaProps {
 }
 
 const QUICK_PROMPTS = [
-  {
-    title: 'Москва сегодня: +6°C, пасмурно',
-    text: 'Подбери образ по погоде на сегодня: в Москве около +6°C и сыро. Нужен теплый тренч или пальто.',
-    isWeather: true,
-  },
   {
     title: 'Деловая встреча',
     text: 'Подбери лаконичный образ для деловой встречи в офисе.',
@@ -51,6 +47,8 @@ export const ChatArea = ({
   onToggleSaveOutfit,
 }: ChatAreaProps) => {
   const [inputText, setInputText] = useState('');
+  const weatherPromptRef = useRef('');
+  const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isLoading = Boolean(draft);
 
@@ -62,6 +60,7 @@ export const ChatArea = ({
     e.preventDefault();
     if (!inputText.trim() || isLoading) return;
     onSendMessage(inputText);
+    weatherPromptRef.current = '';
     setInputText('');
   };
 
@@ -148,27 +147,31 @@ export const ChatArea = ({
       <div className="p-4 sm:p-6 border-t border-[#DFD9CF] dark:border-[#2E2A26] bg-[#F6F4F0] dark:bg-[#181614]">
         <div className="max-w-3xl mx-auto space-y-3">
           {/* Quick Ideas */}
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
-            {QUICK_PROMPTS.map((p, idx) => (
+          <WeatherPicker disabled={isLoading} onUse={(text) => {
+            const previous = weatherPromptRef.current;
+            weatherPromptRef.current = text;
+            setInputText((draftText) => {
+              const note = previous && draftText.endsWith(previous) ? draftText.slice(0, -previous.length) : draftText;
+              return note.trim() ? `${note.trimEnd()} ${text}` : text;
+            });
+            inputRef.current?.focus();
+          }}>
+            {QUICK_PROMPTS.map((prompt) => (
               <button
-                key={idx}
+                key={prompt.title}
                 disabled={isLoading}
-                onClick={() => onSendMessage(p.text)}
-                className={`px-3 py-1.5 border text-[11px] font-normal whitespace-nowrap transition-colors shrink-0 disabled:opacity-40 flex items-center gap-1.5 cursor-pointer ${
-                  p.isWeather
-                    ? 'bg-[#E5DFD5] dark:bg-[#2C2824] border-[#1E1B18]/30 dark:border-white/30 text-[#1E1B18] dark:text-[#F7F5F0] font-medium'
-                    : 'bg-[#ECE7DF] dark:bg-[#24211E] hover:bg-[#E2DCCF] dark:hover:bg-[#2E2A26] border-[#DFD9CF] dark:border-[#332F2A] text-[#38332E] dark:text-[#D8D1C7]'
-                }`}
+                onClick={() => onSendMessage(prompt.text)}
+                className="shrink-0 cursor-pointer whitespace-nowrap border border-[#DFD9CF] bg-[#ECE7DF] px-3 py-1.5 text-[11px] text-[#38332E] transition-colors hover:bg-[#E2DCCF] disabled:opacity-40 dark:border-[#332F2A] dark:bg-[#24211E] dark:text-[#D8D1C7] dark:hover:bg-[#2E2A26]"
               >
-                {p.isWeather && <CloudDrizzle className="w-3.5 h-3.5 text-[#6B6359] dark:text-[#A69D92]" />}
-                <span>{p.title}</span>
+                {prompt.title}
               </button>
             ))}
-          </div>
+          </WeatherPicker>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="relative flex items-center">
             <input
+              ref={inputRef}
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -178,6 +181,7 @@ export const ChatArea = ({
             />
             <button
               type="submit"
+              aria-label="Отправить сообщение"
               disabled={!inputText.trim() || isLoading}
               className="absolute right-2 p-1.5 bg-[#1E1B18] dark:bg-[#F7F5F0] text-[#F7F5F0] dark:text-[#1E1B18] hover:opacity-85 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
             >
