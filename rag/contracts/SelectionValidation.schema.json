@@ -33,8 +33,9 @@
           "type": "string"
         },
         "season": {
-          "default": "all",
+          "default": "unknown",
           "enum": [
+            "unknown",
             "all",
             "spring/summer",
             "autumn/winter"
@@ -84,6 +85,30 @@
           ],
           "default": null,
           "title": "Material"
+        },
+        "materialDetails": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "propertyNames": {
+                "enum": [
+                  "lining",
+                  "insulation",
+                  "sole",
+                  "insole",
+                  "trim"
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Materialdetails"
         },
         "embeddingSnippet": {
           "anyOf": [

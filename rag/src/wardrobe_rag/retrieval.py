@@ -14,11 +14,13 @@ from .config import RAGConfig
 from .constraints import (
     is_documented_flat, item_violations, requests_flat_shoes, required_slots, resolve_context, weather_warnings,
 )
+from .query_attributes import attribute_violations, preference_score, query_conditions
 from .schemas import (
     CATEGORIES, Candidate, Category, RetrievalRequest, RetrievalResult, SlotSearchRequest, SlotSearchResult,
     VectorHit, WardrobeItem,
 )
 from .text import build_document, tokenize
+from .thermal import material_weather_score, thermal_direction
 
 
 class Store(Protocol):
@@ -134,19 +136,27 @@ class RetrievalEngine:
         items = self.store.get_items(request.user_id) if items is None else items
         revision = self.store.get_revision(request.user_id)
         context = resolve_context(request)
+        direction = thermal_direction(request.query, context)
         slots = [scope.target] if scope else required_slots(request, context, self.config)
+        conditions = query_conditions(request.query, scope.target if scope else None)
+        explicit_slots = {condition.slot for condition in conditions
+                          if condition.slot is not None and not condition.preferred}
+        if not scope:
+            slots.extend(slot for slot in CATEGORIES if slot in explicit_slots and slot not in slots)
         by_id = {item.id: item for item in items}
         if len(by_id) != len(items):
             raise ValueError("Store returned duplicate IDs within one user's snapshot")
         if request.anchor_item_id is not None and request.anchor_item_id not in by_id:
             raise ValueError("anchor_item_id is not present in this user's wardrobe")
         pool = [item for item in items if item.category == scope.target] if scope else items
-        allowed = {item.id: item for item in pool if not item_violations(item, request, context)}
+        allowed = {item.id: item for item in pool if not item_violations(item, request, context, conditions=conditions)}
+        attribute_blocked_slots = [slot for slot in slots if not any(i.category == slot for i in allowed.values())
+                                   and any(i.category == slot and attribute_violations(i, conditions) for i in pool)]
         if request.anchor_item_id is not None and request.anchor_item_id not in allowed:
             raise ValueError("anchor_item_id conflicts with explicit item or weather constraints")
         filtered_count = len(pool) - len(allowed)
         if filtered_count:
-            warnings.append(f"Filtered {filtered_count} items by explicit exclusions or curated weather attributes")
+            warnings.append(f"Filtered {filtered_count} items by explicit requirements or curated weather attributes")
         if not items:
             warnings.append("The user's wardrobe is empty; no demo-catalog items were substituted")
         if scope and scope.flat_only:
@@ -213,7 +223,8 @@ class RetrievalEngine:
         fusion_ms = 0.0
         for category in ((scope.target,) if scope else CATEGORIES):
             anchor_category = by_id[request.anchor_item_id].category if request.anchor_item_id else None
-            if not scope and category == "accessories" and not self.config.include_accessories and anchor_category != "accessories":
+            if (not scope and category == "accessories" and not self.config.include_accessories
+                    and anchor_category != "accessories" and category not in explicit_slots):
                 candidates_by_slot[category] = []
                 continue
             category_items = {item.id: item for item in allowed.values() if item.category == category}
@@ -239,6 +250,12 @@ class RetrievalEngine:
             visual_ranks = _rank_scores(visual_distances, descending=False)
             weights = self._weights(request, bool(dense_ranks), bool(visual_ranks))
             candidate_ids = set(bm25_ranks) | set(dense_ranks) | set(visual_ranks)
+            preferences = {item_id: preference_score(item, conditions) for item_id, item in category_items.items()}
+            candidate_ids.update(item_id for item_id, score in preferences.items() if score)
+            thermal = {item_id: material_weather_score(item, direction) for item_id, item in category_items.items()}
+            candidate_ids.update(item_id for item_id, score in thermal.items() if score > 0)
+            if category in explicit_slots:
+                candidate_ids.update(category_items)
             # Explicit anchor is pinned as a constraint, not presented as retrieval evidence.
             if request.anchor_item_id in category_items:
                 candidate_ids.add(request.anchor_item_id)
@@ -249,7 +266,8 @@ class RetrievalEngine:
                 visual_contribution = self._contribution(weights[2], visual_ranks.get(item_id))
                 score = bm25_contribution + dense_contribution + visual_contribution
                 anchored = item_id == request.anchor_item_id
-                if score == 0 and not anchored:
+                if (score == 0 and not anchored and not preferences[item_id]
+                        and thermal[item_id] <= 0 and category not in explicit_slots):
                     continue
                 candidates.append(Candidate(
                     item=category_items[item_id], score=score,
@@ -257,22 +275,32 @@ class RetrievalEngine:
                     dense_distance=dense_distances.get(item_id) if score else None, dense_rank=dense_ranks.get(item_id) if score else None,
                     visual_distance=visual_distances.get(item_id) if score else None, visual_rank=visual_ranks.get(item_id) if score else None,
                     bm25_contribution=bm25_contribution, dense_contribution=dense_contribution,
-                    visual_contribution=visual_contribution, anchored=anchored, fallback=score == 0,
+                    visual_contribution=visual_contribution, anchored=anchored,
+                    preference_score=preferences[item_id],
+                    material_weather_score=thermal[item_id],
+                    fallback=False,
                 ))
-            candidates.sort(key=lambda candidate: (-candidate.score, candidate.item.id))
+            # Apply the material cue at the ranking stage, not to channel scores or weights.
+            scale = max((candidate.score for candidate in candidates), default=0.0) or 1.0
+
+            def rank(c: Candidate) -> tuple[int, float, str]:
+                return (-c.preference_score, -(c.score / scale + 0.15 * c.material_weather_score), c.item.id)
+
+            candidates.sort(key=rank)
             selected = candidates[:self.config.top_k[category]]
             if request.anchor_item_id in category_items and not any(candidate.anchored for candidate in selected):
                 anchor = next(candidate for candidate in candidates if candidate.anchored)
                 selected = selected[:-1] + [anchor]
-                selected.sort(key=lambda candidate: (-candidate.score, candidate.item.id))
+                selected.sort(key=rank)
             selected_ids = {candidate.item.id for candidate in selected}
             # Guarantee slot coverage without fabricating retrieval scores. Evaluators
             # must ignore fallback=True rows when computing ranked HitRate/MRR.
-            for item_id in (() if scope else sorted(category_items)):
+            for item_id in (() if scope else sorted(category_items, key=lambda i: (-thermal[i], i))):
                 if len(selected) >= self.config.top_k[category]:
                     break
                 if item_id not in selected_ids:
-                    selected.append(Candidate(item=category_items[item_id], score=0, fallback=True))
+                    selected.append(Candidate(item=category_items[item_id], score=0,
+                                              material_weather_score=thermal[item_id], fallback=True))
                     selected_ids.add(item_id)
             fallbacks = [candidate.item.id for candidate in selected if candidate.fallback]
             if fallbacks:
@@ -302,6 +330,8 @@ class RetrievalEngine:
             alpha=request.alpha, visual_weight=request.visual_weight, rrf_c=self.config.rrf_c,
             candidates_by_slot=candidates_by_slot, required_slots=slots, missing_slots=missing,
             context=context, anchor_item_id=request.anchor_item_id,
+            exclude_colors=request.exclude_colors, exclude_materials=request.exclude_materials,
+            attribute_blocked_slots=attribute_blocked_slots,
             warnings=list(dict.fromkeys(warnings)), timings_ms=timings,
             wardrobe_revision=revision, model_fingerprint=model_fingerprint,
         )

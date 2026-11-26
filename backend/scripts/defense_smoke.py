@@ -118,6 +118,7 @@ def check_outfit(
     require(isinstance(outfit, dict), f"{case}: expected an outfit card")
     items = outfit.get("items")
     require(isinstance(items, list) and bool(items), f"{case}: expected items in the card")
+    require(not result["text"].startswith("В образ вошли:"), f"{case}: chat repeats the item inventory")
     ids = []
     counts: Counter[str] = Counter()
     for item in items:
@@ -128,7 +129,6 @@ def check_outfit(
         title, category = canonical["title"], canonical["category"]
         require(item.get("title") == title and item.get("category") == category,
                 f"{case}: card item {item_id} disagrees with the capsule")
-        require(title in result["text"], f"{case}: selected item {item_id} ({title!r}) is missing from the text")
         ids.append(item_id)
         counts[category] += 1
     require(result.get("referencedItemIds") == ids and len(set(ids)) == len(ids),

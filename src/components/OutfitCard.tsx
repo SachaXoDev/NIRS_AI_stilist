@@ -108,25 +108,29 @@ export const OutfitCard = ({
       </div>
 
       {/* Stylist Breakdown */}
-      <div className="space-y-3 pt-3 border-t border-[#EFECE6] dark:border-[#282420]">
-        <div className="text-xs text-[#38332E] dark:text-[#D8D1C7] leading-relaxed font-light">
-          {outfit.stylistReasoning}
-        </div>
+      {(outfit.stylistReasoning || outfit.confidenceTips?.length > 0) && (
+        <div className="space-y-3 pt-3 border-t border-[#EFECE6] dark:border-[#282420]">
+          {outfit.stylistReasoning && (
+            <div className="text-xs text-[#38332E] dark:text-[#D8D1C7] leading-relaxed font-light">
+              {outfit.stylistReasoning}
+            </div>
+          )}
 
-        {outfit.confidenceTips?.length > 0 && (
-          <ul className="space-y-1.5 pt-2">
-            {outfit.confidenceTips.map((tip, idx) => (
-              <li
-                key={idx}
-                className="text-xs text-[#6B6359] dark:text-[#A69D92] flex items-start gap-2 font-light"
-              >
-                <span className="text-[#8A8175] select-none">•</span>
-                <span>{tip}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+          {outfit.confidenceTips?.length > 0 && (
+            <ul className="space-y-1.5 pt-2">
+              {outfit.confidenceTips.map((tip, idx) => (
+                <li
+                  key={idx}
+                  className="text-xs text-[#6B6359] dark:text-[#A69D92] flex items-start gap-2 font-light"
+                >
+                  <span className="text-[#8A8175] select-none">•</span>
+                  <span>{tip}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {/* Match Quality */}
       <div className="mt-4 pt-3 border-t border-[#EFECE6] dark:border-[#282420] flex items-center justify-between text-[11px] text-[#7C7469] dark:text-[#A69D92]">

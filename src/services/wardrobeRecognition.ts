@@ -1,5 +1,7 @@
 import type { ClothingCategory, WardrobeRecognitionResponse } from '../types';
 import { BACKEND_URL } from './backendConfig';
+import { cleanMaterialDetails } from './materialDetails';
+import { isClothingSeason } from './wardrobeSeason';
 
 export const WARDROBE_PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp';
 const MAX_SOURCE_BYTES = 30 * 1024 * 1024;
@@ -96,7 +98,7 @@ export async function recognizeWardrobePhoto(upload: Blob, signal: AbortSignal, 
     const { suggestion } = result;
     if (suggestion === null) return { suggestion: null };
     if (suggestion && typeof suggestion === 'object') {
-      const { title, category, color, material, brand } = suggestion as Record<string, unknown>;
+      const { title, category, season, color, material, materialDetails, brand } = suggestion as Record<string, unknown>;
       if ((title === null || typeof title === 'string') &&
         (category === null || (typeof category === 'string' && Object.hasOwn(CATEGORIES, category))) &&
         (color === null || typeof color === 'string') &&
@@ -106,8 +108,10 @@ export async function recognizeWardrobePhoto(upload: Blob, signal: AbortSignal, 
           suggestion: {
             title: title?.trim() || null,
             category: category as ClothingCategory | null,
+            season: isClothingSeason(season) ? season : null,
             color: color?.trim() || null,
             material: material?.trim() || null,
+            materialDetails: cleanMaterialDetails(materialDetails),
             brand: brand?.trim() || null,
           },
         };

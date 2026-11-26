@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
-import type { ClothingCategory, WardrobeItem } from '../types';
+import type { ClothingCategory, ClothingSeason, MaterialDetails, WardrobeItem } from '../types';
 import { X, Pencil, Check, ArrowRight } from 'lucide-react';
+import { cleanMaterialDetails, MATERIAL_PART_KEYS, MATERIAL_PARTS } from '../services/materialDetails';
+import { CLOTHING_SEASONS, CLOTHING_SEASON_VALUES, isClothingSeason } from '../services/wardrobeSeason';
+import { MaterialDetailsFields } from './MaterialDetailsFields';
 
 interface ItemDetailModalProps {
   item: WardrobeItem | null;
@@ -38,16 +41,18 @@ export const ItemDetailModal = ({
   const [title, setTitle] = useState('');
   const [color, setColor] = useState('');
   const [material, setMaterial] = useState('');
+  const [materialDetails, setMaterialDetails] = useState<MaterialDetails>({});
   const [category, setCategory] = useState<ClothingCategory>('tops');
-  const [season, setSeason] = useState<'all' | 'spring/summer' | 'autumn/winter'>('all');
+  const [season, setSeason] = useState<ClothingSeason>('unknown');
 
   useEffect(() => {
     if (item) {
       setTitle(item.title);
       setColor(item.color);
       setMaterial(item.material || '');
+      setMaterialDetails(item.materialDetails ?? {});
       setCategory(item.category);
-      setSeason(item.season || 'all');
+      setSeason(isClothingSeason(item.season) ? item.season : 'unknown');
       setIsEditing(false);
       setIsChoosingOccasion(false);
       setCustomOccasion('');
@@ -64,6 +69,7 @@ export const ItemDetailModal = ({
       title: title.trim(),
       color: color.trim() || 'Базовый',
       material: material.trim() || undefined,
+      materialDetails: cleanMaterialDetails(materialDetails),
       category,
       season,
     };
@@ -81,7 +87,7 @@ export const ItemDetailModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="w-full max-w-lg bg-[#FCFAF7] dark:bg-[#1C1A18] border border-[#DFD9CF] dark:border-[#2E2A26] p-6 sm:p-7 shadow-2xl relative text-[#1E1B18] dark:text-[#F7F5F0]">
+      <div className="w-full max-w-lg max-h-full overflow-y-auto bg-[#FCFAF7] dark:bg-[#1C1A18] border border-[#DFD9CF] dark:border-[#2E2A26] p-6 sm:p-7 shadow-2xl relative text-[#1E1B18] dark:text-[#F7F5F0]">
         {/* Controls top right */}
         <div className="absolute top-5 right-5 flex items-center gap-2">
           {!isChoosingOccasion && onUpdateItem && (
@@ -235,18 +241,18 @@ export const ItemDetailModal = ({
                         <span className="text-[#1E1B18] dark:text-[#F7F5F0]">{item.material}</span>
                       </div>
                     )}
-                    {item.season && (
-                      <div className="flex justify-between py-1.5 border-b border-[#EFECE6] dark:border-[#282420]">
-                        <span className="text-[#8A8175] dark:text-[#A69D92]">Сезонность</span>
-                        <span className="text-[#1E1B18] dark:text-[#F7F5F0]">
-                          {item.season === 'all'
-                            ? 'Внесезонная базовая модель'
-                            : item.season === 'autumn/winter'
-                            ? 'Осень / Зима (утепленная)'
-                            : 'Весна / Лето (облегченная)'}
-                        </span>
+                    {MATERIAL_PART_KEYS.map((part) => item.materialDetails?.[part] && (
+                      <div key={part} className="flex justify-between gap-2 py-1.5 border-b border-[#EFECE6] dark:border-[#282420]">
+                        <span className="text-[#8A8175] dark:text-[#A69D92]">{MATERIAL_PARTS[part]}</span>
+                        <span className="text-right text-[#1E1B18] dark:text-[#F7F5F0]">{item.materialDetails[part]}</span>
                       </div>
-                    )}
+                    ))}
+                    <div className="flex justify-between py-1.5 border-b border-[#EFECE6] dark:border-[#282420]">
+                      <span className="text-[#8A8175] dark:text-[#A69D92]">Сезон</span>
+                      <span className="text-[#1E1B18] dark:text-[#F7F5F0]">
+                        {CLOTHING_SEASONS[isClothingSeason(item.season) ? item.season : 'unknown']}
+                      </span>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -313,20 +319,22 @@ export const ItemDetailModal = ({
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase tracking-wider text-[#8A8175] mb-1">
+                      <label htmlFor="edit-item-season" className="block text-[10px] uppercase tracking-wider text-[#8A8175] mb-1">
                         Сезон
                       </label>
                       <select
+                        id="edit-item-season"
                         value={season}
-                        onChange={(e) => setSeason(e.target.value as 'all' | 'spring/summer' | 'autumn/winter')}
+                        onChange={({ target }) => { if (isClothingSeason(target.value)) setSeason(target.value); }}
                         className="w-full px-2 py-1.5 text-xs bg-[#EFECE6] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#2E2A26] text-[#1E1B18] dark:text-[#F7F5F0] focus:outline-none"
                       >
-                        <option value="all">Внесезонно</option>
-                        <option value="autumn/winter">Осень / Зима</option>
-                        <option value="spring/summer">Весна / Лето</option>
+                        {CLOTHING_SEASON_VALUES.map((value) => <option key={value} value={value}>{CLOTHING_SEASONS[value]}</option>)}
                       </select>
                     </div>
                   </div>
+
+                  <MaterialDetailsFields value={materialDetails} onChange={(part, value) =>
+                    setMaterialDetails((current) => ({ ...current, [part]: value }))} />
 
                   <div className="pt-2 flex items-center justify-end gap-2">
                     <button

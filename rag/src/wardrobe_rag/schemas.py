@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Category = Literal["tops", "bottoms", "shoes", "outerwear", "accessories"]
 RetrievalMode = Literal["bm25", "dense", "hybrid", "visual", "multimodal"]
+MaterialPart = Literal["lining", "insulation", "sole", "insole", "trim"]
 CATEGORIES: tuple[Category, ...] = ("tops", "bottoms", "shoes", "outerwear", "accessories")
 REQUIRED_SLOTS: tuple[Category, ...] = ("tops", "bottoms", "shoes")
 
@@ -40,12 +41,13 @@ class WardrobeItem(Contract):
     title: str = Field(min_length=1, max_length=1000)
     category: Category
     color: str = ""
-    season: Literal["all", "spring/summer", "autumn/winter"] = "all"
+    season: Literal["unknown", "all", "spring/summer", "autumn/winter"] = "unknown"
     style: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
     imageUrl: str = ""
     brand: str | None = None
     material: str | None = None
+    materialDetails: dict[MaterialPart, str] | None = None
     embeddingSnippet: str | None = None
     uploadedAt: str = ""
     imagePath: str | None = None
@@ -134,6 +136,8 @@ class Candidate(Contract):
     bm25_contribution: float = 0
     dense_contribution: float = 0
     visual_contribution: float = 0
+    preference_score: int = 0
+    material_weather_score: int = 0
     anchored: bool = False
     fallback: bool = False
 
@@ -154,6 +158,9 @@ class RetrievalResult(Contract):
     missing_slots: list[Category] = Field(default_factory=list)
     context: QueryContext = Field(default_factory=QueryContext)
     anchor_item_id: str | None = None
+    exclude_colors: list[str] = Field(default_factory=list)
+    exclude_materials: list[str] = Field(default_factory=list)
+    attribute_blocked_slots: list[Category] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     timings_ms: dict[str, float] = Field(default_factory=dict)
     wardrobe_revision: str

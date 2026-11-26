@@ -18,17 +18,22 @@ export interface UserAccount {
   createdAt: string;
 }
 
+export type MaterialPart = 'lining' | 'insulation' | 'sole' | 'insole' | 'trim';
+export type MaterialDetails = Partial<Record<MaterialPart, string>>;
+export type ClothingSeason = 'unknown' | 'all' | 'spring/summer' | 'autumn/winter';
+
 export interface WardrobeItem {
   id: string;
   title: string;
   category: ClothingCategory;
   color: string;
-  season: 'all' | 'spring/summer' | 'autumn/winter';
+  season: ClothingSeason;
   style: string[]; // e.g. ['casual', 'business', 'minimalism']
   tags: string[];
   imageUrl: string;
   brand?: string | null;
   material?: string | null;
+  materialDetails?: MaterialDetails | null;
   embeddingSnippet?: string | null;
   uploadedAt: string;
   imagePath?: string | null;
@@ -39,8 +44,10 @@ export interface WardrobeRecognitionResponse {
   suggestion: {
     title: string | null;
     category: ClothingCategory | null;
+    season?: ClothingSeason | null;
     color: string | null;
     material: string | null;
+    materialDetails?: MaterialDetails | null;
     brand: string | null;
   } | null;
 }
@@ -68,6 +75,8 @@ export interface RetrievalCandidate {
   bm25_contribution: number;
   dense_contribution: number;
   visual_contribution: number;
+  preference_score?: number;
+  material_weather_score?: number;
   anchored: boolean;
   fallback: boolean;
 }
@@ -92,6 +101,7 @@ export interface RetrievalResult {
     wind?: boolean | null;
   };
   anchor_item_id?: string | null;
+  attribute_blocked_slots?: ClothingCategory[];
   warnings: string[];
   timings_ms: Record<string, number>;
   wardrobe_revision: string;

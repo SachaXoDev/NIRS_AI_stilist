@@ -5,7 +5,7 @@ import pytest
 
 from wardrobe_rag.config import RAGConfig
 from wardrobe_rag.retrieval import RetrievalEngine
-from wardrobe_rag.schemas import RetrievalRequest, VectorHit
+from wardrobe_rag.schemas import RetrievalRequest, VectorHit, WardrobeItem
 from wardrobe_rag.text import build_document, tokenize
 
 
@@ -105,8 +105,8 @@ def test_anchor_survives_shortlist_and_explicit_exclusion_is_applied(embedder, m
 def test_visual_text_and_image_queries_use_the_correct_encoder(embedder, wardrobe):
     store = ControlledStore({"alice": wardrobe})
     engine = engine_for(store, embedder)
-    result = engine.retrieve(RetrievalRequest(user_id="alice", query="белые кеды", mode="visual"))
-    assert result.candidates_by_slot["shoes"]
+    result = engine.retrieve(RetrievalRequest(user_id="alice", query="белые лоферы", mode="visual"))
+    assert result.candidates_by_slot["shoes"][0].visual_rank == 1
     assert embedder.calls["visual_text"] == 1
     assert all(channel == "image" for channel, _, _, _ in store.queries)
 
@@ -199,3 +199,30 @@ def test_multimodal_diagnostics_expose_all_three_actual_rrf_contributions(embedd
     assert top.dense_contribution == pytest.approx((0.65 * 0.65) / 61)
     assert top.visual_contribution == pytest.approx((0.65 * 0.35) / 61)
     assert top.score == pytest.approx(top.bm25_contribution + top.dense_contribution + top.visual_contribution)
+
+
+def test_unknown_season_does_not_match_all_season_search_terms(make_item):
+    unknown = WardrobeItem(id="unknown", category="shoes", title="Кроссовки")
+    year_round = make_item("all", "shoes", "Кроссовки", season="all")
+    query_terms = set(tokenize("всесезонный"))
+    assert query_terms.isdisjoint(tokenize(build_document(unknown)))
+    assert query_terms.issubset(tokenize(build_document(year_round)))
+
+
+@pytest.mark.parametrize(("query", "first", "score"), [
+    ("Образ на +6°C", "z-insulated", 2),
+    ("Образ в прохладную погоду", "z-insulated", 2),
+    ("Образ на +29°C", "a-plain", -2),
+    ("Образ на +20°C", "a-plain", 0),
+])
+def test_material_weather_hint_changes_order_without_changing_season(embedder, make_item, query, first, score):
+    plain = make_item("a-plain", "shoes", "Кроссовки", material="Кожа", season="unknown",
+                      materialDetails={"lining": "Полиэстер", "sole": "Резина"})
+    insulated = plain.model_copy(update={"id": "z-insulated", "materialDetails": {"insulation": "100% полиэстер"}})
+    result = engine_for(ControlledStore({"alice": [plain, insulated]}), embedder).retrieve(
+        RetrievalRequest(user_id="alice", query=query, mode="dense"),
+    )
+    candidates = result.candidates_by_slot["shoes"]
+    assert candidates[0].item_id == first
+    assert {c.item_id: c.material_weather_score for c in candidates} == {"a-plain": 0, "z-insulated": score}
+    assert all(c.score == c.dense_contribution and c.item.season == "unknown" for c in candidates)

@@ -150,7 +150,8 @@ class WardrobeRagEngine:
                 alpha=query.alpha,
                 visual_weight=query.visual_weight,
                 context=QueryContext(
-                    occasion=query.occasion, weather=query.weather, vibe=query.vibe
+                    occasion=query.occasion, weather=query.weather, vibe=query.vibe,
+                    temperature_c=query.temperature_c,
                 ),
                 anchor_item_id=query.anchor_item_id,
                 exclude_item_ids=[i for i in query.exclude_item_ids if i != query.anchor_item_id],
@@ -175,6 +176,8 @@ class WardrobeRagEngine:
                         score=candidate.score,
                         anchored=candidate.anchored,
                         fallback=candidate.fallback,
+                        preference_score=candidate.preference_score,
+                        material_weather_score=candidate.material_weather_score,
                     )
                     for candidate in candidates
                 ]
@@ -246,6 +249,8 @@ class WardrobeRagEngine:
                 SlotCandidate(
                     item=_to_api_item(candidate.item), score=candidate.score,
                     anchored=candidate.anchored, fallback=candidate.fallback,
+                    preference_score=candidate.preference_score,
+                    material_weather_score=candidate.material_weather_score,
                 )
                 for candidate in result.candidates
             ],

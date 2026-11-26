@@ -122,6 +122,15 @@ export async function askStylist(
 
   const queryLower = userQuery.toLowerCase();
   const occasion = context?.occasion?.toLowerCase() || '';
+  // Демо не проверяет температурную разметку: в сильный мороз не выдаём случайную карточку.
+  const frost = (context?.weather ?? '').match(/(?<!\w)(?:[-−–]\s*|минус\s+)(\d{1,2})(?!\d)/i)
+    ?? queryLower.match(/(?<!\w)(?:[-−–]\s*|минус\s+)(\d{1,2})(?!\d)/i);
+  if (frost && Number(frost[1]) >= 15 && Number(frost[1]) <= 80) {
+    return {
+      text: `При −${frost[1]} °C нужны зимние ботинки и тёплая верхняя одежда с подходящим температурным диапазоном. Демо-режим не может это проверить, поэтому образ не предлагаю.`,
+      source: 'client-mock',
+    };
+  }
 
   // Classify intent
   const isWorkOrBusiness =
@@ -132,13 +141,17 @@ export async function askStylist(
     queryLower.includes('презентац') ||
     occasion.includes('работ');
 
+  const weatherText = `${context?.weather ?? ''} ${queryLower}`;
+  const degrees = weatherText.match(/(?<![\w.,])([+\-−]?\s*\d{1,2})\s*°\s*[cс]?/i);
+  const temperature = degrees ? Number(degrees[1].replace(/\s/g, '').replace('−', '-')) : undefined;
   const isRainOrCold =
-    queryLower.includes('дожд') ||
-    queryLower.includes('холод') ||
-    queryLower.includes('прохлад') ||
-    queryLower.includes('ветр') ||
-    queryLower.includes('+12') ||
-    queryLower.includes('осень') ||
+    (temperature !== undefined && temperature >= -80 && temperature <= 12) ||
+    weatherText.includes('дожд') ||
+    weatherText.includes('снег') ||
+    weatherText.includes('холод') ||
+    weatherText.includes('прохлад') ||
+    weatherText.includes('ветр') ||
+    weatherText.includes('осень') ||
     queryLower.includes('куртк');
 
   const isDateOrEvening =

@@ -44,14 +44,15 @@ from app.services.analysis import (
     analyze_query, is_outfit_query, is_outfit_revision, outfit_revision, small_talk_reply, starts_new_topic,
 )
 from app.services.editing import (
-    NOTHING_TO_EDIT_TEXT, LastCard, OutfitEditor, describe_changes, find_last_card,
+    NOTHING_TO_EDIT_TEXT, LastCard, OutfitEditor, find_last_card, restyle_edit,
 )
 from app.services.followup import FollowUp, classify_followup, refers_to_dialogue
 from app.services.llm.base import LLMClient, LLMError
 from app.services.prompts import PromptContext, build_conversation_messages, build_messages, build_repair_messages
 from app.services.scoring import MATCH_SCORE_METHOD, match_score
 from app.services.streaming import JsonStringFieldExtractor
-from app.services.suitability import unsuitable_reason
+from app.services.styling import styling_comment
+from app.services.suitability import FROST_CRITICAL_SLOTS, frost_gap_text, is_severe_frost, unsuitable_reason
 from app.services.validation import (
     MAX_TEXT_CHARS,
     DraftParseError,
@@ -162,13 +163,20 @@ class StylistService:
 
     # --- рекомендация -------------------------------------------------------------
 
-    @staticmethod
-    def _uses_wardrobe(request: RecommendRequest, prior_request: str | None) -> bool:
+    def _detailed_selection(self, query: str) -> bool:
+        if self._engine.name != "wardrobe_rag":
+            return False
+        from wardrobe_rag.query_attributes import is_detailed_selection
+
+        return is_detailed_selection(query)
+
+    def _uses_wardrobe(self, request: RecommendRequest, prior_request: str | None) -> bool:
         context = request.context
         return bool(
             prior_request or request.anchor_item_id or request.query_image or request.mode
             or (context and (context.occasion or context.weather or context.vibe))
             or is_outfit_query(request.query)
+            or self._detailed_selection(request.query)
         )
 
     async def recommend(self, request: RecommendRequest) -> RecommendResponse:
@@ -291,6 +299,8 @@ class StylistService:
             )
 
         analysis = analyze_query(request.query, context, items)
+        if prior_request and analysis.temperature_c is None:
+            analysis.temperature_c = analyze_query(prior_request).temperature_c
         known_ids = {item.id for item in items}
         anchor = request.anchor_item_id or next(iter(analysis.anchor_item_ids), None)
         if anchor is not None and anchor not in known_ids:
@@ -319,6 +329,7 @@ class StylistService:
             exclude_item_ids=exclude,
             query_image=request.query_image,
             require_outerwear=warmer,
+            temperature_c=analysis.temperature_c,
         )
         phase = time.perf_counter()
         try:
@@ -385,7 +396,7 @@ class StylistService:
         self, request: RecommendRequest, card: LastCard | None
     ) -> FollowUp | RecommendResponse | None:
         """Правка/вопрос о последней карточке, готовый ответ «нечего менять» или None — обычный путь."""
-        if starts_new_topic(request.query):
+        if starts_new_topic(request.query) or self._detailed_selection(request.query):
             return None  # «подбери образ…», «с чем носить…» — прошлая карточка ни при чём
         follow_up = classify_followup(request.query)
         if follow_up is None or card is not None:
@@ -553,24 +564,18 @@ class StylistService:
         }
 
         items = [with_image(item) for item in generation.items]
-        summary = "В образ вошли: " + "; ".join(item.title for item in items) + "."
-        colors = list(dict.fromkeys(item.color.strip().lower() for item in items if item.color.strip()))
-        palette = "Палитра образа: " + ", ".join(colors) + "." if colors else ""
+        text = styling_comment(items, ctx.analysis)
         outfit = OutfitLook(
             id=f"outfit-{uuid.uuid4().hex[:12]}",
             title=f"Образ · {ctx.analysis.occasion_label}",
-            description=summary,
+            description=text,
             occasion=ctx.analysis.occasion_label,
             items=items,
-            stylist_reasoning=palette,
+            stylist_reasoning="",
             match_score=match_score(generation.items, outcome),
             confidence_tips=[],
         )
-        text, edit = summary, None
-        if prepared.previous is not None:
-            # «Потеплее» может поменять образ целиком — тогда прямо говорим, что именно изменилось.
-            changes, edit = describe_changes(prepared.previous, items)
-            text = f"{summary} {changes}"
+        edit = restyle_edit(prepared.previous, items) if prepared.previous is not None else None
         return RecommendResponse(
             text=text,
             suggested_outfit=outfit,
@@ -599,12 +604,19 @@ def _incomplete_text(missing: list[str], outcome: RetrievalOutcome, *, unsuitabl
             "погодных ограничений. Попробуйте уточнить запрос или добавить вещи."
         )
     labels = ", ".join(CATEGORY_LABELS_RU[slot] for slot in missing)
+    if set(missing) & set(outcome.diagnostics.get("attribute_blocked_slots", [])):
+        return (f"Не могу подтвердить, что вещи в этих категориях подходят под условия запроса: {labels}. "
+                "Проверьте характеристики в гардеробе или уточните, какое условие можно смягчить.")
     if set(missing) & unsuitable_slots or outcome.context.get("occasion") == "beach":
         text = f"Не могу собрать подходящий образ для этого повода и погоды. Не хватает подходящих вещей: {labels}."
     else:
         text = f"Пока не могу собрать законченный образ: в гардеробе не хватает — {labels}."
-    if "outerwear" in missing and outcome.context.get("temperature_c") is not None:
-        text += f" При {outcome.context['temperature_c']:+g}°C без верхней одежды не обойтись."
+    temperature = outcome.context.get("temperature_c")
+    frost_slots = set(missing) & FROST_CRITICAL_SLOTS
+    if frost_slots and temperature is not None and is_severe_frost(temperature):
+        return f"{frost_gap_text(temperature, frost_slots)} Для улицы я бы не заменял их демисезонными вещами."
+    if "outerwear" in missing and temperature is not None:
+        text += f" При {temperature:+g}°C без верхней одежды не обойтись."
     elif "outerwear" in missing:
         text += " По погоде нужен верхний слой."
     return text + " Добавьте недостающее — и я подберу комплект."

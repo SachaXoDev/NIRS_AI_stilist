@@ -97,7 +97,8 @@ WEATHER_EXPANSION: dict[str, tuple[str, ...]] = {
 # «+12°C», «-5», «−5» (типографский минус), «12 градусов». Знак не должен стоять сразу после
 # буквы/цифры («5-6 вещей»); en dash считается минусом, только если приклеен к числу.
 _TEMPERATURE_RE = re.compile(
-    r"(?<![\w])(?P<signed>(?:[+\-−]\s?|–)\d{1,2})(?!\d)|(?<![\w.,])(?P<plain>\d{1,2})\s*(?:°|град)"
+    r"(?<!\w)(?P<signed>(?:[+\-−]\s*|–|минус\s+)\d{1,2})(?!\d)"
+    r"|(?<![\w.,])(?P<plain>\d{1,2})\s*(?:°|град)"
 )
 
 COLD_MAX_C = 12
@@ -246,9 +247,10 @@ def _detect_temperature(text: str) -> int | None:
     if not match:
         return None
     raw = match.group("signed") or match.group("plain")
-    raw = raw.replace("−", "-").replace("–", "-").replace(" ", "")
+    raw = raw.replace("минус", "-").replace("−", "-").replace("–", "-")
     try:
-        return int(raw)
+        temperature = int("".join(raw.split()))
+        return temperature if -80 <= temperature <= 65 else None
     except ValueError:
         return None
 

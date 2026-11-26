@@ -50,8 +50,8 @@ class Session:
         if expect_card:
             require(result.get("source") in self.allowed, f"{case}: unexpected source {result.get('source')!r}")
             require(result.get("referencedItemIds") == ids, f"{case}: referenced IDs disagree with the card")
-            for item in result["suggestedOutfit"]["items"]:
-                require(item["title"] in result["text"], f"{case}: {item['id']} is missing from the text")
+            require(not result["text"].startswith(("В образ вошли:", "Заменил обувь")),
+                    f"{case}: chat shows an inventory or an edit log instead of advice")
         return result
 
 
@@ -94,8 +94,7 @@ def run(session: Session) -> None:
             "ambiguous: expected exactly one question and no model call")
 
     warmer = session.ask("warmer", "А можно потеплее?", OFFICE_CARD, OFFICE_QUERY)
-    require("прошл" in warmer["text"] and warmer.get("edit", {}).get("operation") == "restyle",
-            "warmer: the answer must say what changed against the previous outfit")
+    require(warmer.get("edit", {}).get("operation") == "restyle", "warmer: missing restyle metadata")
 
     advice = session.ask("birthday after beach", "С чем носить чёрные ботинки на день рождения?",
                          BEACH_CARD, BEACH_QUERY, expect_card=False)

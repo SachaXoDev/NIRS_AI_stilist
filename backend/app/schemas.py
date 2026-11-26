@@ -12,7 +12,7 @@ from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 from pydantic.alias_generators import to_camel
 
 Category = Literal["tops", "bottoms", "outerwear", "shoes", "accessories"]
-Season = Literal["all", "spring/summer", "autumn/winter"]
+Season = Literal["unknown", "all", "spring/summer", "autumn/winter"]
 
 CATEGORY_ORDER: tuple[str, ...] = ("outerwear", "tops", "bottoms", "shoes", "accessories")
 CATEGORY_LABELS_RU: dict[str, str] = {
@@ -40,17 +40,21 @@ class WeatherAttributes(BaseModel):
     open_shoes: bool | None = None
 
 
+MaterialPart = Literal["lining", "insulation", "sole", "insole", "trim"]
+
+
 class WardrobeItem(CamelModel):
     id: str = Field(min_length=1, max_length=200)
     title: str = Field(min_length=1, max_length=1000)
     category: Category
     color: str = ""
-    season: Season = "all"
+    season: Season = "unknown"
     style: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
     image_url: str = ""
     brand: str | None = None
     material: str | None = None
+    material_details: dict[MaterialPart, str] | None = None
     embedding_snippet: str | None = None
     uploaded_at: str = ""
     image_path: str | None = None
@@ -64,7 +68,7 @@ class WardrobeItem(CamelModel):
     @field_validator("season", mode="before")
     @classmethod
     def _lenient_season(cls, value: Any) -> Any:
-        return value if value in ("all", "spring/summer", "autumn/winter") else "all"
+        return value if value in ("unknown", "all", "spring/summer", "autumn/winter") else "unknown"
 
     @field_validator("style", "tags", mode="before")
     @classmethod
@@ -231,8 +235,10 @@ class WardrobeResponse(CamelModel):
 class PhotoSuggestion(BaseModel):
     title: str | None = None
     category: Category | None = None
+    season: Season | None = None
     color: str | None = None
     material: str | None = None
+    materialDetails: dict[MaterialPart, str] | None = None
     brand: str | None = None
 
 

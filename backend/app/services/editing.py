@@ -55,7 +55,8 @@ from app.services.prompts import (
     build_slot_messages,
 )
 from app.services.scoring import match_score
-from app.services.suitability import unsuitable_reason
+from app.services.styling import styling_comment
+from app.services.suitability import FROST_CRITICAL_SLOTS, frost_gap_text, is_severe_frost, unsuitable_reason
 from app.services.textutils import normalize
 from app.services.validation import MAX_TEXT_CHARS, DraftParseError, parse_draft
 
@@ -152,35 +153,17 @@ def _listing(items: list[WardrobeItem]) -> str:
     return "; ".join(quote(item) for item in sort_items(items))
 
 
-def describe_changes(before: list[WardrobeItem], after: list[WardrobeItem]) -> tuple[str, OutfitEdit]:
-    """Что изменилось между двумя образами — словами и в виде проверяемой структуры."""
+def restyle_edit(before: list[WardrobeItem], after: list[WardrobeItem]) -> OutfitEdit:
+    """Сохраняет машинное описание правки, не дублируя карточку в чате."""
     old, new = {item.id: item for item in before}, {item.id: item for item in after}
     kept = [item for item in after if item.id in old]
-    parts: list[str] = []
-    for slot in CATEGORY_ORDER:
-        removed = [item for item in before if item.category == slot and item.id not in new]
-        added = [item for item in after if item.category == slot and item.id not in old]
-        label = CATEGORY_LABELS_RU[slot]
-        if removed and added:
-            parts.append(f"{label}: " + ", ".join(map(quote, removed)) + " → " + ", ".join(map(quote, added)))
-        elif added:
-            parts.append(f"{label} — добавлено: " + ", ".join(map(quote, added)))
-        elif removed:
-            parts.append(f"{label} — убрано: " + ", ".join(map(quote, removed)))
-    if not parts:
-        text = "Состав тот же, что и в прошлом образе: более подходящих вещей в гардеробе не нашлось."
-    else:
-        text = "Что изменилось по сравнению с прошлым образом: " + "; ".join(parts) + "."
-        if kept:
-            text += " Без изменений: " + _listing(kept) + "."
-    edit = OutfitEdit(
+    return OutfitEdit(
         operation="restyle",
         base_item_ids=[item.id for item in before],
         kept_item_ids=[item.id for item in kept],
         added_item_ids=[item.id for item in after if item.id not in old],
         removed_item_ids=[item.id for item in before if item.id not in new],
     )
-    return text, edit
 
 
 def _named(items: list[WardrobeItem], mention: str | None) -> WardrobeItem | None:
@@ -264,9 +247,8 @@ class OutfitEditor:
                 missing_slots=[slot],
             )
         kept = [item for item in base if item.id != target.id]
-        lead = f"Убрал {_SLOT_ACC[slot]}: {quote(target)}."
         return reply.card(
-            kept, base, lead=lead, source="rules", attempts=0, revision="",
+            kept, source="rules", attempts=0, revision="",
             edit=OutfitEdit(
                 operation="remove", slot=slot, base_item_ids=[item.id for item in base],
                 kept_item_ids=[item.id for item in kept], removed_item_ids=[target.id],
@@ -290,19 +272,16 @@ class OutfitEditor:
         reply: "_Reply",
     ) -> RecommendResponse:
         operation = follow_up.kind
-        note = ""
         target: WardrobeItem | None = None
         if operation == "add" and len(in_slot) >= SLOT_LIMITS[slot]:
             if slot == "accessories":
                 return reply.text(
-                    f"В образе уже два аксессуара: {_listing(in_slot)}. Больше не добавляю — какой из них заменить?"
+                    f"В образе уже два аксессуара: {_listing(in_slot)}. Какой из них заменить?"
                 )
             operation, target = "replace", in_slot[0]
-            note = " В образе уже была вещь этой категории, поэтому я заменил её, а не добавил вторую."
         elif operation == "replace":
             if not in_slot:
                 operation = "add"
-                note = f" В прошлом образе не было {_SLOT_GEN[slot]}, поэтому я добавил вещь, ничего не убирая."
             else:
                 target = _named(in_slot, follow_up.mention)
                 if target is None:
@@ -345,9 +324,10 @@ class OutfitEditor:
 
         if not outcome.candidates:
             # Альтернативы нет — прежний комплект остаётся, новой карточки не будет.
-            return reply.text(
-                _no_alternative_text(request.query, operation, slot, target, base), revision=outcome.revision
-            )
+            temperature = analysis.temperature_c
+            if slot in FROST_CRITICAL_SLOTS and temperature is not None and is_severe_frost(temperature):
+                return reply.text(frost_gap_text(temperature, {slot}), revision=outcome.revision)
+            return reply.text(_no_alternative_text(request.query, operation, slot, target), revision=outcome.revision)
 
         chosen, source, attempts = await self._pick(
             request.query, analysis, outcome, base, target, operation, runtime, reply
@@ -365,12 +345,8 @@ class OutfitEditor:
         if await asyncio.to_thread(self._engine.get_revision, user_id) != outcome.revision:
             raise RagEngineError("Гардероб изменился, пока стилист подбирал вещь. Повторите запрос.")
 
-        if operation == "add":
-            lead = f"Добавил {_SLOT_ACC[slot]}: {quote(chosen.item)}."
-        else:
-            lead = f"Заменил {_SLOT_ACC[slot]}: {quote(target)} → {quote(chosen.item)}."  # type: ignore[arg-type]
         return reply.card(
-            final, base, lead=lead + note, source=source, attempts=attempts, revision=outcome.revision,
+            final, source=source, attempts=attempts, revision=outcome.revision,
             edit=OutfitEdit(
                 operation=operation, slot=slot, base_item_ids=base_ids,  # type: ignore[arg-type]
                 kept_item_ids=[item.id for item in kept], added_item_ids=[chosen.item.id],
@@ -513,22 +489,30 @@ class _Reply:
         )
 
     def card(
-        self, items: list[WardrobeItem], base: list[WardrobeItem], *, lead: str, source: str,
+        self, items: list[WardrobeItem], *, source: str,
         attempts: int, revision: str, edit: OutfitEdit, ranked: SlotOutcome | None,
     ) -> RecommendResponse:
         from app.services.orchestrator import with_image  # общий помощник карточек
 
         items = [with_image(item) for item in sort_items(items)]
-        kept = [item for item in items if item.id in set(edit.kept_item_ids)]
-        text = lead + (f" Остальные вещи без изменений: {_listing(kept)}." if kept else "")
-        colors = list(dict.fromkeys(item.color.strip().lower() for item in items if item.color.strip()))
+        temperature = self.analysis.temperature_c
+        if temperature is not None and is_severe_frost(temperature):
+            weather_only = replace(self.analysis, occasion=DEFAULT_OCCASION)
+            gaps = {slot for slot in FROST_CRITICAL_SLOTS if not any(
+                item.category == slot and not unsuitable_reason(item, weather_only) for item in items
+            )}
+            if gaps:
+                return self.text(f"{frost_gap_text(temperature, gaps)} Лучше собрать образ заново.",
+                                 revision=revision, missing_slots=sorted(gaps))
+        focus = next((item for item in items if item.id in edit.added_item_ids), None)
+        text = styling_comment(items, self.analysis, focus=focus)
         outfit = OutfitLook(
             id=f"outfit-{uuid.uuid4().hex[:12]}",
             title=f"Образ · {self.analysis.occasion_label}",
-            description="В образ вошли: " + "; ".join(item.title for item in items) + ".",
+            description=text,
             occasion=self.analysis.occasion_label,
             items=items,
-            stylist_reasoning="Палитра образа: " + ", ".join(colors) + "." if colors else "",
+            stylist_reasoning="",
             match_score=match_score(items, _edited_as_outcome(items, edit, ranked)),
             confidence_tips=[],
         )
@@ -554,7 +538,7 @@ def _ask_which_item(operation: str | None, base: list[WardrobeItem]) -> str:
 
 
 def _no_alternative_text(
-    query: str, operation: str, slot: str, target: WardrobeItem | None, base: list[WardrobeItem]
+    query: str, operation: str, slot: str, target: WardrobeItem | None
 ) -> str:
     wants_flat = slot == "shoes" and any(word in normalize(query) for word in _FLAT_WORDS)
     if wants_flat:
@@ -565,7 +549,7 @@ def _no_alternative_text(
         lead = f"Заменить {quote(target)} нечем: {reason}."
     else:
         lead = f"Добавить {_SLOT_ACC[slot]} не получится: {reason}."
-    return f"{lead} Прежний образ оставляю без изменений: {_listing(base)}."
+    return f"{lead} Прежний образ оставляю без изменений."
 
 
 def _context_summary(analysis: QueryAnalysis) -> str:

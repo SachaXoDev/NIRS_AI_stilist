@@ -43,6 +43,8 @@ _FIT_WEIGHT = 0.4
 
 _WARM_MATERIALS = ("шерст", "кашемир", "твид", "пух", "флис", "мех", "вельвет", "драп")
 _LIGHT_MATERIALS = ("лен", "льн", "шелк", "вискоз", "хлоп", "шифон")
+_INSULATION_FILL = re.compile(r"\b(?:полиэстер\w*|синтепон\w*|шерст\w*|кашемир\w*|пух\w*|флис\w*|мех\w*|polyester|wool|cashmere|down|fleece|thinsulate|primaloft)\b")
+_NO_FILL = re.compile(r"\b(?:без|нет|не|отсутствует|none|no|uninsulated|unknown)\b")
 _RAIN_FRIENDLY = ("водооттал", "дожд", "плащ", "тренч", "непромока", "резин")
 _RAIN_HOSTILE_SHOES = ("замш", "текстил", "сандал", "босонож", "открыт", "эспадрил", "шлепан")
 
@@ -55,6 +57,7 @@ def item_document(item: WardrobeItem) -> str:
         CATEGORY_LABELS_RU.get(item.category, item.category),
         item.color,
         item.material or "",
+        *(item.material_details or {}).values(),
         item.brand or "",
         " ".join(item.tags),
         " ".join(item.tags),
@@ -104,7 +107,11 @@ def fit_score(item: WardrobeItem, analysis: QueryAnalysis) -> float:
     text = normalize(" ".join([item.title, item.material or "", " ".join(item.tags)]))
     if {normalize(s) for s in item.style} & analysis.occasion_styles:
         score += 0.25
-    warm = any(m in text for m in _WARM_MATERIALS)
+    details = item.material_details or {}
+    lining = normalize(details.get("lining", ""))
+    fill = normalize(details.get("insulation", ""))
+    insulated = item.category != "accessories" and _INSULATION_FILL.search(fill) and not _NO_FILL.search(fill)
+    warm = any(m in text or m in lining for m in _WARM_MATERIALS)
     light = any(m in text for m in _LIGHT_MATERIALS)
     if analysis.is_hot:
         if item.season == "autumn/winter":
@@ -113,11 +120,15 @@ def fit_score(item: WardrobeItem, analysis: QueryAnalysis) -> float:
             score -= 0.2
         if light:
             score += 0.15
+        if insulated:
+            score -= 0.15
     elif analysis.is_cold:
         if item.season == "autumn/winter":
             score += 0.15
         if warm:
             score += 0.1
+        if insulated:
+            score += 0.15
         if item.season == "spring/summer" and item.category != "outerwear" and not warm:
             score -= 0.1
     if "rain" in analysis.weather or "snow" in analysis.weather:
@@ -178,6 +189,8 @@ class BuiltinEngine:
 
         context = RecommendContext(occasion=query.occasion, weather=query.weather, vibe=query.vibe)
         analysis = analyze_query(query.query, context, [])
+        if query.temperature_c is not None:
+            analysis.temperature_c = query.temperature_c
         warnings: list[str] = [
             "Работает запасной встроенный поиск builtin-bm25 (только лексика, без эмбеддингов "
             "и изображений), а не wardrobe_rag"
@@ -375,6 +388,8 @@ class BuiltinEngine:
 
         context = RecommendContext(occasion=query.occasion, weather=query.weather, vibe=query.vibe)
         analysis = analyze_query(query.query, context, [])
+        if query.temperature_c is not None:
+            analysis.temperature_c = query.temperature_c
         kept = [by_id[i] for i in query.outfit_item_ids if i != replaced]
         search = " ".join(filter(None, [query.query, query.occasion, *(item.title for item in kept)]))
         raw_scores = lexical_scores(search, analysis, pool)

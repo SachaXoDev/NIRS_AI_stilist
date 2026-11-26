@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from functools import lru_cache
 
+from .query_attributes import PART_NAMES, color_families
 from .schemas import WardrobeItem
 
 CATEGORY_LABELS = {
@@ -34,11 +35,16 @@ def build_document(item: WardrobeItem) -> str:
     """Use current authoritative fields, never a possibly stale embeddingSnippet."""
     parts = [
         CATEGORY_LABELS[item.category], item.title, f"цвет {item.color}",
-        f"сезон {SEASON_LABELS[item.season]}",
         "стиль " + " ".join(item.style), "теги " + " ".join(item.tags),
     ]
+    if item.season in SEASON_LABELS:
+        parts.insert(3, f"сезон {SEASON_LABELS[item.season]}")
+    parts.extend(sorted(family for family in color_families(item.color) if family not in item.color.casefold().replace("ё", "е")))
     if item.material:
         parts.append(f"ткань {item.material}")
+    for part, value in sorted((item.materialDetails or {}).items()):
+        if value:
+            parts.append(f"{PART_NAMES[part]} {value}")
     if item.brand:
         parts.append(f"бренд {item.brand}")
     if item.weather is not None:

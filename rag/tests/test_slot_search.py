@@ -81,3 +81,14 @@ def test_slot_edit_rejects_foreign_ids_and_wrong_slot_replacements(embedder, war
         engine.retrieve_slot(dict(base, outfit_item_ids=["top", "secret"]))
     with pytest.raises(ValueError, match="requested slot"):
         engine.retrieve_slot(dict(base, outfit_item_ids=["top", "bottom", "shoe"], replace_item_id="top"))
+
+
+def test_slot_search_uses_warm_lining_without_treating_plain_lining_as_insulation(embedder, wardrobe, make_item):
+    warm = make_item("warm", "shoes", "Кроссовки", material="Кожа", materialDetails={"lining": "Шерсть"})
+    plain = make_item("plain", "shoes", "Кроссовки", material="Кожа",
+                      materialDetails={"lining": "Полиэстер", "insulation": "без утеплителя"})
+    result = engine_for(ControlledStore({"alice": [*wardrobe[:3], plain, warm]}), embedder).retrieve_slot(dict(
+        user_id="alice", query="Замени обувь на кроссовки", slot="shoes", operation="replace",
+        outfit_item_ids=["top", "bottom", "shoe"], context={"temperature_c": 6}, mode="bm25",
+    ))
+    assert [(c.item_id, c.material_weather_score) for c in result.candidates] == [("warm", 1), ("plain", 0)]

@@ -120,9 +120,9 @@ export const SavedOutfitsView = ({
                   </div>
 
                   {/* Stylist Reasoning */}
-                  {outfit.stylistReasoning && (
+                  {(outfit.stylistReasoning || outfit.description) && (
                     <p className="text-xs text-[#6B6359] dark:text-[#A69D92] leading-relaxed mb-3 font-light border-t border-[#EFECE6] dark:border-[#282420] pt-3">
-                      {outfit.stylistReasoning}
+                      {outfit.stylistReasoning || outfit.description}
                     </p>
                   )}
                 </div>

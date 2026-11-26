@@ -49,6 +49,7 @@ class RetrievalQuery:
     exclude_item_ids: list[str] = field(default_factory=list)
     query_image: str | None = None
     require_outerwear: bool = False
+    temperature_c: int | None = None
 
 
 @dataclass
@@ -57,6 +58,8 @@ class SlotCandidate:
     score: float = 0.0
     anchored: bool = False
     fallback: bool = False  # слот заполнен без поисковых свидетельств
+    preference_score: int = 0
+    material_weather_score: int = 0
 
 
 @dataclass

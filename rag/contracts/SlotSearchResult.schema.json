@@ -97,6 +97,16 @@
           "title": "Visual Contribution",
           "type": "number"
         },
+        "preference_score": {
+          "default": 0,
+          "title": "Preference Score",
+          "type": "integer"
+        },
+        "material_weather_score": {
+          "default": 0,
+          "title": "Material Weather Score",
+          "type": "integer"
+        },
         "anchored": {
           "default": false,
           "title": "Anchored",
@@ -229,8 +239,9 @@
           "type": "string"
         },
         "season": {
-          "default": "all",
+          "default": "unknown",
           "enum": [
+            "unknown",
             "all",
             "spring/summer",
             "autumn/winter"
@@ -280,6 +291,30 @@
           ],
           "default": null,
           "title": "Material"
+        },
+        "materialDetails": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "propertyNames": {
+                "enum": [
+                  "lining",
+                  "insulation",
+                  "sole",
+                  "insole",
+                  "trim"
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Materialdetails"
         },
         "embeddingSnippet": {
           "anyOf": [

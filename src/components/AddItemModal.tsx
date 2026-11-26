@@ -1,8 +1,12 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import type { ClothingCategory, WardrobeItem, WardrobeRecognitionResponse } from '../types';
+import type { ClothingCategory, ClothingSeason, MaterialDetails, WardrobeItem, WardrobeRecognitionResponse } from '../types';
 import { Camera, Check, FileText, X } from 'lucide-react';
 import { USE_REAL_BACKEND } from '../services/backendConfig';
 import { prepareWardrobePhoto, recognizeWardrobePhoto, WARDROBE_PHOTO_ACCEPT } from '../services/wardrobeRecognition';
+import { cleanMaterialDetails } from '../services/materialDetails';
+import { categoryFromTitle } from '../services/wardrobeCategory';
+import { CLOTHING_SEASONS, CLOTHING_SEASON_VALUES, isClothingSeason } from '../services/wardrobeSeason';
+import { MaterialDetailsFields } from './MaterialDetailsFields';
 
 interface AddItemModalProps {
   isOpen: boolean;
@@ -19,7 +23,7 @@ const CATEGORY_OPTIONS: { value: ClothingCategory; label: string }[] = [
 ];
 
 type PhotoStatus = 'idle' | 'pending' | 'success' | 'uncertain' | 'error' | 'offline';
-type ItemFields = { title: string; category: ClothingCategory | ''; color: string; material: string; brand: string };
+type ItemFields = { title: string; category: ClothingCategory | ''; season: ClothingSeason; color: string; material: string; brand: string };
 const IDLE_PHOTO_STATUS: { state: PhotoStatus; message: string } = { state: 'idle', message: '' };
 const FIELD_LABEL = 'mb-1 block text-xs text-[#6B6258] dark:text-[#BFB3A6]';
 const FIELD_INPUT = 'h-11 w-full min-w-0 rounded-lg border border-[#DFD9CF] bg-[#EFECE6] px-3 text-base text-[#1E1B18] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A8175] sm:text-sm dark:border-[#38332E] dark:bg-[#25221F] dark:text-[#F7F5F0]';
@@ -33,6 +37,7 @@ export const AddItemModal = ({ isOpen, ...props }: AddItemModalProps) =>
 
 const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
   const [fields, setFields] = useState<Partial<ItemFields>>({});
+  const [editedDetails, setEditedDetails] = useState<MaterialDetails>({});
   const [suggestion, setSuggestion] = useState<WardrobeRecognitionResponse['suggestion']>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoStatus, setPhotoStatus] = useState(IDLE_PHOTO_STATUS);
@@ -109,11 +114,19 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
   };
 
   // Even an intentionally cleared field takes precedence over a late suggestion.
-  const title = fields.title ?? labelSuggestion?.title ?? suggestion?.title ?? '';
-  const category = fields.category ?? labelSuggestion?.category ?? suggestion?.category ?? '';
+  // A text source replaces the visual identity only if it has both fields.
+  const labelCategory = labelSuggestion?.title && (categoryFromTitle(labelSuggestion.title) ?? labelSuggestion.category);
+  const identity = labelCategory ? labelSuggestion : suggestion;
+  const title = fields.title ?? identity?.title ?? labelSuggestion?.title ?? '';
+  const category = fields.category ?? categoryFromTitle(title) ?? (labelCategory || identity?.category || '');
+  const photoSeason = suggestion?.season;
+  const labelSeason = labelSuggestion?.season;
+  const season = fields.season ?? (photoSeason && labelSeason && photoSeason !== labelSeason
+    ? 'unknown' : labelSeason ?? photoSeason ?? 'unknown');
   const color = fields.color ?? labelSuggestion?.color ?? suggestion?.color ?? '';
   const material = fields.material ?? labelSuggestion?.material ?? suggestion?.material ?? '';
   const brand = fields.brand ?? labelSuggestion?.brand ?? suggestion?.brand ?? '';
+  const materialDetails = { ...suggestion?.materialDetails, ...labelSuggestion?.materialDetails, ...editedDetails };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,11 +143,12 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
       title: title.trim(),
       category,
       color: color.trim(),
-      season: 'all',
+      season,
       style: [],
-      tags: [category, color.trim().toLowerCase(), material.trim().toLowerCase()].filter(Boolean),
+      tags: [],
       brand: brand.trim(),
       material: material.trim(),
+      materialDetails: cleanMaterialDetails(materialDetails),
       imageUrl: photoPreview || defaultImage,
       uploadedAt: new Date().toISOString(),
     };
@@ -290,6 +304,18 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
               />
             </div>
           </div>
+
+          <div>
+            <label htmlFor="add-item-season" className={FIELD_LABEL}>Сезон</label>
+            <select id="add-item-season" value={season} className={FIELD_INPUT} onChange={({ target }) => {
+              if (isClothingSeason(target.value)) editField('season', target.value);
+            }}>
+              {CLOTHING_SEASON_VALUES.map((value) => <option key={value} value={value}>{CLOTHING_SEASONS[value]}</option>)}
+            </select>
+          </div>
+
+          <MaterialDetailsFields value={materialDetails} onChange={(part, value) =>
+            setEditedDetails((current) => ({ ...current, [part]: value }))} />
 
           <div className="pt-1">
             <button

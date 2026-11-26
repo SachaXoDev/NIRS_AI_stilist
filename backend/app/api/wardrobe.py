@@ -86,8 +86,13 @@ async def recognize_photo(request: Request, label_only: bool = False) -> PhotoRe
         logger.exception("Photo inference failed")
         raise HTTPException(status_code=503, detail="Не удалось запустить распознавание фото.") from exc
     if lines and (text_suggestion := await suggest_from_text(lines, request.app.state.product_reader)):
-        suggestion = (
-            suggestion.model_copy(update=text_suggestion.model_dump(exclude_none=True))
-            if suggestion else text_suggestion
-        )
+        if suggestion:
+            update = text_suggestion.model_dump(exclude_none=True)
+            if not (text_suggestion.title and text_suggestion.category):
+                # Don't pair a title from one source with a category from another.
+                update.pop("title", None)
+                update.pop("category", None)
+            suggestion = suggestion.model_copy(update=update)
+        else:
+            suggestion = text_suggestion
     return PhotoRecognitionResponse(suggestion=suggestion)

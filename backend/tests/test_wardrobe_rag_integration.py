@@ -337,3 +337,35 @@ def test_editing_one_item_does_not_re_encode_the_whole_wardrobe(settings, tmp_pa
     })))
     assert sync_counts(plain, "alice", capsule) == (50, 50)
     assert sync_counts(plain, "alice", edited) == (50, 50), "без кеша правка перекодирует всё"
+
+
+def test_detailed_query_routes_to_wardrobe_and_rejects_wrong_component(make_client, rag_engine):
+    items = [
+        {"id": "top", "category": "tops", "title": "Рубашка"},
+        {"id": "pants", "category": "bottoms", "title": "Брюки"},
+        {"id": "shoe", "category": "shoes", "title": "Кроссовки"},
+        {"id": "wrong", "category": "outerwear", "title": "Пальто", "color": "Бежевый",
+         "material": "100% вискоза", "materialDetails": {"lining": "100% шерсть"}},
+        {"id": "right", "category": "outerwear", "title": "Пальто", "color": "Бежевый",
+         "material": "100% шерсть", "materialDetails": {"lining": "100% вискоза"}},
+    ]
+    llm = ScriptedLLM([_answer(["top", "pants", "shoe", "wrong"]), _answer(["top", "pants", "shoe", "right"])])
+    result = _recommend(make_client(engine=rag_engine, llm=llm), query="Хочу бежевое пальто с подкладкой из вискозы",
+                        wardrobe=items, user_id="precision-case", debug=True)
+    assert set(result["referencedItemIds"]) == {"right", "top", "pants", "shoe"}
+    assert result["retrieval"]["missing_slots"] == []
+
+
+def test_insulation_is_only_a_preference_not_a_frost_rating(make_client, rag_engine):
+    items = [
+        {"id": "top", "category": "tops", "title": "Рубашка"},
+        {"id": "pants", "category": "bottoms", "title": "Брюки"},
+        {"id": "coat", "category": "outerwear", "title": "Куртка", "weather": {"temperature_min": -30}},
+        {"id": "shoes", "category": "shoes", "title": "Кроссовки", "season": "unknown",
+         "materialDetails": {"insulation": "100% полиэстер"}},
+    ]
+    client = make_client(engine=rag_engine)
+    result = _recommend(client, query="Подбери образ для прогулки при −25°C", wardrobe=items,
+                        user_id="unrated-insulation", debug=True)
+    assert result["missingSlots"] == ["shoes"]
+    assert result["source"] == "none" and "suggestedOutfit" not in result

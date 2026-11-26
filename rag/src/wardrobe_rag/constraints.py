@@ -7,6 +7,7 @@ import re
 from collections import Counter
 from collections.abc import Sequence
 
+from .query_attributes import Condition, attribute_violations, material_values, query_conditions
 from .config import RAGConfig
 from .schemas import (
     Category, QueryContext, REQUIRED_SLOTS, RetrievalRequest, RetrievalResult,
@@ -55,17 +56,6 @@ def required_slots(request: RetrievalRequest, context: QueryContext, config: RAG
     return slots
 
 
-def inferred_exclusions(request: RetrievalRequest) -> tuple[list[str], list[str]]:
-    """A small documented grammar, rather than pretending to do full NLP."""
-    text = request.query.lower().replace("ё", "е")
-    colors = list(request.exclude_colors)
-    materials = list(request.exclude_materials)
-    prefix = r"(?:без|не)\s+"
-    colors.extend(re.findall(prefix + r"(черн\w*|бел\w*|красн\w*|син\w*|зелен\w*|желт\w*|розов\w*|сер\w*|бежев\w*|коричнев\w*)", text))
-    materials.extend(re.findall(prefix + r"(шерст\w*|кож\w*|шелк\w*|кашемир\w*|хлоп\w*|деним\w*)", text))
-    return colors, materials
-
-
 _FLAT_SHOE = re.compile(r"\b(?:без\s+каблук\w*|плоск\w*\s+подошв\w*|на\s+плоском\s+ходу|flat[ -]sole|no[ -]heel|heel[- ]free)\b")
 _HEEL = re.compile(r"\b(?:на|с)\s+(?:\w+\s+){0,2}каблук(?:е|ом)\b|\bheels\b")
 
@@ -81,17 +71,20 @@ def is_documented_flat(item: WardrobeItem) -> bool:
 
 def item_violations(
     item: WardrobeItem, request: RetrievalRequest, context: QueryContext,
+    *, conditions: tuple[Condition, ...] | None = None,
 ) -> list[str]:
     violations: list[str] = []
     if item.id in request.exclude_item_ids:
         violations.append("item explicitly excluded")
-    colors, materials = inferred_exclusions(request)
+    colors, materials = request.exclude_colors, request.exclude_materials
     actual_color = color_tokens(item.color)
     if any(actual_color & color_tokens(color) for color in colors):
         violations.append("excluded color")
-    actual_material = set(tokenize(item.material or ""))
-    if any(actual_material & set(tokenize(material)) for material in materials):
+    composition = [item.material or "", *(item.materialDetails or {}).values()]
+    actual_material = set(tokenize(" ".join(composition))) | material_values(" ".join(composition))
+    if any(actual_material & (set(tokenize(material)) | material_values(material)) for material in materials):
         violations.append("excluded material")
+    violations.extend(attribute_violations(item, query_conditions(request.query) if conditions is None else conditions))
     facts = item.weather
     if facts is None:
         return violations
@@ -158,6 +151,7 @@ def validate_selection(selected_item_ids: Sequence[str], result: RetrievalResult
     request = RetrievalRequest(
         user_id=result.user_id, query=result.query or "selection", context=result.context,
         require_outerwear="outerwear" in result.required_slots,
+        exclude_colors=result.exclude_colors, exclude_materials=result.exclude_materials,
     )
     for item in selected:
         for violation in item_violations(item, request, result.context):
@@ -186,7 +180,7 @@ def assemble_outfit(result: RetrievalResult) -> SelectionValidation:
     """Deterministic candidate assembly for demos/tests before the LLM is connected."""
     slots = list(dict.fromkeys([*REQUIRED_SLOTS, *result.required_slots]))
     query = result.query.lower().replace("ё", "е")
-    if result.candidates_by_slot.get("accessories") and any(
+    if "accessories" not in slots and result.candidates_by_slot.get("accessories") and any(
         stem in query for stem in ("аксессуар", "платок", "шарф", "сумк", "акцент", "шелк")
     ):
         slots.append("accessories")
@@ -214,9 +208,11 @@ def assemble_outfit(result: RetrievalResult) -> SelectionValidation:
     best_objective = float("-inf")
     for combination in itertools.product(*pools):
         items = [candidate.item for candidate in combination]
+        preference = sum(candidate.preference_score for candidate in combination)
         objective = sum(candidate.score / max((c.score for c in pool), default=1.0)
                         if max((c.score for c in pool), default=0) > 0 else 0
-                        for candidate, pool in zip(combination, pools)) - _accent_penalty(items)
+                        for candidate, pool in zip(combination, pools)) - _accent_penalty(items) + 2 * preference
+        objective += 0.15 * sum(candidate.material_weather_score for candidate in combination)
         ids = [item.id for item in items]
         if objective > best_objective or (objective == best_objective and ids < best_ids):
             best_objective, best_ids = objective, ids

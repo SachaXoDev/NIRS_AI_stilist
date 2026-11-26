@@ -76,7 +76,7 @@ class IndexingPipeline:
 
         fingerprint = self.embedder.fingerprint
         payload = {"items": [item.model_dump(mode="json") for item in items],
-                   "image_hashes": image_hashes, "fingerprint": fingerprint, "template": 1}
+                   "image_hashes": image_hashes, "fingerprint": fingerprint, "template": 2}
         revision = hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
         counts = {"encoded_text_count": 0, "reused_text_count": 0, "encoded_image_count": 0, "reused_image_count": 0}
         with self.store.read_session():

@@ -67,9 +67,6 @@ def test_add_jacket_keeps_the_three_original_ids(make_client, wardrobe):
         "keptItemIds": OFFICE, "addedItemIds": ["item-29"], "removedItemIds": [],
     }
     assert result["referencedItemIds"] == ids and result["source"] == "llm"
-    assert "Добавил верхнюю одежду" in result["text"] and "без изменений" in result["text"]
-    for item in result["suggestedOutfit"]["items"]:
-        assert item["title"] in result["text"], "текст называет каждую вещь карточки"
 
 
 def test_slot_prompt_offers_only_candidates_and_no_chat_history(make_client, wardrobe):
@@ -105,7 +102,7 @@ def test_add_to_a_filled_slot_becomes_an_explained_replacement(make_client, ward
     result = _ask(make_client(llm=llm), "Добавь куртку", wardrobe, _history(base))
     assert result["edit"]["operation"] == "replace" and result["edit"]["removedItemIds"] == ["item-28"]
     assert result["edit"]["addedItemIds"] == ["item-29"]
-    assert result["edit"]["keptItemIds"] == OFFICE and "уже была вещь этой категории" in result["text"]
+    assert result["edit"]["keptItemIds"] == OFFICE
 
 
 # --- заменить ---------------------------------------------------------------------------------
@@ -120,7 +117,7 @@ def test_replace_shoes_changes_exactly_one_id(make_client, wardrobe):
     assert result["edit"]["keptItemIds"] == ["item-1", "item-4"]
     assert (result["edit"]["removedItemIds"], result["edit"]["addedItemIds"]) == (["item-42"], ["item-36"])
     assert result["source"] == "rules" and llm.calls == []
-    assert "Заменил обувь" in result["text"] and "→" in result["text"]
+    assert "Заменил обувь" not in result["text"] and "→" not in result["text"]
 
 
 def test_office_edit_does_not_offer_beach_sandals_as_flat_shoes(make_client, capsule50):
@@ -129,6 +126,12 @@ def test_office_edit_does_not_offer_beach_sandals_as_flat_shoes(make_client, cap
                   list(capsule50.values()), _history(OFFICE))
     # В полной капсуле «плоская подошва» есть у кед и у пляжных сандалий; в офис годятся только кеды.
     assert result["edit"]["addedItemIds"] == ["item-36"] and result["source"] == "rules"
+
+
+def test_frost_edit_does_not_keep_unsuitable_shoes_in_a_new_card(make_client, wardrobe):
+    result = _ask(make_client(llm=ScriptedLLM([])), "Без сумки, пожалуйста", wardrobe,
+                  _history([*OFFICE, "item-9"], "Подбери образ на -30"))
+    assert "suggestedOutfit" not in result and "shoes" in result["missingSlots"]
 
 
 def test_replacement_never_offers_the_same_pair(make_client, wardrobe):
@@ -146,13 +149,11 @@ def test_no_suitable_replacement_means_no_new_card(make_client, capsule50):
     assert "suggestedOutfit" not in result and "edit" not in result and result["referencedItemIds"] == []
     assert result["source"] == "none" and llm.calls == []
     assert "без каблука" in result["text"] and "Прежний образ оставляю без изменений" in result["text"]
-    assert "Черные лодочки на устойчивом каблуке" in result["text"]
 
 
 def test_replace_in_empty_slot_adds_with_explanation(make_client, wardrobe):
     result = _ask(make_client(llm=ScriptedLLM([_pick("item-29")])), "Замени куртку", wardrobe, _history(OFFICE))
     assert result["edit"]["operation"] == "add" and result["edit"]["keptItemIds"] == OFFICE
-    assert "не было верхней одежды" in result["text"]
 
 
 def test_ambiguous_request_gets_one_short_question(make_client, wardrobe):
@@ -294,17 +295,15 @@ def test_follow_up_question_keeps_dialogue_history(make_client, wardrobe):
     assert [m["role"] for m in llm.calls[0]] == ["system", "user", "assistant", "user"]
 
 
-# --- «потеплее»: новый вариант целиком, но с явным списком изменений -------------------------------
+# --- «потеплее»: новый вариант и метаданные изменений -----------------------------------------------
 
 
-def test_warmer_names_what_changed_against_the_previous_card(make_client, wardrobe):
+def test_warmer_preserves_the_edit_metadata_and_occasion(make_client, wardrobe):
     llm = ScriptedLLM([json.dumps({"outfit": {"item_ids": ["item-1", "item-4", "item-35", "item-28"]}})])
     result = _ask(make_client(llm=llm), "А можно потеплее?", wardrobe, _history(OFFICE))
     assert set(_ids(result)) == {"item-1", "item-4", "item-35", "item-28"}
-    text = result["text"]
-    assert text.startswith("В образ вошли:") and "Что изменилось по сравнению с прошлым образом" in text
-    assert "верхняя одежда — добавлено: «Двубортный жакет оттенка тауп»" in text
-    assert "обувь: «Черные лодочки на устойчивом каблуке» → «Бордовые дерби на низком каблуке»" in text
+    assert result["edit"]["addedItemIds"] == ["item-28", "item-35"]
+    assert result["edit"]["removedItemIds"] == ["item-42"]
     assert result["edit"]["operation"] == "restyle" and result["edit"]["keptItemIds"] == ["item-1", "item-4"]
     assert result["meta"]["occasion"] == "Деловой выход", "повод прошлого образа сохранён"
 
