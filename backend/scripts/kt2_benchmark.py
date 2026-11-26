@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Benchmark the running KT-2 demo API (no local retrieval or generation)."""
+"""Benchmark the KT-2 demo API or compare its local retrieval without an LLM."""
 from __future__ import annotations
 
 import argparse
@@ -274,12 +274,92 @@ def write_json(path: Path, data: Any) -> None:
     tmp.replace(path)
 
 
+def dataset_fingerprints(files: dict[str, bytes]) -> tuple[dict[str, str], str]:
+    hashes = {name: hashlib.sha256(data).hexdigest() for name, data in files.items()}
+    combined = json.dumps(hashes, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashes, hashlib.sha256(combined).hexdigest()
+
+
+def compare_retrieval(output: Path) -> int:
+    # Support both `python scripts/kt2_benchmark.py` and `python -m scripts.kt2_benchmark`.
+    sys.path.insert(0, str(DATA.parent))
+    from app.kt2_search import BM25Index, Document, FEEDBACK_DOCS, FEEDBACK_TERMS, FEEDBACK_WEIGHT
+
+    files = {name: (DATA / name).read_bytes() for name in ("corpus.json", "questions.json")}
+    hashes, dataset_hash = dataset_fingerprints(files)
+    _, lf_hash = dataset_fingerprints({name: data.replace(b"\r\n", b"\n") for name, data in files.items()})
+    docs, questions = validate_dataset(files)
+    index = BM25Index(Document(**doc) for doc in docs.values())
+
+    def measure(hits, relevant: set[str]) -> dict[str, Any]:
+        ids = [hit.document.id for hit in hits]
+        ranks = [rank for rank, doc_id in enumerate(ids, start=1) if doc_id in relevant]
+        return {
+            "top_3_ids": ids,
+            "scores": [hit.score for hit in hits],
+            "relevant_hit_ranks": ranks,
+            "missed_relevant_ids": sorted(relevant.difference(ids)),
+            "recall_at_3": len(ranks) / len(relevant) if relevant else None,
+            "mrr_at_3": (1 / ranks[0] if ranks else 0.0) if relevant else None,
+        }
+
+    rows = []
+    for question in questions:
+        text, relevant = question["question"], set(question["relevant_ids"])
+        before = measure(index.search_stemmed(text, k=K), relevant)
+        after = measure(index.search(text, k=K), relevant)
+        old_ids, new_ids = before["top_3_ids"], after["top_3_ids"]
+        rows.append({
+            "id": question["id"], "kind": "positive" if relevant else "trap", "question": text,
+            "relevant_ids": question["relevant_ids"], "before": before, "after": after,
+            "changed_order": old_ids != new_ids,
+            "added_ids": [doc_id for doc_id in new_ids if doc_id not in old_ids],
+            "removed_ids": [doc_id for doc_id in old_ids if doc_id not in new_ids],
+        })
+
+    positives = [row for row in rows if row["kind"] == "positive"]
+    metrics = {
+        side: {
+            "found_relevant": sum(len(row[side]["relevant_hit_ranks"]) for row in positives),
+            "recall_at_3": mean(row[side]["recall_at_3"] for row in positives),
+            "mrr_at_3": mean(row[side]["mrr_at_3"] for row in positives),
+        }
+        for side in ("before", "after")
+    }
+    summary = {
+        "schema_version": 1, "mode": "retrieval_only", "k": K,
+        "dataset_sha256": dataset_hash, "dataset_files_sha256": hashes,
+        "dataset_lf_sha256": lf_hash,
+        "document_count": len(docs), "positive_count": len(positives), "trap_count": len(rows) - len(positives),
+        "total_labeled_relevant": sum(len(row["relevant_ids"]) for row in positives),
+        "before_method": "stemmed_bm25", "after_method": "stemmed_bm25_with_lexical_feedback",
+        "feedback": {"seed_documents": FEEDBACK_DOCS, "max_terms": FEEDBACK_TERMS, "weight": FEEDBACK_WEIGHT,
+                     "preserve_original_first_hit": True},
+        "metric_rules": {key: METRIC_RULES[key] for key in ("recall_at_3", "mrr_at_3")},
+        "metrics": metrics,
+    }
+    output.mkdir(parents=True, exist_ok=True)
+    write_json(output / "per_query.json", rows)
+    write_json(output / "summary.json", summary)
+    print(json.dumps(metrics))
+    print(f"Retrieval comparison saved to {output}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default="http://127.0.0.1:8012", help="Base URL of the running demo API")
     parser.add_argument("--timeout", type=float, default=120.0, help="HTTP timeout in seconds (default: %(default)s)")
-    parser.add_argument("--output", type=Path, default=DATA / "results", help="Directory for summary.json and per_query.json")
+    parser.add_argument("--retrieval-only", action="store_true", help="Compare local BM25 rankings without HTTP or Qwen")
+    parser.add_argument("--output", type=Path, help="Directory for summary.json and per_query.json")
     args = parser.parse_args()
+    if args.retrieval_only:
+        try:
+            return compare_retrieval(args.output or DATA / "retrieval_feedback")
+        except (OSError, ValueError) as exc:
+            print(f"FAIL: {exc}", file=sys.stderr)
+            return 1
+    args.output = args.output or DATA / "results"
     if not math.isfinite(args.timeout) or args.timeout <= 0:
         parser.error("--timeout must be finite and positive")
 
@@ -302,11 +382,9 @@ def main() -> int:
     rows: list[dict[str, Any]] = []
     try:
         files = {name: (DATA / name).read_bytes() for name in ("corpus.json", "questions.json")}
-        hashes = {name: hashlib.sha256(data).hexdigest() for name, data in files.items()}
+        hashes, dataset_hash = dataset_fingerprints(files)
         summary["dataset_files_sha256"] = hashes
-        summary["dataset_sha256"] = hashlib.sha256(
-            json.dumps(hashes, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest()
+        summary["dataset_sha256"] = dataset_hash
         docs, questions = validate_dataset(files)
     except (OSError, ValueError) as exc:
         summary["errors"].append({"kind": "dataset_error", "detail": str(exc)})

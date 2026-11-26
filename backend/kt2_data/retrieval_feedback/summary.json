@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "mode": "retrieval_only",
+  "k": 3,
+  "dataset_sha256": "4ede7a8eee0e3a0baa69448fbdd9fa806f86007c68e40d24d5830048b6f40d74",
+  "dataset_files_sha256": {
+    "corpus.json": "e495ffb6d8a9216e379ab217712e0e2deec65d966bb0d1f7248bae3b3fccdd27",
+    "questions.json": "2dcc88cd41372679024a7e9f6ba29e4f8e7ef05d7dd6fcc6de3e843bf521caa7"
+  },
+  "dataset_lf_sha256": "d05aca10f04cd75cb80ac6bc9dc881e5f6245638d6aadc67349c329483657843",
+  "document_count": 30,
+  "positive_count": 10,
+  "trap_count": 5,
+  "total_labeled_relevant": 30,
+  "before_method": "stemmed_bm25",
+  "after_method": "stemmed_bm25_with_lexical_feedback",
+  "feedback": {
+    "seed_documents": 2,
+    "max_terms": 16,
+    "weight": 0.5,
+    "preserve_original_first_hit": true
+  },
+  "metric_rules": {
+    "recall_at_3": "Macro over positives: relevant IDs in the first 3 hits / all labeled relevant IDs.",
+    "mrr_at_3": "Macro over positives: reciprocal of the rank of the first relevant hit, or 0."
+  },
+  "metrics": {
+    "before": {
+      "found_relevant": 25,
+      "recall_at_3": 0.8333333333333334,
+      "mrr_at_3": 1.0
+    },
+    "after": {
+      "found_relevant": 30,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0
+    }
+  }
+}

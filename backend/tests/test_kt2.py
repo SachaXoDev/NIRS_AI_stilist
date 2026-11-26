@@ -39,6 +39,28 @@ def test_bm25_matches_russian_inflection_and_preserves_numbers():
     assert [hit.document.id for hit in index.search("водолазкой 30")] == ["D01"]
 
 
+def test_feedback_retrieves_companion_without_query_terms_and_preserves_first_hit():
+    index = BM25Index([
+        Document("record", "Калибровка датчика С-28", "Лист настройки. В коробке лежит эталонный резистор."),
+        Document("procedure", "Настройка и калибровка оборудования", "Подберите эталонный резистор для сверки."),
+        Document("inventory", "Место хранения", "Эталонный резистор находится в лаборатории."),
+        Document("unrelated", "Как получить справку", "Заявление подают через окно."),
+        Document("D05", "Литьё", "Опока для формовки."),
+        Document("D06", "Архив", "Стеллажи с папками."),
+        Document("D07", "Покраска", "Валик с ручкой."),
+        Document("D08", "Сборка", "Струбцина."),
+        Document("D09", "Точение", "Державка резца."),
+    ])
+    question = "Как выполнить настройку и калибровку датчика С-28?"
+    before = index.search_stemmed(question)
+    after = index.search(question)
+    assert before[0] == after[0] and after[0].document.id == "record"
+    assert "inventory" not in {hit.document.id for hit in before}
+    assert {hit.document.id for hit in after} == {"record", "procedure", "inventory"}
+    assert all(a.score >= b.score > 0 for a, b in zip(after, after[1:]))
+    assert index.search("С-28") == index.search_stemmed("С-28")
+
+
 def test_empty_retrieval_refuses_without_using_model_knowledge():
     index = BM25Index([Document("D01", "Рубашка", "Хлопок")])
     llm = ScriptedAnswer("")
