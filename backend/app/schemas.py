@@ -228,6 +228,18 @@ class WardrobeResponse(CamelModel):
     items: list[WardrobeItem]
 
 
+class PhotoSuggestion(BaseModel):
+    title: str | None = None
+    category: Category | None = None
+    color: str | None = None
+    material: str | None = None
+    brand: str | None = None
+
+
+class PhotoRecognitionResponse(BaseModel):
+    suggestion: PhotoSuggestion | None
+
+
 # --- Настройки куратора (админка) ---------------------------------------------
 
 

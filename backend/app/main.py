@@ -10,9 +10,11 @@ from app.api import admin, recommend, wardrobe
 from app.config import Settings, get_settings
 from app.rag.base import RagEngine
 from app.rag.factory import build_engine
+from app.rag.wardrobe_rag_engine import WardrobeRagEngine
 from app.services.llm.base import LLMClient
 from app.services.llm.factory import build_llm
 from app.services.orchestrator import StylistService
+from app.services.product_text import build_product_reader
 from app.storage.app_store import DEMO_USER_ID, AppStore, load_base_capsule, load_wardrobe_file
 
 API_VERSION = "0.2.0"
@@ -60,6 +62,8 @@ def create_app(
     )
     app.state.settings = settings
     app.state.service = service
+    app.state.photo_recognizer = engine.recognize_photo if isinstance(engine, WardrobeRagEngine) else None
+    app.state.product_reader = build_product_reader(settings)
 
     app.add_middleware(
         CORSMiddleware,

@@ -35,6 +35,16 @@ export interface WardrobeItem {
   weather?: WeatherAttributes | null;
 }
 
+export interface WardrobeRecognitionResponse {
+  suggestion: {
+    title: string | null;
+    category: ClothingCategory | null;
+    color: string | null;
+    material: string | null;
+    brand: string | null;
+  } | null;
+}
+
 // Optional curated facts used by the RAG module. Missing values mean unknown.
 export interface WeatherAttributes {
   temperature_min?: number | null;

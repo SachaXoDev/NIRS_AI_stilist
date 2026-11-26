@@ -208,9 +208,11 @@ export const ItemDetailModal = ({
             <div className="flex-1 flex flex-col justify-between">
               {!isEditing ? (
                 <div>
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-[#8A8175] dark:text-[#A69D92] block mb-1 font-normal">
-                    {item.brand || '12 STOREEZ'}
-                  </span>
+                  {item.brand && (
+                    <span className="text-[10px] tracking-[0.2em] uppercase text-[#8A8175] dark:text-[#A69D92] block mb-1 font-normal">
+                      {item.brand}
+                    </span>
+                  )}
 
                   <h3 className="text-base font-medium text-[#1E1B18] dark:text-[#F7F5F0] mb-4 leading-snug">
                     {item.title}

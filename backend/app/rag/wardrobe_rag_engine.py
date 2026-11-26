@@ -23,7 +23,8 @@ from app.rag.base import (
     SlotOutcome,
     SlotQuery,
 )
-from app.schemas import WardrobeItem
+from app.schemas import PhotoSuggestion, WardrobeItem
+from app.services.photo_recognition import PhotoRecognizer
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,12 @@ class WardrobeRagEngine:
         self._lock = threading.RLock()
         # user_id -> (отпечаток присланного снимка, результат sync): повторный снимок не переиндексируем
         self._sync_cache: dict[str, tuple[str, dict[str, Any]]] = {}
+        self._photo_recognizer = PhotoRecognizer(service.retriever.embedder)
+
+    def recognize_photo(self, image: Any) -> PhotoSuggestion | None:
+        image.thumbnail((768, 768))
+        with self._lock:
+            return self._photo_recognizer.suggest(image)
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "WardrobeRagEngine":
