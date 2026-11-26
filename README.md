@@ -25,7 +25,7 @@
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-ollama pull qwen2.5:3b
+ollama pull qwen3:4b-instruct-2507-q4_K_M
 python -m uvicorn app.kt2_api:app --host 127.0.0.1 --port 8012
 ```
 
@@ -42,6 +42,8 @@ python scripts/kt2_benchmark.py --base-url http://127.0.0.1:8012 --output kt2_da
 Раннер сохраняет `summary.json` и `per_query.json` в указанном каталоге. Recall@3 и MRR@3 считаются по 10 обычным вопросам; эвристическая Accuracy — по их ответам, Correct Rejection Rate — по 5 ловушкам. Здесь выбрано `k=3` для выдачи и расчёта MRR; слайд 42 предлагает согласовать глубину заранее. Ошибка модели или соединения не засчитывается как отказ.
 
 **Сравнение с исходным прогоном:** корпус, вопросы, эталоны и `k=3` не менялись. Русский стемминг Snowball сводит словоформы к общей основе; формула BM25 и обратный индекс остались собственными. Recall@3 вырос с 73,33% до 83,33%, MRR@3 остался 1,00. Корректные отказы выросли с 4/5 до 5/5, но эвристическая Accuracy осталась 0/10. [Исходный прогон и ручной разбор](backend/kt2_data/results/analysis.md) · Стемминг: [сводка](backend/kt2_data/stemming_only/summary.json), [результаты по вопросам](backend/kt2_data/stemming_only/per_query.json).
+
+**Текущая генерация:** Qwen3 4B Instruct с промптом, который просит применять правила документов к условиям вопроса. При той же выдаче: эвристическая Accuracy 1/10, ручная 2/10, корректные отказы 5/5. Медиана ответа в этом прогоне — 25,2 с против 14,2 с у прогона только со стеммингом; времена зависят от нагрузки. [Сравнение и ручная сверка](backend/kt2_data/conclusions_run/analysis.md).
 
 ---
 
