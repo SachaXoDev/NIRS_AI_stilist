@@ -198,14 +198,14 @@ function HeaderContent({
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="h-14 sm:h-16 border-b border-[#DFD9CF] dark:border-[#2E2A26] bg-[#F6F4F0] dark:bg-[#181614] px-4 sm:px-8 flex items-center justify-between shrink-0 z-30 transition-colors relative">
+    <header className="h-14 sm:h-16 border-b border-[#DFD9CF] dark:border-night-divider bg-[#F6F4F0] dark:bg-night-canvas px-4 sm:px-8 flex items-center justify-between shrink-0 z-30 transition-colors relative">
       {/* 12 STOREEZ Brand */}
       <div className="flex items-center gap-3">
-        <span className="text-sm sm:text-base tracking-[0.2em] font-medium text-[#1E1B18] dark:text-[#F7F5F0] uppercase select-none">
+        <span className="text-sm sm:text-base tracking-[0.2em] font-medium text-[#1E1B18] dark:text-night-fg uppercase select-none">
           12 STOREEZ
         </span>
-        <span className="w-px h-3 bg-[#DFD9CF] dark:bg-[#3A3530]" />
-        <span className="text-[10px] tracking-[0.22em] text-[#7C7469] dark:text-[#A69D92] uppercase font-normal">
+        <span className="w-px h-3 bg-[#DFD9CF] dark:bg-night-divider" />
+        <span className="text-[10px] tracking-[0.22em] text-[#7C7469] dark:text-night-muted uppercase font-normal">
           {currentScreen === 'admin' ? 'RAG ADMIN' : 'AI LOOKBOOK'}
         </span>
       </div>
@@ -217,8 +217,8 @@ function HeaderContent({
             onClick={() => onAtelierTabChange('chat')}
             className={`text-xs uppercase tracking-[0.16em] py-2 transition-colors relative font-normal cursor-pointer ${
               atelierTab === 'chat'
-                ? 'text-[#1E1B18] dark:text-[#F7F5F0] font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#1E1B18] dark:after:bg-[#F7F5F0]'
-                : 'text-[#7C7469] dark:text-[#A69D92] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0]'
+                ? 'text-[#1E1B18] dark:text-night-fg font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#1E1B18] dark:after:bg-night-accent'
+                : 'text-[#7C7469] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg'
             }`}
           >
             Стилист
@@ -228,8 +228,8 @@ function HeaderContent({
             onClick={() => onAtelierTabChange('wardrobe')}
             className={`text-xs uppercase tracking-[0.16em] py-2 transition-colors relative font-normal cursor-pointer ${
               atelierTab === 'wardrobe'
-                ? 'text-[#1E1B18] dark:text-[#F7F5F0] font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#1E1B18] dark:after:bg-[#F7F5F0]'
-                : 'text-[#7C7469] dark:text-[#A69D92] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0]'
+                ? 'text-[#1E1B18] dark:text-night-fg font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#1E1B18] dark:after:bg-night-accent'
+                : 'text-[#7C7469] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg'
             }`}
           >
             Гардероб ({wardrobeCount})
@@ -239,8 +239,8 @@ function HeaderContent({
             onClick={() => onAtelierTabChange('saved')}
             className={`text-xs uppercase tracking-[0.16em] py-2 transition-colors relative font-normal cursor-pointer ${
               atelierTab === 'saved'
-                ? 'text-[#1E1B18] dark:text-[#F7F5F0] font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#1E1B18] dark:after:bg-[#F7F5F0]'
-                : 'text-[#7C7469] dark:text-[#A69D92] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0]'
+                ? 'text-[#1E1B18] dark:text-night-fg font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#1E1B18] dark:after:bg-night-accent'
+                : 'text-[#7C7469] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg'
             }`}
           >
             Лукбук ({savedCount})
@@ -249,13 +249,13 @@ function HeaderContent({
       )}
 
       {currentScreen === 'admin' && (
-        <div className="absolute left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.2em] text-[#7C7469] dark:text-[#A69D92] font-medium pointer-events-none">
+        <div className="absolute left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.2em] text-[#7C7469] dark:text-night-muted font-medium pointer-events-none">
           Панель куратора RAG
         </div>
       )}
 
       {currentScreen === 'auth' && (
-        <div className="absolute left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.22em] text-[#7C7469] dark:text-[#A69D92] font-normal pointer-events-none">
+        <div className="absolute left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.22em] text-[#7C7469] dark:text-night-muted font-normal pointer-events-none">
           Авторизация
         </div>
       )}
@@ -266,32 +266,32 @@ function HeaderContent({
         <button
           onClick={toggleTheme}
           title="Сменить тему"
-          className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:text-[#A69D92] dark:hover:text-[#F7F5F0] transition-colors cursor-pointer"
+          className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:text-night-muted dark:hover:text-night-fg transition-colors cursor-pointer"
         >
           {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
 
         {/* User Info & Simple Clean Logout Button */}
         {currentUser && (
-          <div className="flex items-center gap-2.5 pl-2 border-l border-[#DFD9CF] dark:border-[#38332E]">
+          <div className="flex items-center gap-2.5 pl-2 border-l border-[#DFD9CF] dark:border-night-outline">
             <div className="hidden md:flex flex-col items-end">
-              <span className="text-xs font-medium text-[#1E1B18] dark:text-[#F7F5F0] max-w-[130px] truncate leading-tight">
+              <span className="text-xs font-medium text-[#1E1B18] dark:text-night-fg max-w-[130px] truncate leading-tight">
                 {currentUser.name}
               </span>
-              <span className="text-[10px] text-[#7C7469] dark:text-[#9F9589] leading-tight">
+              <span className="text-[10px] text-[#7C7469] dark:text-night-muted leading-tight">
                 {currentUser.role === 'admin' ? 'Администратор' : 'Клиент'}
               </span>
             </div>
 
             {/* Строгая монограмма по первой букве имени для ВСЕХ пользователей */}
-            <div className="w-7 h-7 rounded-full bg-[#E5DFD5] dark:bg-[#2C2824] border border-[#DFD9CF] dark:border-[#38332E] flex items-center justify-center text-[11px] font-medium text-[#1E1B18] dark:text-[#F7F5F0] select-none">
+            <div className="w-7 h-7 rounded-full bg-[#E5DFD5] dark:bg-night-hover border border-[#DFD9CF] dark:border-night-outline flex items-center justify-center text-[11px] font-medium text-[#1E1B18] dark:text-night-fg select-none">
               {currentUser.name.trim().slice(0, 1).toUpperCase()}
             </div>
 
             <button
               onClick={onLogout}
               title="Завершить сессию"
-              className="px-2.5 py-1 text-[11px] uppercase tracking-[0.12em] text-[#7C7469] dark:text-[#A69D92] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-colors cursor-pointer"
+              className="px-2.5 py-1 text-[11px] uppercase tracking-[0.12em] text-[#7C7469] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg transition-colors cursor-pointer"
             >
               Выйти
             </button>
@@ -650,7 +650,7 @@ function MainApp() {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-screen bg-[#F6F4F0] dark:bg-[#181614] text-[#1E1B18] dark:text-[#F7F5F0] overflow-hidden font-sans transition-colors duration-150">
+    <div className="flex flex-col h-[100dvh] w-screen bg-[#F6F4F0] dark:bg-night-canvas text-[#1E1B18] dark:text-night-fg overflow-hidden font-sans transition-colors duration-150">
       {/* Authentic Luxury Header */}
       <HeaderContent
         currentScreen={currentScreen}
@@ -699,7 +699,7 @@ function MainApp() {
                 <div
                   className={`${
                     mobileViewingList ? 'flex' : 'hidden md:flex'
-                  } w-full md:w-[300px] lg:w-[340px] xl:w-[360px] shrink-0 h-full border-r border-[#DFD9CF] dark:border-[#2E2A26] bg-[#EFECE6] dark:bg-[#1D1B18] overflow-hidden`}
+                  } w-full md:w-[300px] lg:w-[340px] xl:w-[360px] shrink-0 h-full border-r border-[#DFD9CF] dark:border-night-divider bg-[#EFECE6] dark:bg-night-sidebar overflow-hidden`}
                 >
                   <ChatListSidebar
                     threads={threads}

@@ -9,7 +9,7 @@ export function MaterialDetailsFields({ value, onChange }: {
   const [expanded, setExpanded] = useState<boolean | undefined>();
   const open = expanded ?? MATERIAL_PART_KEYS.some((part) => Boolean(value[part]));
   return (
-    <details className="space-y-2 text-xs text-[#6B6258] dark:text-[#BFB3A6]" open={open}>
+    <details className="space-y-2 text-xs text-[#6B6258] dark:text-night-secondary" open={open}>
       <summary className="cursor-pointer" onClick={(event) => {
         event.preventDefault();
         setExpanded(!open);
@@ -21,7 +21,7 @@ export function MaterialDetailsFields({ value, onChange }: {
             <input
               value={value[part] ?? ''}
               onChange={(event) => onChange(part, event.target.value)}
-              className="mt-1 w-full rounded-md border border-[#DFD9CF] bg-[#EFECE6] px-2 py-1.5 text-base text-[#1E1B18] dark:border-[#38332E] dark:bg-[#25221F] dark:text-[#F7F5F0] sm:text-sm"
+              className="mt-1 w-full rounded-md border border-[#DFD9CF] bg-[#EFECE6] px-2 py-1.5 text-base text-[#1E1B18] dark:border-night-outline dark:bg-night-field dark:text-night-fg sm:text-sm"
             />
           </label>
         ))}

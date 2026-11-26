@@ -65,21 +65,21 @@ export const ChatArea = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#F6F4F0] dark:bg-[#181614] overflow-hidden relative">
+    <div className="flex-1 flex flex-col h-full bg-[#F6F4F0] dark:bg-night-canvas overflow-hidden relative">
       {/* Top Header */}
-      <div className="h-14 sm:h-16 border-b border-[#DFD9CF] dark:border-[#2E2A26] px-4 sm:px-8 flex items-center justify-between shrink-0 bg-[#F6F4F0]/90 dark:bg-[#181614]/90 backdrop-blur-md z-10">
+      <div className="h-14 sm:h-16 border-b border-[#DFD9CF] dark:border-night-divider px-4 sm:px-8 flex items-center justify-between shrink-0 bg-[#F6F4F0]/90 dark:bg-night-canvas/90 backdrop-blur-md z-10">
         <div className="flex items-center gap-3 min-w-0">
           {onOpenChatListModal && (
             <button
               onClick={onOpenChatListModal}
               title="Открыть список диалогов"
-              className="md:hidden p-1.5 -ml-1 text-[#1E1B18] dark:text-[#F7F5F0]"
+              className="md:hidden p-1.5 -ml-1 text-[#1E1B18] dark:text-night-fg"
             >
               <Menu className="w-4 h-4" />
             </button>
           )}
 
-          <h2 className="text-xs sm:text-sm font-medium tracking-normal text-[#1E1B18] dark:text-[#F7F5F0] truncate">
+          <h2 className="text-xs sm:text-sm font-medium tracking-normal text-[#1E1B18] dark:text-night-fg truncate">
             {chatTitle}
           </h2>
         </div>
@@ -105,8 +105,8 @@ export const ChatArea = ({
                 <div
                   className={`p-4 sm:p-5 leading-relaxed text-xs sm:text-sm ${
                     isUser
-                      ? 'bg-[#1E1B18] dark:bg-[#F7F5F0] text-[#F7F5F0] dark:text-[#1E1B18] font-normal shadow-xs'
-                      : 'bg-[#FCFAF7] dark:bg-[#221F1C] text-[#1E1B18] dark:text-[#E8E2D8] font-normal border border-[#DFD9CF] dark:border-[#332F2A]'
+                      ? 'bg-[#1E1B18] dark:bg-night-message text-[#F7F5F0] dark:text-night-fg font-normal shadow-xs'
+                      : 'bg-[#FCFAF7] dark:bg-night-panel text-[#1E1B18] dark:text-night-fg font-normal border border-[#DFD9CF] dark:border-night-divider'
                   }`}
                 >
                   <p className="whitespace-pre-line leading-relaxed">{message.text}</p>
@@ -122,7 +122,7 @@ export const ChatArea = ({
                   )}
                 </div>
 
-                <span className="text-[10px] text-[#8A8175] dark:text-[#7A7268] mt-1.5 px-0.5">
+                <span className="text-[10px] text-[#8A8175] dark:text-night-muted mt-1.5 px-0.5">
                   {message.timestamp}
                 </span>
               </div>
@@ -133,8 +133,8 @@ export const ChatArea = ({
         {/* Loading Indicator */}
         {isLoading && !draft?.text && (
           <div className="flex max-w-3xl mx-auto justify-start">
-            <div role="status" className="bg-[#FCFAF7] dark:bg-[#221F1C] border border-[#DFD9CF] dark:border-[#332F2A] p-3 text-xs text-[#6B6359] dark:text-[#A69D92] flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#1E1B18] dark:bg-[#F7F5F0] animate-pulse" />
+            <div role="status" className="bg-[#FCFAF7] dark:bg-night-panel border border-[#DFD9CF] dark:border-night-divider p-3 text-xs text-[#6B6359] dark:text-night-muted flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1E1B18] dark:bg-night-accent animate-pulse" />
               <span>Стилист готовит ответ...</span>
             </div>
           </div>
@@ -144,7 +144,7 @@ export const ChatArea = ({
       </div>
 
       {/* Input area */}
-      <div className="p-4 sm:p-6 border-t border-[#DFD9CF] dark:border-[#2E2A26] bg-[#F6F4F0] dark:bg-[#181614]">
+      <div className="p-4 sm:p-6 border-t border-[#DFD9CF] dark:border-night-divider bg-[#F6F4F0] dark:bg-night-canvas">
         <div className="max-w-3xl mx-auto space-y-3">
           {/* Quick Ideas */}
           <WeatherPicker disabled={isLoading} onUse={(text) => {
@@ -161,7 +161,7 @@ export const ChatArea = ({
                 key={prompt.title}
                 disabled={isLoading}
                 onClick={() => onSendMessage(prompt.text)}
-                className="shrink-0 cursor-pointer whitespace-nowrap border border-[#DFD9CF] bg-[#ECE7DF] px-3 py-1.5 text-[11px] text-[#38332E] transition-colors hover:bg-[#E2DCCF] disabled:opacity-40 dark:border-[#332F2A] dark:bg-[#24211E] dark:text-[#D8D1C7] dark:hover:bg-[#2E2A26]"
+                className="shrink-0 cursor-pointer whitespace-nowrap border border-[#DFD9CF] bg-[#ECE7DF] px-3 py-1.5 text-[11px] text-[#38332E] transition-colors hover:bg-[#E2DCCF] disabled:opacity-40 dark:border-night-divider dark:bg-night-field dark:text-night-secondary dark:hover:bg-night-hover"
               >
                 {prompt.title}
               </button>
@@ -177,13 +177,13 @@ export const ChatArea = ({
               onChange={(e) => setInputText(e.target.value)}
               disabled={isLoading}
               placeholder="Спросите стилиста (например: «С чем носить тренч?»)..."
-              className="w-full bg-[#FCFAF7] dark:bg-[#221F1C] border border-[#DFD9CF] dark:border-[#332F2A] focus:border-[#1E1B18] dark:focus:border-[#F7F5F0] px-4 py-3 pr-12 text-xs sm:text-sm text-[#1E1B18] dark:text-[#F7F5F0] placeholder-[#8A8175] focus:outline-none transition-colors"
+              className="w-full bg-[#FCFAF7] dark:bg-night-field border border-[#DFD9CF] dark:border-night-outline focus:border-[#1E1B18] dark:focus:border-night-accent px-4 py-3 pr-12 text-xs sm:text-sm text-[#1E1B18] dark:text-night-fg placeholder-[#8A8175] dark:placeholder-night-muted focus:outline-none transition-colors"
             />
             <button
               type="submit"
               aria-label="Отправить сообщение"
               disabled={!inputText.trim() || isLoading}
-              className="absolute right-2 p-1.5 bg-[#1E1B18] dark:bg-[#F7F5F0] text-[#F7F5F0] dark:text-[#1E1B18] hover:opacity-85 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
+              className="absolute right-2 p-1.5 bg-[#1E1B18] dark:bg-night-accent text-[#F7F5F0] dark:text-night-ink hover:opacity-85 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
             >
               <Send className="w-3.5 h-3.5" />
             </button>

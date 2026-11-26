@@ -48,7 +48,7 @@ const STYLES = [
   { id: 'beach', label: 'Пляжный' },
 ] as const;
 
-const FILTER_CLASS = 'w-full min-w-0 min-h-9 text-xs bg-[#EFECE6] dark:bg-[#201D1A] border border-[#DFD9CF] dark:border-[#2E2A26] text-[#1E1B18] dark:text-[#F7F5F0]';
+const FILTER_CLASS = 'w-full min-w-0 min-h-9 text-xs bg-[#EFECE6] dark:bg-night-field border border-[#DFD9CF] dark:border-night-divider text-[#1E1B18] dark:text-night-fg';
 
 export const WardrobeSidebar = ({
   wardrobe,
@@ -91,11 +91,11 @@ export const WardrobeSidebar = ({
   });
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#F6F4F0] dark:bg-[#181614] select-none">
+    <div className="w-full h-full flex flex-col bg-[#F6F4F0] dark:bg-night-canvas select-none">
       {/* Top Header */}
-      <div className="py-4 border-b border-[#DFD9CF] dark:border-[#2E2A26] flex items-center justify-between gap-2">
+      <div className="py-4 border-b border-[#DFD9CF] dark:border-night-divider flex items-center justify-between gap-2">
         <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
-          <h2 className="text-sm font-medium tracking-[0.16em] uppercase text-[#1E1B18] dark:text-[#F7F5F0]">
+          <h2 className="text-sm font-medium tracking-[0.16em] uppercase text-[#1E1B18] dark:text-night-fg">
             Гардероб ({wardrobe.length})
           </h2>
           {onRestoreDefaultCapsule && (
@@ -103,7 +103,7 @@ export const WardrobeSidebar = ({
               type="button"
               onClick={onRestoreDefaultCapsule}
               title="Добавить недостающие вещи из капсулы, не заменяя ваши"
-              className="flex min-h-8 items-center gap-1 text-[11px] text-[#8A8175] hover:text-[#1E1B18] dark:hover:text-white transition-colors cursor-pointer"
+              className="flex min-h-8 items-center gap-1 text-[11px] text-[#8A8175] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Базовая капсула</span>
@@ -113,7 +113,7 @@ export const WardrobeSidebar = ({
 
         <button
           onClick={onOpenAddModal}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1E1B18] hover:bg-[#322E2A] dark:bg-[#F7F5F0] dark:hover:bg-[#EBE7DF] text-[#F7F5F0] dark:text-[#1E1B18] text-[11px] font-medium tracking-[0.12em] uppercase transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1E1B18] hover:bg-[#322E2A] dark:bg-night-accent dark:hover:bg-night-accent-hover text-[#F7F5F0] dark:text-night-ink text-[11px] font-medium tracking-[0.12em] uppercase transition-colors cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Добавить</span>
@@ -121,7 +121,7 @@ export const WardrobeSidebar = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="min-w-0 py-3.5 border-b border-[#DFD9CF] dark:border-[#2E2A26] flex flex-col gap-3">
+      <div className="min-w-0 py-3.5 border-b border-[#DFD9CF] dark:border-night-divider flex flex-col gap-3">
         {/* Categories Tabs */}
         <div className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-none pb-1" role="group" aria-label="Раздел гардероба">
           {CATEGORIES.map((cat) => (
@@ -135,8 +135,8 @@ export const WardrobeSidebar = ({
               }}
               className={`text-xs uppercase tracking-[0.12em] whitespace-nowrap transition-colors pb-1 border-b cursor-pointer ${
                 selectedCategory === cat.id
-                  ? 'border-[#1E1B18] dark:border-[#F7F5F0] text-[#1E1B18] dark:text-[#F7F5F0] font-medium'
-                  : 'border-transparent text-[#7C7469] dark:text-[#A69D92] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0]'
+                  ? 'border-[#1E1B18] dark:border-night-accent text-[#1E1B18] dark:text-night-fg font-medium'
+                  : 'border-transparent text-[#7C7469] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg'
               }`}
             >
               {cat.label}
@@ -174,14 +174,14 @@ export const WardrobeSidebar = ({
             {STYLES.map(({ id, label }) => <option key={id} value={id}>{label}</option>)}
           </select>
           <div className="relative col-span-2 sm:col-span-1">
-            <Search aria-hidden="true" className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#8A8175] pointer-events-none" />
+            <Search aria-hidden="true" className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#8A8175] dark:text-night-muted pointer-events-none" />
             <input
               type="search"
               aria-label="Поиск по вещам"
               placeholder="Поиск по вещам..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`${FILTER_CLASS} pl-8 pr-2 placeholder-[#8A8175]`}
+              className={`${FILTER_CLASS} pl-8 pr-2 placeholder-[#8A8175] dark:placeholder-night-muted`}
             />
           </div>
         </div>
@@ -191,26 +191,26 @@ export const WardrobeSidebar = ({
       <div className="flex-1 overflow-y-auto py-6">
         {wardrobe.length === 0 ? (
           <div className="text-center py-24 px-4 flex flex-col items-center justify-center">
-            <div className="w-12 h-12 rounded-full border border-dashed border-[#DFD9CF] dark:border-[#38332E] flex items-center justify-center mb-3 text-[#8A8175]">
+            <div className="w-12 h-12 rounded-full border border-dashed border-[#DFD9CF] dark:border-night-outline flex items-center justify-center mb-3 text-[#8A8175] dark:text-night-muted">
               <Plus className="w-5 h-5" />
             </div>
-            <p className="text-xs font-medium text-[#1E1B18] dark:text-[#F7F5F0] mb-1">
+            <p className="text-xs font-medium text-[#1E1B18] dark:text-night-fg mb-1">
               Ваш гардероб пока пуст
             </p>
-            <p className="text-[11px] text-[#7C7469] dark:text-[#A69D92] max-w-xs mb-4">
+            <p className="text-[11px] text-[#7C7469] dark:text-night-muted max-w-xs mb-4">
               Загрузите фото ваших любимых вещей, чтобы стилист мог собирать законченные образы
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <button
                 onClick={onOpenAddModal}
-                className="px-4 py-2 bg-[#1E1B18] hover:bg-[#322E2A] dark:bg-[#F7F5F0] dark:hover:bg-[#EBE7DF] text-[#F7F5F0] dark:text-[#1E1B18] text-[11px] font-medium tracking-[0.12em] uppercase rounded-lg transition-colors cursor-pointer"
+                className="px-4 py-2 bg-[#1E1B18] hover:bg-[#322E2A] dark:bg-night-accent dark:hover:bg-night-accent-hover text-[#F7F5F0] dark:text-night-ink text-[11px] font-medium tracking-[0.12em] uppercase rounded-lg transition-colors cursor-pointer"
               >
                 + Добавить вещь
               </button>
               {onRestoreDefaultCapsule && (
                 <button
                   onClick={onRestoreDefaultCapsule}
-                  className="px-4 py-2 border border-[#DFD9CF] dark:border-[#2E2A26] hover:border-[#1E1B18] text-[#1E1B18] dark:text-white text-[11px] font-normal tracking-[0.12em] uppercase transition-colors cursor-pointer"
+                  className="px-4 py-2 border border-[#DFD9CF] dark:border-night-divider hover:border-[#1E1B18] text-[#1E1B18] dark:text-night-fg text-[11px] font-normal tracking-[0.12em] uppercase transition-colors cursor-pointer"
                 >
                   Добавить базовую капсулу
                 </button>
@@ -219,16 +219,16 @@ export const WardrobeSidebar = ({
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="text-center py-16 px-4">
-            <p role="status" className="text-xs font-medium text-[#1E1B18] dark:text-[#F7F5F0] mb-2">
+            <p role="status" className="text-xs font-medium text-[#1E1B18] dark:text-night-fg mb-2">
               Ничего не найдено
             </p>
-            <p className="text-[11px] text-[#7C7469] dark:text-[#A69D92] mb-4">
+            <p className="text-[11px] text-[#7C7469] dark:text-night-muted mb-4">
               Измените поисковый запрос или сбросьте фильтры.
             </p>
             <button
               type="button"
               onClick={resetFilters}
-              className="px-4 py-2 border border-[#DFD9CF] dark:border-[#2E2A26] hover:border-[#1E1B18] text-[#1E1B18] dark:text-[#F7F5F0] text-xs cursor-pointer"
+              className="px-4 py-2 border border-[#DFD9CF] dark:border-night-divider hover:border-[#1E1B18] text-[#1E1B18] dark:text-night-fg text-xs cursor-pointer"
             >
               Сбросить фильтры
             </button>
@@ -254,7 +254,7 @@ export const WardrobeSidebar = ({
                   className="group flex flex-col cursor-pointer"
                 >
                   {/* Image */}
-                  <div className="aspect-[3/4] overflow-hidden bg-[#ECE7DE] dark:bg-[#1E1B19] border border-[#DFD9CF] dark:border-[#2E2A26] relative mb-2.5 flex items-center justify-center p-2">
+                  <div className="aspect-[3/4] overflow-hidden bg-[#ECE7DE] dark:bg-night-image border border-[#DFD9CF] dark:border-night-divider relative mb-2.5 flex items-center justify-center p-2">
                     <img
                       src={item.imageUrl || fallbackSvg}
                       alt={item.title}
@@ -271,7 +271,7 @@ export const WardrobeSidebar = ({
                         setDeletingItem(item);
                       }}
                       title="Удалить вещь"
-                      className="opacity-0 group-hover:opacity-100 p-1.5 bg-[#FCFAF7] dark:bg-[#181614] text-[#7C7469] hover:text-red-600 dark:hover:text-red-400 border border-[#DFD9CF] dark:border-[#2E2A26] transition-all absolute top-2 right-2 cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 p-1.5 bg-[#FCFAF7] dark:bg-night-canvas text-[#7C7469] hover:text-red-600 dark:hover:text-red-400 border border-[#DFD9CF] dark:border-night-divider transition-all absolute top-2 right-2 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -279,10 +279,10 @@ export const WardrobeSidebar = ({
 
                   {/* Details */}
                   <div className="flex flex-col">
-                    <h4 className="text-xs font-normal text-[#1E1B18] dark:text-[#F7F5F0] truncate">
+                    <h4 className="text-xs font-normal text-[#1E1B18] dark:text-night-fg truncate">
                       {item.title}
                     </h4>
-                    <p className="text-[11px] text-[#7C7469] dark:text-[#A69D92] mt-0.5 font-normal">
+                    <p className="text-[11px] text-[#7C7469] dark:text-night-muted mt-0.5 font-normal">
                       {item.color} {item.material ? `• ${item.material}` : ''}
                     </p>
                   </div>
@@ -300,25 +300,25 @@ export const WardrobeSidebar = ({
           onClick={() => setDeletingItem(null)}
         >
           <div
-            className="w-full max-w-sm bg-[#FCFAF7] dark:bg-[#1C1A18] border border-[#DFD9CF] dark:border-[#2E2A26] p-6 shadow-2xl relative text-[#1E1B18] dark:text-[#F7F5F0]"
+            className="w-full max-w-sm bg-[#FCFAF7] dark:bg-night-panel border border-[#DFD9CF] dark:border-night-divider p-6 shadow-2xl relative text-[#1E1B18] dark:text-night-fg"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8175] dark:text-[#A69D92] mb-2 font-normal">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8175] dark:text-night-muted mb-2 font-normal">
               12 STOREEZ • Гардероб
             </div>
 
-            <h3 className="text-sm uppercase tracking-[0.06em] font-medium text-[#1E1B18] dark:text-[#F7F5F0] mb-2">
+            <h3 className="text-sm uppercase tracking-[0.06em] font-medium text-[#1E1B18] dark:text-night-fg mb-2">
               Удалить эту вещь?
             </h3>
 
-            <p className="text-xs text-[#6B6359] dark:text-[#A69D92] font-light leading-relaxed mb-5">
+            <p className="text-xs text-[#6B6359] dark:text-night-muted font-light leading-relaxed mb-5">
               Предмет «<strong>{deletingItem.title}</strong>» будет удален из вашего личного гардероба.
             </p>
 
-            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#EFECE6] dark:border-[#282420]">
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#EFECE6] dark:border-night-divider">
               <button
                 onClick={() => setDeletingItem(null)}
-                className="px-3.5 py-2 text-xs text-[#8A8175] hover:text-[#1E1B18] dark:hover:text-white transition-colors cursor-pointer font-light"
+                className="px-3.5 py-2 text-xs text-[#8A8175] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg transition-colors cursor-pointer font-light"
               >
                 Отмена
               </button>
@@ -327,7 +327,7 @@ export const WardrobeSidebar = ({
                   onDeleteItem(deletingItem.id);
                   setDeletingItem(null);
                 }}
-                className="px-4 py-2 bg-[#1E1B18] hover:bg-black dark:bg-[#F7F5F0] dark:hover:bg-white text-[#F7F5F0] dark:text-[#1E1B18] text-xs uppercase tracking-[0.12em] font-normal transition-colors cursor-pointer"
+                className="px-4 py-2 bg-[#1E1B18] hover:bg-black dark:bg-night-accent dark:hover:bg-night-accent-hover text-[#F7F5F0] dark:text-night-ink text-xs uppercase tracking-[0.12em] font-normal transition-colors cursor-pointer"
               >
                 Удалить
               </button>

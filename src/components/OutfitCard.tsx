@@ -24,21 +24,21 @@ export const OutfitCard = ({
   };
 
   return (
-    <div className="mt-5 border border-[#DFD9CF] dark:border-[#2E2A26] bg-[#FCFAF7] dark:bg-[#1C1A18] p-4 sm:p-6 transition-all relative">
+    <div className="mt-5 border border-[#DFD9CF] dark:border-night-divider bg-[#FCFAF7] dark:bg-night-panel p-4 sm:p-6 transition-all relative">
       {/* Copied Notification Toast */}
       {copied && (
-        <div className="absolute top-2 right-16 bg-[#1E1B18] text-white dark:bg-white dark:text-black text-[10px] tracking-wider uppercase px-2.5 py-1 shadow-md animate-in fade-in duration-150">
+        <div className="absolute top-2 right-16 bg-[#1E1B18] text-white dark:bg-night-accent dark:text-night-ink text-[10px] tracking-wider uppercase px-2.5 py-1 shadow-md animate-in fade-in duration-150">
           Скопировано
         </div>
       )}
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#EFECE6] dark:border-[#282420]">
+      <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#EFECE6] dark:border-night-divider">
         <div>
-          <span className="text-[10px] tracking-[0.16em] uppercase text-[#7C7469] dark:text-[#A69D92] font-normal block mb-1">
+          <span className="text-[10px] tracking-[0.16em] uppercase text-[#7C7469] dark:text-night-muted font-normal block mb-1">
             {outfit.occasion}
           </span>
-          <h4 className="text-sm sm:text-base font-medium text-[#1E1B18] dark:text-[#F7F5F0] tracking-normal">
+          <h4 className="text-sm sm:text-base font-medium text-[#1E1B18] dark:text-night-fg tracking-normal">
             {outfit.title}
           </h4>
         </div>
@@ -48,16 +48,16 @@ export const OutfitCard = ({
           <button
             onClick={handleShare}
             title="Поделиться формулой образа"
-            className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-colors cursor-pointer"
+            className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:hover:text-night-fg transition-colors cursor-pointer"
           >
-            {copied ? <Check className="w-4 h-4 text-[#1E1B18] dark:text-[#F7F5F0]" /> : <Share2 className="w-4 h-4" />}
+            {copied ? <Check className="w-4 h-4 text-[#1E1B18] dark:text-night-fg" /> : <Share2 className="w-4 h-4" />}
           </button>
           <button
             onClick={() => onToggleSave?.(outfit)}
             title={isSaved ? 'Убрать из сохраненных' : 'Сохранить в лукбук'}
-            className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-colors cursor-pointer"
+            className="p-1.5 text-[#7C7469] hover:text-[#1E1B18] dark:hover:text-night-fg transition-colors cursor-pointer"
           >
-            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#1E1B18] dark:text-[#F7F5F0]' : ''}`} />
+            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#1E1B18] dark:text-night-fg' : ''}`} />
           </button>
         </div>
       </div>
@@ -81,9 +81,9 @@ export const OutfitCard = ({
               <div
                 key={item.id}
                 onClick={() => onSelectItem?.(item)}
-                className="group flex flex-col bg-[#F6F4F0] dark:bg-[#221F1C] border border-[#EBE7DF] dark:border-[#2D2925] cursor-pointer"
+                className="group flex flex-col bg-[#F6F4F0] dark:bg-night-panel border border-[#EBE7DF] dark:border-night-divider cursor-pointer"
               >
-                <div className="aspect-[3/4] w-full overflow-hidden bg-[#ECE7DE] dark:bg-[#1A1816] flex items-center justify-center p-2">
+                <div className="aspect-[3/4] w-full overflow-hidden bg-[#ECE7DE] dark:bg-night-image flex items-center justify-center p-2">
                   <img
                     src={item.imageUrl || fallbackSvg}
                     alt={item.title}
@@ -94,10 +94,10 @@ export const OutfitCard = ({
                   />
                 </div>
                 <div className="p-2.5 flex flex-col justify-between flex-1">
-                  <span className="text-[11px] font-normal text-[#1E1B18] dark:text-[#F7F5F0] line-clamp-1">
+                  <span className="text-[11px] font-normal text-[#1E1B18] dark:text-night-fg line-clamp-1">
                     {item.title}
                   </span>
-                  <span className="text-[10px] text-[#7C7469] dark:text-[#A69D92] mt-0.5">
+                  <span className="text-[10px] text-[#7C7469] dark:text-night-muted mt-0.5">
                     {item.color}
                   </span>
                 </div>
@@ -109,9 +109,9 @@ export const OutfitCard = ({
 
       {/* Stylist Breakdown */}
       {(outfit.stylistReasoning || outfit.confidenceTips?.length > 0) && (
-        <div className="space-y-3 pt-3 border-t border-[#EFECE6] dark:border-[#282420]">
+        <div className="space-y-3 pt-3 border-t border-[#EFECE6] dark:border-night-divider">
           {outfit.stylistReasoning && (
-            <div className="text-xs text-[#38332E] dark:text-[#D8D1C7] leading-relaxed font-light">
+            <div className="text-xs text-[#38332E] dark:text-night-secondary leading-relaxed font-light">
               {outfit.stylistReasoning}
             </div>
           )}
@@ -121,9 +121,9 @@ export const OutfitCard = ({
               {outfit.confidenceTips.map((tip, idx) => (
                 <li
                   key={idx}
-                  className="text-xs text-[#6B6359] dark:text-[#A69D92] flex items-start gap-2 font-light"
+                  className="text-xs text-[#6B6359] dark:text-night-muted flex items-start gap-2 font-light"
                 >
-                  <span className="text-[#8A8175] select-none">•</span>
+                  <span className="text-[#8A8175] dark:text-night-muted select-none">•</span>
                   <span>{tip}</span>
                 </li>
               ))}
@@ -133,7 +133,7 @@ export const OutfitCard = ({
       )}
 
       {/* Match Quality */}
-      <div className="mt-4 pt-3 border-t border-[#EFECE6] dark:border-[#282420] flex items-center justify-between text-[11px] text-[#7C7469] dark:text-[#A69D92]">
+      <div className="mt-4 pt-3 border-t border-[#EFECE6] dark:border-night-divider flex items-center justify-between text-[11px] text-[#7C7469] dark:text-night-muted">
         <span>Согласованность силуэта: {outfit.matchScore}%</span>
         <span>Капсула 12 STOREEZ</span>
       </div>

@@ -49,17 +49,17 @@ export const ChatListSidebar = ({
   );
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#EFECE6] dark:bg-[#1D1B18] select-none">
+    <div className="w-full h-full flex flex-col bg-[#EFECE6] dark:bg-night-sidebar select-none">
       {/* Header */}
-      <div className="p-4 sm:p-5 border-b border-[#DFD9CF] dark:border-[#2E2A26] flex items-center justify-between">
-        <h3 className="text-xs uppercase tracking-[0.16em] font-medium text-[#1E1B18] dark:text-[#F7F5F0]">
+      <div className="p-4 sm:p-5 border-b border-[#DFD9CF] dark:border-night-divider flex items-center justify-between">
+        <h3 className="text-xs uppercase tracking-[0.16em] font-medium text-[#1E1B18] dark:text-night-fg">
           Диалоги
         </h3>
 
         <button
           onClick={onCreateThread}
           title="Новый диалог"
-          className="flex items-center gap-1 text-[11px] uppercase tracking-[0.12em] font-medium text-[#1E1B18] dark:text-[#F7F5F0] hover:text-[#7C7469] transition-colors"
+          className="flex items-center gap-1 text-[11px] uppercase tracking-[0.12em] font-medium text-[#1E1B18] dark:text-night-fg hover:text-[#7C7469] transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Новый</span>
@@ -67,23 +67,23 @@ export const ChatListSidebar = ({
       </div>
 
       {/* Search */}
-      <div className="p-3 border-b border-[#DFD9CF] dark:border-[#2E2A26] bg-[#E8E4DC] dark:bg-[#24211E]">
+      <div className="p-3 border-b border-[#DFD9CF] dark:border-night-divider bg-[#E8E4DC] dark:bg-night-field">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8A8175]" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8A8175] dark:text-night-muted" />
           <input
             type="text"
             placeholder="Поиск..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs bg-transparent border-none text-[#1E1B18] dark:text-[#F7F5F0] placeholder-[#8A8175] focus:outline-none"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-transparent border-none text-[#1E1B18] dark:text-night-fg placeholder-[#8A8175] dark:placeholder-night-muted focus:outline-none"
           />
         </div>
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto divide-y divide-[#E4DDD2] dark:border-[#282420]">
+      <div className="flex-1 overflow-y-auto divide-y divide-[#E4DDD2] dark:divide-night-divider">
         {filteredThreads.length === 0 ? (
-          <div className="text-center py-12 px-4 text-[#7C7469]">
+          <div className="text-center py-12 px-4 text-[#7C7469] dark:text-night-muted">
             <p className="text-xs">Диалогов не найдено</p>
           </div>
         ) : (
@@ -97,8 +97,8 @@ export const ChatListSidebar = ({
                 onClick={() => onSelectThread(thread.id)}
                 className={`group relative flex flex-col p-4 cursor-pointer transition-colors ${
                   isActive
-                    ? 'bg-[#FDFCFA] dark:bg-[#25221F] border-l-2 border-[#1E1B18] dark:border-[#F7F5F0]'
-                    : 'hover:bg-[#EAE5DC] dark:hover:bg-[#221F1C]'
+                    ? 'bg-[#FDFCFA] dark:bg-night-field border-l-2 border-[#1E1B18] dark:border-night-accent'
+                    : 'hover:bg-[#EAE5DC] dark:hover:bg-night-hover'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2 mb-1">
@@ -113,7 +113,7 @@ export const ChatListSidebar = ({
                           if (e.key === 'Escape') setEditingId(null);
                         }}
                         autoFocus
-                        className="flex-1 text-xs px-1.5 py-0.5 bg-white dark:bg-[#1E1C19] border border-[#1E1B18] dark:border-white rounded text-[#1E1B18] dark:text-white focus:outline-none"
+                        className="flex-1 text-xs px-1.5 py-0.5 bg-white dark:bg-night-panel border border-[#1E1B18] dark:border-night-accent rounded text-[#1E1B18] dark:text-night-fg focus:outline-none"
                       />
                       <button
                         onClick={(e) => handleSaveRename(e, thread.id)}
@@ -135,31 +135,31 @@ export const ChatListSidebar = ({
                       <h4
                         className={`text-xs truncate tracking-normal ${
                           isActive
-                            ? 'font-medium text-[#1E1B18] dark:text-[#F7F5F0]'
-                            : 'font-normal text-[#38332E] dark:text-[#D8D1C7]'
+                            ? 'font-medium text-[#1E1B18] dark:text-night-fg'
+                            : 'font-normal text-[#38332E] dark:text-night-secondary'
                         }`}
                       >
                         {thread.title}
                       </h4>
-                      <span className="text-[10px] text-[#8A8175] shrink-0 font-normal">
+                      <span className="text-[10px] text-[#8A8175] dark:text-night-muted shrink-0 font-normal">
                         {thread.updatedAt}
                       </span>
                     </>
                   )}
                 </div>
 
-                <p className="text-xs text-[#6B6359] dark:text-[#A69D92] truncate font-normal leading-normal">
+                <p className="text-xs text-[#6B6359] dark:text-night-muted truncate font-normal leading-normal">
                   {lastMsg?.sender === 'assistant' ? 'Стилист: ' : 'Вы: '}
                   {lastMsg?.text?.slice(0, 50) || 'Новый диалог'}
                 </p>
 
                 {editingId !== thread.id && (
-                  <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 absolute right-3 bottom-2.5 transition-opacity bg-[#EFECE6]/90 dark:bg-[#1D1B18]/90 pl-1">
+                  <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 absolute right-3 bottom-2.5 transition-opacity bg-[#EFECE6]/90 dark:bg-night-sidebar/90 pl-1">
                     {onRenameThread && (
                       <button
                         onClick={(e) => handleStartRename(e, thread)}
                         title="Переименовать"
-                        className="p-1 text-[#8A8175] hover:text-[#1E1B18] dark:hover:text-[#F7F5F0] transition-colors cursor-pointer"
+                        className="p-1 text-[#8A8175] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg transition-colors cursor-pointer"
                       >
                         <Pencil className="w-3 h-3" />
                       </button>
@@ -171,7 +171,7 @@ export const ChatListSidebar = ({
                           setDeletingThread(thread);
                         }}
                         title="Удалить диалог"
-                        className="p-1 text-[#8A8175] hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
+                        className="p-1 text-[#8A8175] dark:text-night-muted hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
@@ -191,25 +191,25 @@ export const ChatListSidebar = ({
           onClick={() => setDeletingThread(null)}
         >
           <div
-            className="w-full max-w-sm bg-[#FCFAF7] dark:bg-[#1C1A18] border border-[#DFD9CF] dark:border-[#2E2A26] p-6 shadow-2xl relative text-[#1E1B18] dark:text-[#F7F5F0]"
+            className="w-full max-w-sm bg-[#FCFAF7] dark:bg-night-panel border border-[#DFD9CF] dark:border-night-divider p-6 shadow-2xl relative text-[#1E1B18] dark:text-night-fg"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8175] dark:text-[#A69D92] mb-2 font-normal">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8175] dark:text-night-muted mb-2 font-normal">
               12 STOREEZ • Диалог
             </div>
 
-            <h3 className="text-sm uppercase tracking-[0.06em] font-medium text-[#1E1B18] dark:text-[#F7F5F0] mb-2">
+            <h3 className="text-sm uppercase tracking-[0.06em] font-medium text-[#1E1B18] dark:text-night-fg mb-2">
               Удалить этот диалог?
             </h3>
 
-            <p className="text-xs text-[#6B6359] dark:text-[#A69D92] font-light leading-relaxed mb-5">
+            <p className="text-xs text-[#6B6359] dark:text-night-muted font-light leading-relaxed mb-5">
               Диалог «<strong>{deletingThread.title}</strong>» и все рекомендации стилиста внутри него будут удалены.
             </p>
 
-            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#EFECE6] dark:border-[#282420]">
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#EFECE6] dark:border-night-divider">
               <button
                 onClick={() => setDeletingThread(null)}
-                className="px-3.5 py-2 text-xs text-[#8A8175] hover:text-[#1E1B18] dark:hover:text-white transition-colors cursor-pointer font-light"
+                className="px-3.5 py-2 text-xs text-[#8A8175] dark:text-night-muted hover:text-[#1E1B18] dark:hover:text-night-fg transition-colors cursor-pointer font-light"
               >
                 Отмена
               </button>
@@ -218,7 +218,7 @@ export const ChatListSidebar = ({
                   onDeleteThread(deletingThread.id);
                   setDeletingThread(null);
                 }}
-                className="px-4 py-2 bg-[#1E1B18] hover:bg-black dark:bg-[#F7F5F0] dark:hover:bg-white text-[#F7F5F0] dark:text-[#1E1B18] text-xs uppercase tracking-[0.12em] font-normal transition-colors cursor-pointer"
+                className="px-4 py-2 bg-[#1E1B18] hover:bg-black dark:bg-night-accent dark:hover:bg-night-accent-hover text-[#F7F5F0] dark:text-night-ink text-xs uppercase tracking-[0.12em] font-normal transition-colors cursor-pointer"
               >
                 Удалить
               </button>

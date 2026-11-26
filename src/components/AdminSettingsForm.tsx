@@ -4,7 +4,7 @@ import type { RetrievalMode } from '../types';
 import { saveAdminSettings } from '../services/adminApi';
 import type { AdminSettings } from '../services/adminApi';
 
-const inputClass = 'w-full px-3 py-2 text-xs bg-[#FAF8F5] dark:bg-[#25221F] border border-[#DFD9CF] dark:border-[#38332E] rounded-lg text-[#1E1B18] dark:text-white';
+const inputClass = 'w-full px-3 py-2 text-xs bg-[#FAF8F5] dark:bg-night-field border border-[#DFD9CF] dark:border-night-outline rounded-lg text-[#1E1B18] dark:text-night-fg';
 const modes: Record<RetrievalMode, string> = {
   bm25: 'BM25 — по ключевым словам',
   dense: 'Dense — по смыслу',
@@ -55,10 +55,10 @@ export function AdminSettingsForm({ tab, config, onSaved, onSaving }: AdminSetti
   };
 
   return (
-    <form onSubmit={submit} className="max-w-3xl p-6 rounded-xl border border-[#DFD9CF] dark:border-[#2E2A26] bg-white dark:bg-[#1E1C19] space-y-4">
+    <form onSubmit={submit} className="max-w-3xl p-6 rounded-xl border border-[#DFD9CF] dark:border-night-divider bg-white dark:bg-night-panel space-y-4">
       <div>
         <h2 className="text-base font-semibold">{tab === 'rag' ? 'Поиск и генерация' : 'Тон голоса стилиста'}</h2>
-        <p className="mt-1 text-xs text-[#6F675C] dark:text-[#A89E91]">
+        <p className="mt-1 text-xs text-[#6F675C] dark:text-night-muted">
           Модель: {config.llmModel} ({config.llmProvider}) · Движок поиска: {config.retriever}.
         </p>
       </div>
@@ -99,11 +99,11 @@ export function AdminSettingsForm({ tab, config, onSaved, onSaving }: AdminSetti
             <span className="block mb-1">Токен куратора</span>
             <input type="password" autoComplete="off" required disabled={saving} value={token} onChange={(e) => setToken(e.target.value)} className={inputClass} />
           </label>
-          <button type="submit" disabled={disabled || !canSave} className="px-5 py-2.5 bg-[#1E1B18] text-white dark:bg-white dark:text-[#181614] text-xs uppercase tracking-wider font-medium rounded-lg disabled:opacity-50">
+          <button type="submit" disabled={disabled || !canSave} className="px-5 py-2.5 bg-[#1E1B18] text-white dark:bg-night-accent dark:text-night-ink text-xs uppercase tracking-wider font-medium rounded-lg disabled:opacity-50">
             {saving ? 'Сохраняем…' : 'Сохранить настройки'}
           </button>
         </>
-      ) : <p className="text-xs text-[#6F675C] dark:text-[#A89E91]">Только чтение: на сервере не задан ADMIN_TOKEN.</p>}
+      ) : <p className="text-xs text-[#6F675C] dark:text-night-muted">Только чтение: на сервере не задан ADMIN_TOKEN.</p>}
       {notice && <p role={notice.error ? 'alert' : 'status'} className={notice.error ? 'text-xs text-red-700 dark:text-red-300' : 'text-xs text-emerald-700 dark:text-emerald-300'}>{notice.text}</p>}
     </form>
   );

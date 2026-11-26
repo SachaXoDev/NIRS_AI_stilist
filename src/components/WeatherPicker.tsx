@@ -6,7 +6,7 @@ import {
 } from '../services/currentWeather';
 import type { CurrentWeather, WeatherPlace } from '../services/currentWeather';
 
-const BUTTON = 'px-2.5 py-1.5 border border-[#DFD9CF] dark:border-[#554B42] disabled:opacity-40 enabled:cursor-pointer';
+const BUTTON = 'px-2.5 py-1.5 border border-[#DFD9CF] dark:border-night-outline disabled:opacity-40 enabled:cursor-pointer';
 
 type WeatherState =
   | { kind: 'idle' }
@@ -85,7 +85,7 @@ export function WeatherPicker({ disabled, onUse, children }: WeatherPickerProps)
   return (
     <>
       {open && (
-        <section id="weather-picker" aria-label="Текущая погода" className="relative mb-2 space-y-2 border border-[#DFD9CF] bg-[#FCFAF7] px-3 py-2 text-xs text-[#1E1B18] dark:border-[#332F2A] dark:bg-[#221F1C] dark:text-[#F7F5F0]">
+        <section id="weather-picker" aria-label="Текущая погода" className="relative mb-2 space-y-2 border border-[#DFD9CF] bg-[#FCFAF7] px-3 py-2 text-xs text-[#1E1B18] dark:border-night-divider dark:bg-night-panel dark:text-night-fg">
           <button type="button" onClick={close} aria-label="Закрыть погоду" className="absolute right-2 top-2 cursor-pointer p-1">
             <X className="size-4" aria-hidden="true" />
           </button>
@@ -95,7 +95,7 @@ export function WeatherPicker({ disabled, onUse, children }: WeatherPickerProps)
             </button>
             <form onSubmit={findCity} className="flex min-w-0 flex-[1_1_9rem] gap-1">
               <input aria-label="Город" placeholder="Город" value={city} maxLength={100}
-                onChange={(event) => setCity(event.target.value)} className={`${BUTTON} min-w-0 flex-1`} />
+                onChange={(event) => setCity(event.target.value)} className={`${BUTTON} min-w-0 flex-1 dark:bg-night-field dark:placeholder-night-muted`} />
               <button type="submit" disabled={disabled || city.trim().length < 2} className={BUTTON}>Найти</button>
             </form>
           </div>
@@ -117,7 +117,7 @@ export function WeatherPicker({ disabled, onUse, children }: WeatherPickerProps)
             </ul>
           )}
           {state.kind === 'weather' && (
-            <button type="button" disabled={disabled} className={`${BUTTON} bg-[#EFECE6] dark:bg-[#302922]`} onClick={() => {
+            <button type="button" disabled={disabled} className={`${BUTTON} bg-[#EFECE6] dark:bg-night-hover`} onClick={() => {
               const where = state.place ? ` (${state.place.name})` : '';
               onUse(`Подбери образ на текущую погоду${where}: ${weatherSummary(state.weather)}.`);
               close();
@@ -136,7 +136,7 @@ export function WeatherPicker({ disabled, onUse, children }: WeatherPickerProps)
               if (savedCity) void loadWeather(savedCity);
             }
           }}
-          className="flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap border border-[#1E1B18]/30 bg-[#E5DFD5] px-3 py-1.5 text-[11px] font-medium text-[#1E1B18] disabled:opacity-40 dark:border-white/30 dark:bg-[#2C2824] dark:text-[#F7F5F0]">
+          className="flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap border border-[#1E1B18]/30 bg-[#E5DFD5] px-3 py-1.5 text-[11px] font-medium text-[#1E1B18] disabled:opacity-40 dark:border-night-outline dark:bg-night-hover dark:text-night-fg">
           <CloudDrizzle className="size-3.5" aria-hidden="true" /> По погоде
         </button>
         {children}

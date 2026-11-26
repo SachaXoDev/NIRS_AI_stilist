@@ -2,9 +2,31 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-night-canvas: #191A1D;
+  --color-night-sidebar: #212328;
+  --color-night-panel: #25272C;
+  --color-night-field: #2D3037;
+  --color-night-hover: #353840;
+  --color-night-image: #35373C;
+  --color-night-message: #36313B;
+  --color-night-divider: #40434B;
+  --color-night-outline: #757985;
+  --color-night-fg: #EEECEF;
+  --color-night-secondary: #CAC7D0;
+  --color-night-muted: #ADAAB3;
+  --color-night-accent: #D7C2C7;
+  --color-night-accent-hover: #E4D1D5;
+  --color-night-ink: #211D22;
+}
+
 @layer base {
   :root {
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  :root.dark {
+    color-scheme: dark;
   }
 
   body {
@@ -12,6 +34,11 @@
     letter-spacing: -0.01em;
     color: #1E1B18;
     background-color: #F6F4F0;
+  }
+
+  .dark body {
+    color: var(--color-night-fg);
+    background-color: var(--color-night-canvas);
   }
 }
 
@@ -29,4 +56,11 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #9E9385;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-night-divider);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-night-outline);
 }

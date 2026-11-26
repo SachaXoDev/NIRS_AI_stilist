@@ -25,12 +25,12 @@ const CATEGORY_OPTIONS: { value: ClothingCategory; label: string }[] = [
 type PhotoStatus = 'idle' | 'pending' | 'success' | 'uncertain' | 'error' | 'offline';
 type ItemFields = { title: string; category: ClothingCategory | ''; season: ClothingSeason; color: string; material: string; brand: string };
 const IDLE_PHOTO_STATUS: { state: PhotoStatus; message: string } = { state: 'idle', message: '' };
-const FIELD_LABEL = 'mb-1 block text-xs text-[#6B6258] dark:text-[#BFB3A6]';
-const FIELD_INPUT = 'h-11 w-full min-w-0 rounded-lg border border-[#DFD9CF] bg-[#EFECE6] px-3 text-base text-[#1E1B18] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A8175] sm:text-sm dark:border-[#38332E] dark:bg-[#25221F] dark:text-[#F7F5F0]';
-const UPLOAD_ROW = 'flex min-w-0 items-center rounded-lg border border-[#DFD9CF] bg-[#F6F4F0] dark:border-[#38332E] dark:bg-[#22201D]';
-const UPLOAD_ACTION = 'relative flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-[#1E1B18] hover:bg-black/5 focus-within:outline-2 focus-within:outline-[#8A8175] dark:text-[#F7F5F0] dark:hover:bg-white/5';
-const ICON_BUTTON = 'flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#6B6258] hover:text-[#1E1B18] focus-visible:outline-2 focus-visible:outline-[#8A8175] dark:text-[#BFB3A6] dark:hover:text-white';
-const UPLOAD_STATUS = 'mt-1 text-xs text-[#6B6258] empty:hidden dark:text-[#BFB3A6]';
+const FIELD_LABEL = 'mb-1 block text-xs text-[#6B6258] dark:text-night-secondary';
+const FIELD_INPUT = 'h-11 w-full min-w-0 rounded-lg border border-[#DFD9CF] bg-[#EFECE6] px-3 text-base text-[#1E1B18] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A8175] sm:text-sm dark:border-night-outline dark:bg-night-field dark:text-night-fg';
+const UPLOAD_ROW = 'flex min-w-0 items-center rounded-lg border border-[#DFD9CF] bg-[#F6F4F0] dark:border-night-outline dark:bg-night-panel';
+const UPLOAD_ACTION = 'relative flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-[#1E1B18] hover:bg-black/5 focus-within:outline-2 focus-within:outline-[#8A8175] dark:text-night-fg dark:hover:bg-white/5';
+const ICON_BUTTON = 'flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#6B6258] hover:text-[#1E1B18] focus-visible:outline-2 focus-visible:outline-[#8A8175] dark:text-night-secondary dark:hover:text-night-fg';
+const UPLOAD_STATUS = 'mt-1 text-xs text-[#6B6258] empty:hidden dark:text-night-secondary';
 
 export const AddItemModal = ({ isOpen, ...props }: AddItemModalProps) =>
   isOpen ? <AddItemForm {...props} /> : null;
@@ -159,9 +159,9 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs">
-      <div role="dialog" aria-modal="true" aria-labelledby="add-item-heading" className="relative max-h-full w-full max-w-md overflow-y-auto rounded-xl border border-[#DFD9CF] bg-[#FCFAF7] p-4 shadow-2xl sm:p-5 dark:border-[#2E2A26] dark:bg-[#1C1A18]">
+      <div role="dialog" aria-modal="true" aria-labelledby="add-item-heading" className="relative max-h-full w-full max-w-md overflow-y-auto rounded-xl border border-[#DFD9CF] bg-[#FCFAF7] p-4 shadow-2xl sm:p-5 dark:border-night-divider dark:bg-night-panel">
         <div className="mb-3 flex items-center justify-between">
-          <h3 id="add-item-heading" className="text-base font-medium text-[#1E1B18] dark:text-[#F7F5F0]">
+          <h3 id="add-item-heading" className="text-base font-medium text-[#1E1B18] dark:text-night-fg">
             Новая вещь
           </h3>
           <button type="button" aria-label="Закрыть" onClick={handleClose} className={`${ICON_BUTTON} -mr-2`}>
@@ -321,7 +321,7 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
             <button
               type="submit"
               disabled={!title.trim() || !category}
-              className="min-h-11 w-full rounded-lg bg-[#1E1B18] px-5 text-sm font-medium text-[#F7F5F0] transition-colors hover:bg-[#322E2A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A8175] enabled:cursor-pointer disabled:opacity-45 dark:bg-[#F7F5F0] dark:text-[#1E1B18] dark:hover:bg-[#EBE7DF]"
+              className="min-h-11 w-full rounded-lg bg-[#1E1B18] px-5 text-sm font-medium text-[#F7F5F0] transition-colors hover:bg-[#322E2A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A8175] enabled:cursor-pointer disabled:opacity-45 dark:bg-night-accent dark:text-night-ink dark:hover:bg-night-accent-hover"
             >
               Сохранить
             </button>
