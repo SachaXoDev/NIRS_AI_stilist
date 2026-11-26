@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI LOOKBOOK — КТ-2</title>
+  <style>
+    :root { color-scheme: dark; font: 100%/1.55 system-ui, sans-serif; }
+    body { margin: 0; color: #fafafa; background: #0a0a0a; }
+    main { max-width: 48rem; margin: auto; padding: 2rem 1rem 3rem; }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { margin-top: 0; }
+    form, .panel { margin-block: 1rem; padding: 1rem; background: #171717; border: 1px solid #404040; border-radius: .75rem; }
+    .panel > h2 { margin-top: 0; }
+    label { display: block; font-weight: 700; }
+    #question-hint { margin: .25rem 0 .5rem; }
+    textarea { box-sizing: border-box; width: 100%; min-height: 6rem; padding: .65rem; resize: vertical; border: 1px solid #737373; border-radius: .4rem; }
+    textarea, button { font: inherit; }
+    button { margin-top: .65rem; padding: .5rem .9rem; border: 0; border-radius: .4rem; color: #171717; background: #fb7185; cursor: pointer; }
+    button:disabled { background: #d4d4d4; cursor: wait; }
+    a { color: #fda4af; }
+    :focus-visible { outline: 3px solid #fb7185; outline-offset: 3px; }
+    #error { color: #fda4af; font-weight: 700; }
+    #status:empty, #error:empty { margin: 0; }
+    #answer, .passage-text { white-space: pre-wrap; }
+    #results { overflow-wrap: anywhere; }
+    .passages { padding-inline-start: 1.5rem; }
+    .passages li { padding: .25rem .5rem; }
+    .passages h3 { margin: .5rem 0; font-size: 1rem; }
+    .passages p { margin: .5rem 0; }
+    .passages :target { background: #4c1224; outline: 2px solid #fb7185; }
+    .metadata { color: #d4d4d4; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>КТ-2 · Поиск по документам о гардеробе</h1>
+    <p>Система ищет по учебному корпусу с вымышленными правилами гардероба и каталога. Она отвечает только по найденным материалам и сообщает, если информации не хватает.</p>
+    <form id="ask-form">
+      <label for="question">Ваш вопрос</label>
+      <p id="question-hint">Например: «Где находится ячейка вечернего приёма?»</p>
+      <textarea id="question" name="question" rows="3" maxlength="1000" required aria-describedby="question-hint"></textarea>
+      <button id="submit-question" type="submit">Задать вопрос</button>
+    </form>
+    <noscript><p>Для отправки вопроса включите JavaScript.</p></noscript>
+    <p id="status" role="status"></p>
+    <p id="error" role="alert"></p>
+    <div id="results" hidden>
+      <section class="panel" aria-labelledby="answer-heading">
+        <h2 id="answer-heading">Ответ</h2>
+        <p id="answer"></p>
+        <p id="model" class="metadata"></p>
+      </section>
+      <section class="panel" aria-labelledby="sources-heading">
+        <h2 id="sources-heading">Источники ответа</h2>
+        <p id="sources-note"></p>
+        <ol id="sources" class="passages"></ol>
+      </section>
+      <section class="panel" aria-labelledby="hits-heading">
+        <h2 id="hits-heading">Результаты поиска BM25</h2>
+        <p>Поиск возвращает до трёх документов. Они не обязательно подтверждают ответ, поэтому показаны отдельно от процитированных источников.</p>
+        <p id="hits-note" hidden>Поиск не вернул документов.</p>
+        <ol id="hits" class="passages"></ol>
+      </section>
+    </div>
+  </main>
+  <script>
+    'use strict';
+
+    const byId = (id) => document.getElementById(id);
+    const form = byId('ask-form');
+    const question = byId('question');
+    const submit = byId('submit-question');
+    const status = byId('status');
+    const error = byId('error');
+    const results = byId('results');
+
+    function renderPassages(list, passages, isSource = false) {
+      list.replaceChildren();
+      list.hidden = passages.length === 0;
+      const anchors = new Map();
+      for (const [index, passage] of passages.entries()) {
+        const item = document.createElement('li');
+        const title = document.createElement('h3');
+        title.textContent = `${passage.id} — ${passage.title}`;
+        if (isSource) {
+          item.id = `kt2-source-${index + 1}`;
+          item.tabIndex = -1;
+          anchors.set(passage.id, { target: item.id, title: passage.title });
+        }
+        const text = document.createElement('p');
+        text.className = 'passage-text';
+        text.textContent = passage.text;
+        item.append(title, text);
+        if (!isSource && Number.isFinite(passage.score)) {
+          const score = document.createElement('p');
+          score.className = 'metadata';
+          score.textContent = `Оценка BM25: ${passage.score.toLocaleString('ru-RU', { maximumFractionDigits: 4 })}`;
+          item.append(score);
+        }
+        list.append(item);
+      }
+      return anchors;
+    }
+
+    function renderAnswer(text, anchors) {
+      const answer = byId('answer');
+      answer.textContent = '';
+      let offset = 0;
+      for (const match of text.matchAll(/\[([^\[\]\s]+)\]/g)) {
+        const source = anchors.get(match[1]);
+        if (!source) continue;
+        answer.append(document.createTextNode(text.slice(offset, match.index)));
+        const link = document.createElement('a');
+        link.href = `#${source.target}`;
+        link.textContent = match[0];
+        link.setAttribute('aria-label', `${match[0]} Источник: ${source.title}`);
+        answer.append(link);
+        offset = match.index + match[0].length;
+      }
+      answer.append(document.createTextNode(text.slice(offset)));
+    }
+
+    function showResult(data) {
+      byId('answer-heading').textContent = data.refused ? 'Отказ: недостаточно информации' : 'Ответ';
+      const anchors = renderPassages(byId('sources'), data.sources, true);
+      const sourcesNote = byId('sources-note');
+      sourcesNote.hidden = data.sources.length > 0;
+      sourcesNote.textContent = data.refused ? 'При отказе источники не цитируются.' : 'В ответе нет цитат.';
+      renderAnswer(data.answer, anchors);
+      const model = byId('model');
+      model.hidden = !data.model;
+      model.textContent = data.model ? `Модель: ${data.model}` : '';
+      renderPassages(byId('hits'), data.hits);
+      byId('hits-note').hidden = data.hits.length > 0;
+      results.hidden = false;
+      status.textContent = data.refused
+        ? 'В документах недостаточно информации для ответа. Результаты поиска показаны ниже.'
+        : 'Ответ и результаты поиска готовы.';
+    }
+
+    question.addEventListener('input', () => question.setCustomValidity(''));
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (submit.disabled) return;
+      const value = question.value.trim();
+      if (!value) {
+        question.setCustomValidity('Введите вопрос.');
+        question.reportValidity();
+        return;
+      }
+
+      submit.disabled = true;
+      results.hidden = true;
+      error.textContent = '';
+      status.textContent = 'Ищем документы и готовим ответ…';
+      try {
+        let response;
+        try {
+          response = await fetch('/api/kt2/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ question: value }),
+          });
+        } catch {
+          error.textContent = 'Не удалось связаться с сервером. Проверьте соединение и попробуйте ещё раз.';
+          return;
+        }
+        if (!response.ok) {
+          error.textContent = `Сервер вернул ошибку (HTTP ${response.status}). Попробуйте ещё раз.`;
+          return;
+        }
+        const data = await response.json();
+        if (!data || typeof data.answer !== 'string' || typeof data.refused !== 'boolean' ||
+            !Array.isArray(data.sources) || !Array.isArray(data.hits)) {
+          throw new Error('Unexpected response format');
+        }
+        showResult(data);
+      } catch {
+        error.textContent = 'Сервер вернул ответ в неожиданном формате.';
+      } finally {
+        if (results.hidden) status.textContent = '';
+        submit.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -4,4 +4,5 @@ uvicorn[standard]>=0.30
 pydantic>=2.10
 pydantic-settings>=2.3
 httpx>=0.27
+snowballstemmer>=3.1,<4  # только нормализация слов для собственного BM25 в КТ-2
 # Поиск ставится отдельно, из соседнего каталога:  pip install -e ../rag
