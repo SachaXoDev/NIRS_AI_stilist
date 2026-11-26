@@ -1,10 +1,7 @@
 """Точечная правка последнего образа и ответы на вопросы о нём.
 
-Правка работает по ID вещей из карточки, которые фронтенд присылает в истории: состав не
-восстанавливается по названиям в тексте. Незатронутые вещи сохраняются как есть, меняется
-ровно одна. Перед показом комплект сверяется с текущим гардеробом. Если подходящей вещи нет
-или вещь из прошлого образа уже удалена, пользователь получает объяснение, а не молча
-изменённую карточку.
+Правка работает по ID вещей из карточки. Меняются только выбранные вещи; если хотя бы
+для одной обязательной замены нет кандидатов, прежняя карточка не меняется.
 """
 from __future__ import annotations
 
@@ -47,7 +44,10 @@ from app.services.analysis import (
     is_outfit_revision,
     names_occasion,
 )
-from app.services.followup import FollowUp, classify_followup
+from app.services.followup import (
+    EDIT_QUESTION_PREFIX, WARMER_TEMPERATURE_QUESTION, FollowUp, classify_followup, followup_in_dialogue,
+    mentioned_garments,
+)
 from app.services.llm.base import LLMError
 from app.services.prompts import (
     PromptContext,
@@ -56,6 +56,7 @@ from app.services.prompts import (
     build_slot_messages,
 )
 from app.services.scoring import match_score
+from app.services.styling import compatibility_answer
 from app.services.suitability import (
     FROST_CRITICAL_SLOTS, frost_gap_text, is_insulated_outerwear_or_shoes, is_severe_frost,
     is_shorts, unsuitable_reason,
@@ -76,6 +77,12 @@ _SLOT_GEN = {"tops": "верха", "bottoms": "низа", "shoes": "обуви",
 _GENERIC_MENTIONS = frozenset({"аксе", "обув", "верх", "низ", "низа", "низу", "слой", "слоя"})
 _FLAT_WORDS = ("без каблук", "плоск", "на плоском ходу")
 _LONG_BOTTOM_RE = re.compile(r"\b(?:брюк\w*|джинс\w*|штан\w*|чинос\w*|леггинс\w*|легинс\w*)\b")
+_WARM_FABRIC_RE = re.compile(r"\b(?:шерст\w*|кашемир\w*|меринос\w*|альпак\w*|флис\w*|wool|cashmere|merino|fleece)\b")
+_INSULATED_RE = re.compile(r"\b(?:утепл\w*|пуховик\w*|пухов\w*|флисов\w*)\b")
+_NO_INSULATION_RE = re.compile(r"\b(?:без\s+утепл\w*|не\s+утепл\w*|нет|не\s+указан\w*|отсутств\w*|"
+                               r"unknown|none|no\s+insulation|uninsulated|n/a)\b")
+_LIGHT_TOP_RE = re.compile(r"\b(?:футболк\w*|поплин\w*|льнян\w*|шелков\w*|легк\w*)\b")
+CLOTHING_LAYERS = ("tops", "bottoms")
 _THERMAL_QUESTION = re.compile(r"\b(?:жарко|холодно|прохладно|тепло|замерз\w*|вспотею)\b")
 _FIT_QUESTION = re.compile(r"\b(?:комфорт\w*|удобн\w*)\b")
 NOTHING_TO_EDIT_TEXT = (
@@ -101,18 +108,20 @@ def find_last_card(history: list[HistoryMessage], *, before: int | None = None) 
         return None
     root = None
     followups: list[str] = []
-    for message in reversed(history[index + 1:stop]):
-        follow_up = classify_followup(message.text) if message.sender == "user" else None
-        if follow_up is not None and follow_up.kind == "cold_feedback":
+    for i in range(stop - 1, index, -1):
+        message = history[i]
+        follow_up = followup_in_dialogue(message.text, history, i) if message.sender == "user" else None
+        if follow_up is not None and (follow_up.kind in {"cold_feedback", "warmer"} or follow_up.reject_type):
             followups.append(message.text)
-    for message in reversed(history[:index]):
+    for i in range(index - 1, -1, -1):
+        message = history[i]
         if message.sender != "user":
             continue
-        follow_up = classify_followup(message.text)
+        follow_up = followup_in_dialogue(message.text, history, i)
         if follow_up is None and not is_outfit_revision(message.text):
             root = message.text
             break
-        if follow_up is None or follow_up.kind not in {"card_question", "restore"}:
+        if follow_up is None or follow_up.kind not in {"card_question", "compatibility", "restore"}:
             followups.append(message.text)
     return LastCard(list(dict.fromkeys(history[index].item_ids)), root, index, tuple(reversed(followups)))
 
@@ -184,6 +193,80 @@ def restyle_edit(before: list[WardrobeItem], after: list[WardrobeItem]) -> Outfi
     )
 
 
+@dataclass(frozen=True)
+class _SlotEdit:
+    target: WardrobeItem | None
+    chosen: WardrobeItem
+    outcome: SlotOutcome
+    source: str
+    attempts: int
+
+    def apply(self, base: list[WardrobeItem]) -> list[WardrobeItem]:
+        return [*(item for item in base if self.target is None or item.id != self.target.id), self.chosen]
+
+
+def _matches_type(item: WardrobeItem, mention: str | None) -> bool:
+    return bool(mention and (mention in _GENERIC_MENTIONS or any(
+        re.search(rf"\b{re.escape(mention)}", normalize(label)) for label in (item.title, *item.tags)
+    )))
+
+def _rejected_ids(card: LastCard, items: list[WardrobeItem], query: str) -> set[str]:
+    rejections = set()
+    for text in (*card.followups, query):
+        turn = classify_followup(text)
+        if turn is None:
+            continue
+        if turn.reject_type:
+            rejections.add((turn.slot, turn.mention))
+        elif turn.kind == "replace" and rejections:
+            # «Замени джемпер на футболку» — явное новое предпочтение.
+            _, _, destination = normalize(text).partition(" на ")
+            rejections.difference_update((slot, word[:4]) for slot, word in mentioned_garments(destination))
+    return {item.id for item in items if any(
+        slot == item.category and _matches_type(item, mention) for slot, mention in rejections
+    )}
+
+
+
+def _warmth_hint(item: WardrobeItem) -> tuple[int, str]:
+    """Evidence for a warmer layer, not a temperature rating or a comparison of fabric weights."""
+    details = item.material_details or {}
+    insulation = normalize(details.get("insulation", "")).strip()
+    labels = normalize(" ".join((item.title, *item.tags)))
+    if (insulation and not _NO_INSULATION_RE.search(insulation)) or (
+        _INSULATED_RE.search(labels) and not _NO_INSULATION_RE.search(labels)
+    ):
+        return 2, "у новой вещи указан утеплитель или отмечено утепление"
+    fabrics = normalize(" ".join((item.material or "", details.get("lining", ""), item.title)))
+    if _WARM_FABRIC_RE.search(fabrics):
+        return 1, "у новой вещи указан тёплый материал"
+    return 0, ""
+
+
+def _more_warmth(old: WardrobeItem | None, new: WardrobeItem) -> tuple[int, str]:
+    if old is None:
+        return 1, "дополнительный верхний слой поможет сохранить тепло"
+    if new.category == "bottoms":
+        if not _LONG_BOTTOM_RE.search(normalize(" ".join((new.title, *new.tags)))):
+            return 0, ""
+        if is_shorts(old):
+            return 2, "длинный низ закрывает ноги лучше шорт"
+    old_min = old.weather.temperature_min if old.weather else None
+    new_min = new.weather.temperature_min if new.weather else None
+    if old_min is not None and new_min is not None:
+        if new_min < old_min:
+            return 3, f"у новой вещи указан более низкий температурный предел ({new_min:+g} °C вместо {old_min:+g} °C)"
+        return 0, ""
+    old_hint, _ = _warmth_hint(old)
+    new_hint, reason = _warmth_hint(new)
+    known_light = old.season == "spring/summer" or (
+        old.category == "tops" and _LIGHT_TOP_RE.search(normalize(old.title))
+    )
+    if new_hint > old_hint and (old_hint > 0 or known_light):
+        return new_hint - old_hint, reason
+    return 0, ""
+
+
 def _named(items: list[WardrobeItem], mention: str | None) -> WardrobeItem | None:
     """Одна вещь из нескольких в слоте — та, которую пользователь назвал словом («сумку»)."""
     if len(items) == 1:
@@ -217,7 +300,7 @@ class OutfitEditor:
     ) -> RecommendResponse:
         timings: dict[str, float] = {}
         warnings: list[str] = []
-        user_id, items, _ = await self._service.load_wardrobe(request, timings, warnings)
+        user_id, items, exclude = await self._service.load_wardrobe(request, timings, warnings)
         by_id = {item.id: item for item in items}
         base = [by_id[item_id] for item_id in card.item_ids if item_id in by_id]
         analysis = merge_context(request, card, items)
@@ -233,6 +316,11 @@ class OutfitEditor:
             )
         if follow_up.kind == "card_question":
             return await self._answer_question(request, base, analysis, runtime, reply)
+        if follow_up.kind == "compatibility":
+            return reply.text(compatibility_answer(base, request.query), source="rules")
+        blocked = set(exclude) | _rejected_ids(card, items, request.query)
+        if follow_up.kind == "warmer":
+            return await self._warm_up(request, user_id, items, base, blocked, card, runtime, reply)
         if follow_up.kind == "cold_feedback":
             if not any(is_shorts(item) for item in base):
                 return reply.text("Какая часть образа кажется слишком лёгкой? Могу заменить её, не меняя остальное.")
@@ -241,12 +329,9 @@ class OutfitEditor:
             return reply.text(_ask_which_item(follow_up.operation, base))
 
         slot = follow_up.slot
-        in_slot = [item for item in base if item.category == slot]
         if follow_up.kind == "remove":
-            return self._remove(base, slot, in_slot, follow_up, reply)
-        return await self._add_or_replace(
-            request, user_id, items, base, slot, in_slot, follow_up, analysis, runtime, reply
-        )
+            return self._remove(base, slot, [item for item in base if item.category == slot], follow_up, reply)
+        return await self._edit_slots(request, user_id, items, base, blocked, follow_up, runtime, reply)
 
     async def restore(self, request: RecommendRequest, card: LastCard | None, started: float) -> RecommendResponse:
         previous = find_last_card(request.history, before=card.index) if card else None
@@ -306,25 +391,119 @@ class OutfitEditor:
                 operation="remove", slot=slot, base_item_ids=[item.id for item in base],
                 kept_item_ids=[item.id for item in kept], removed_item_ids=[target.id],
             ),
-            ranked=None, before=base,
+            ranked=(), before=base,
         )
+
+    async def _warm_up(
+        self, request: RecommendRequest, user_id: str, items: list[WardrobeItem], base: list[WardrobeItem],
+        exclude: set[str], card: LastCard, runtime: RuntimeSettings, reply: "_Reply",
+    ) -> RecommendResponse:
+        analysis = reply.analysis
+        if analysis.temperature_c is None:
+            return reply.text(f"Чтобы предложить более тёплый вариант, нужно понимать погоду. {WARMER_TEMPERATURE_QUESTION}")
+
+        # Верхнюю одежду и обувь не меняем по общей просьбе. Именованный якорь сохраняем
+        # также в остальных слотах, пока пользователь явно не попросит заменить его.
+        pinned = set(analyze_query(card.root_request or "", wardrobe=base).anchor_item_ids) | {request.anchor_item_id}
+        base_by_slot = {item.category: item for item in base}
+        slots = [*CLOTHING_LAYERS]
+        if "outerwear" not in base_by_slot and not analysis.is_hot:
+            slots.insert(0, "outerwear")
+        base_ids = {item.id for item in base}
+        options: list[tuple[int, _SlotEdit, str]] = []
+        for slot in slots:
+            target = base_by_slot.get(slot)
+            if target is None and slot != "outerwear" or target is not None and target.id in pinned:
+                continue
+            weather = replace(analysis, occasion=DEFAULT_OCCASION)
+            if any(unsuitable_reason(item, weather) for item in base if item is not target):
+                continue  # после этой замены комплект всё ещё не подходит под известную погоду
+            eligible = {
+                item.id: hint for item in items if item.category == slot and item.id not in base_ids
+                and item.id not in exclude and not unsuitable_reason(item, weather)
+                and (hint := _more_warmth(target, item))[0] > 0
+            }
+            if not eligible:
+                continue
+            outcome = await self._search_slot(
+                request, user_id, base, slot, "replace" if target else "add", target, runtime, reply,
+                exclude | {item.id for item in items if item.category == slot and item.id not in eligible},
+            )
+            if outcome.candidates:
+                candidate = max(outcome.candidates, key=lambda entry: eligible[entry.item.id][0])
+                gain, reason = eligible[candidate.item.id]
+                options.append((gain, _SlotEdit(target, candidate.item, outcome, "rules", 0), reason))
+
+        if not options:
+            return reply.text("По данным гардероба не нашла замены, которая сделает этот образ теплее. Состав не меняю.")
+        _, edit, reason = max(options, key=lambda option: option[0])
+        reply.retrieval = edit.outcome.diagnostics if request.debug else None
+        return await self._finish_edit(user_id, base, edit.apply(base), [edit], reply,
+                                       explanation=f"Для тепла: {reason}.")
 
     # --- добавить или заменить ----------------------------------------------------
 
-    async def _add_or_replace(
+    async def _edit_slots(
+        self, request: RecommendRequest, user_id: str, items: list[WardrobeItem], base: list[WardrobeItem],
+        exclude: set[str], follow_up: FollowUp, runtime: RuntimeSettings, reply: "_Reply",
+    ) -> RecommendResponse:
+        assert follow_up.slot is not None
+        targets = ((follow_up.slot, follow_up.mention), *follow_up.extra_targets)
+        pending = {slot for slot, _ in targets}
+        current = base
+        edits: list[_SlotEdit] = []
+        for slot, mention in targets:
+            pending.remove(slot)
+            # Не подбираем новую вещь к той, которая тоже будет заменена.
+            search_base = [item for item in current if item.category not in pending]
+            step = replace(follow_up, slot=slot, mention=mention, extra_targets=())
+            found = await self._select_slot(request, user_id, items, search_base, step, runtime, reply, exclude)
+            if isinstance(found, RecommendResponse):
+                return found
+            if edits and found.outcome.revision != edits[0].outcome.revision:
+                raise RagEngineError("Гардероб изменился, пока стилист подбирал вещи. Повторите запрос.")
+            edits.append(found)
+            current = found.apply(current)
+        return await self._finish_edit(user_id, base, current, edits, reply)
+
+    async def _finish_edit(
+        self, user_id: str, base: list[WardrobeItem], final: list[WardrobeItem], edits: list[_SlotEdit],
+        reply: "_Reply", *, explanation: str = "",
+    ) -> RecommendResponse:
+        revision = edits[0].outcome.revision
+        problems = composition_errors(final)
+        if problems:
+            reply.warnings.extend(problems)
+            return reply.text("Не получилось собрать корректный комплект после правки. Прежний образ оставляю без изменений.",
+                              revision=revision)
+        if await asyncio.to_thread(self._engine.get_revision, user_id) != revision:
+            raise RagEngineError("Гардероб изменился, пока стилист подбирал вещи. Повторите запрос.")
+        edit = restyle_edit(base, final)
+        if len(edits) == 1:
+            step = edits[0]
+            edit = edit.model_copy(update={"operation": "replace" if step.target else "add", "slot": step.chosen.category})
+        source = next(source for source in ("fallback", "llm", "mock", "rules") if any(e.source == source for e in edits))
+        return reply.card(final, source=source, attempts=sum(e.attempts for e in edits), revision=revision,
+                          edit=edit, ranked=tuple(e.outcome for e in edits), before=base, explanation=explanation)
+
+    async def _select_slot(
         self,
         request: RecommendRequest,
         user_id: str,
         items: list[WardrobeItem],
         base: list[WardrobeItem],
-        slot: str,
-        in_slot: list[WardrobeItem],
         follow_up: FollowUp,
-        analysis: QueryAnalysis,
         runtime: RuntimeSettings,
         reply: "_Reply",
-    ) -> RecommendResponse:
+        exclude: set[str],
+    ) -> _SlotEdit | RecommendResponse:
+        slot = follow_up.slot
+        assert slot is not None
+        in_slot = [item for item in base if item.category == slot]
+        analysis = reply.analysis
         operation = follow_up.kind
+        if follow_up.reject_type and not any(_matches_type(item, follow_up.mention) for item in in_slot):
+            return reply.text("В текущем образе такой вещи нет. Состав не меняю.")
         target: WardrobeItem | None = None
         if operation == "add" and len(in_slot) >= SLOT_LIMITS[slot]:
             if slot == "accessories":
@@ -356,31 +535,9 @@ class OutfitEditor:
         if analysis.occasion in _DRESSY_OCCASIONS:
             # Пляжные сандалии формально «без каблука», но в офисный или вечерний образ не годятся.
             unsuitable += [item.id for item in items if _is_beach_item(item) and item.id not in unsuitable]
-        base_ids = [item.id for item in base]
-        query = SlotQuery(
-            user_id=user_id,
-            query=request.query,
-            slot=slot,
-            operation=operation,
-            outfit_item_ids=base_ids,
-            replace_item_id=target.id if target else None,
-            mode=request.mode or runtime.mode,
-            alpha=request.alpha if request.alpha is not None else runtime.alpha,
-            visual_weight=(
-                request.visual_weight if request.visual_weight is not None else runtime.visual_weight
-            ),
-            occasion=analysis.occasion_label,
-            vibe=analysis.vibe,
-            temperature_c=analysis.temperature_c,
-            rain=True if "rain" in analysis.weather else None,
-            wind=True if "wind" in analysis.weather else None,
-            exclude_item_ids=list(dict.fromkeys(item_id for item_id in unsuitable if item_id not in base_ids)),
+        outcome = await self._search_slot(
+            request, user_id, base, slot, operation, target, runtime, reply, exclude | set(unsuitable)
         )
-        phase = time.perf_counter()
-        outcome = await asyncio.to_thread(self._engine.retrieve_slot, query)
-        reply.timings["retrievalMs"] = _ms_since(phase)
-        reply.warnings.extend(outcome.warnings)
-        reply.retrieval = outcome.diagnostics if request.debug else None
 
         if not outcome.candidates:
             # Альтернативы нет — прежний комплект остаётся, новой карточки не будет.
@@ -398,28 +555,37 @@ class OutfitEditor:
         chosen, source, attempts = await self._pick(
             request.query, analysis, outcome, base, target, operation, runtime, reply
         )
-        kept = [item for item in base if target is None or item.id != target.id]
-        final = [*kept, chosen.item]
-        problems = composition_errors(final)
-        if problems:
-            reply.warnings.extend(problems)
-            return reply.text(
-                "Не получилось собрать корректный комплект после правки, поэтому прежний образ "
-                f"оставляю без изменений: {_listing(base)}.",
-                revision=outcome.revision,
-            )
-        if await asyncio.to_thread(self._engine.get_revision, user_id) != outcome.revision:
-            raise RagEngineError("Гардероб изменился, пока стилист подбирал вещь. Повторите запрос.")
+        return _SlotEdit(target, chosen.item, outcome, source, attempts)
 
-        return reply.card(
-            final, source=source, attempts=attempts, revision=outcome.revision,
-            edit=OutfitEdit(
-                operation=operation, slot=slot, base_item_ids=base_ids,  # type: ignore[arg-type]
-                kept_item_ids=[item.id for item in kept], added_item_ids=[chosen.item.id],
-                removed_item_ids=[target.id] if target else [],
-            ),
-            ranked=outcome, before=base,
+    async def _search_slot(
+        self, request: RecommendRequest, user_id: str, base: list[WardrobeItem], slot: str, operation: str,
+        target: WardrobeItem | None, runtime: RuntimeSettings, reply: "_Reply", exclude: set[str],
+    ) -> SlotOutcome:
+        analysis = reply.analysis
+        base_ids = [item.id for item in base]
+        query = SlotQuery(
+            user_id=user_id,
+            query=request.query,
+            slot=slot,
+            operation=operation,
+            outfit_item_ids=base_ids,
+            replace_item_id=target.id if target else None,
+            mode=request.mode or runtime.mode,
+            alpha=request.alpha if request.alpha is not None else runtime.alpha,
+            visual_weight=request.visual_weight if request.visual_weight is not None else runtime.visual_weight,
+            occasion=analysis.occasion_label,
+            vibe=analysis.vibe,
+            temperature_c=analysis.temperature_c,
+            rain=True if "rain" in analysis.weather else None,
+            wind=True if "wind" in analysis.weather else None,
+            exclude_item_ids=sorted(exclude - set(base_ids)),
         )
+        phase = time.perf_counter()
+        outcome = await asyncio.to_thread(self._engine.retrieve_slot, query)
+        reply.timings["retrievalMs"] = reply.timings.get("retrievalMs", 0) + _ms_since(phase)
+        reply.warnings.extend(outcome.warnings)
+        reply.retrieval = outcome.diagnostics if request.debug else None
+        return outcome
 
     async def _pick(
         self,
@@ -474,7 +640,7 @@ class OutfitEditor:
                 logger.info("LLM slot pick rejected (attempt %d): %s", attempts, error)
                 messages = build_repair_messages(first, raw, [error])
         finally:
-            reply.timings["llmMs"] = _ms_since(llm_started)
+            reply.timings["llmMs"] = reply.timings.get("llmMs", 0) + _ms_since(llm_started)
         reply.warnings.append("Ответ LLM не прошёл проверку — вещь выбрана по релевантности поиска, без модели")
         return candidates[0], "fallback", attempts
 
@@ -562,8 +728,8 @@ class _Reply:
 
     def card(
         self, items: list[WardrobeItem], *, source: str,
-        attempts: int, revision: str, edit: OutfitEdit, ranked: SlotOutcome | None,
-        before: list[WardrobeItem],
+        attempts: int, revision: str, edit: OutfitEdit, ranked: tuple[SlotOutcome, ...],
+        before: list[WardrobeItem], explanation: str = "",
     ) -> RecommendResponse:
         from app.services.orchestrator import with_image  # общий помощник карточек
 
@@ -578,6 +744,8 @@ class _Reply:
                 return self.text(f"{frost_gap_text(temperature, gaps)} Лучше собрать образ заново.",
                                  revision=revision, missing_slots=sorted(gaps))
         text = edit_comment(before, items, edit)
+        if explanation:
+            text = f"{text} {explanation}"
         outfit = OutfitLook(
             id=f"outfit-{uuid.uuid4().hex[:12]}",
             title=f"Образ · {self.analysis.occasion_label}",
@@ -624,7 +792,7 @@ def _ask_which_item(operation: str | None, base: list[WardrobeItem]) -> str:
     if verb is None:
         return "Что добавить к образу: верхнюю одежду или аксессуар?"
     options = ", ".join(f"{quote(item)} ({CATEGORY_LABELS_RU[item.category]})" for item in sort_items(base))
-    return f"Уточните, какую вещь {verb}: {options}?"
+    return f"{EDIT_QUESTION_PREFIX} {verb}: {options}?"
 
 
 def _no_alternative_text(
@@ -737,15 +905,15 @@ def _slot_as_outcome(outcome: SlotOutcome, engine: str) -> RetrievalOutcome:
 
 
 def _edited_as_outcome(
-    items: list[WardrobeItem], edit: OutfitEdit, ranked: SlotOutcome | None
+    items: list[WardrobeItem], edit: OutfitEdit, ranked: tuple[SlotOutcome, ...]
 ) -> RetrievalOutcome:
     """Для matchScore: оставленные вещи выбрал пользователь, новая вещь оценивается по её выдаче."""
     by_slot: dict[str, list[SlotCandidate]] = {}
     for item in items:
         if item.id in edit.kept_item_ids:
             by_slot.setdefault(item.category, []).append(SlotCandidate(item=item, score=1.0, anchored=True))
-    if ranked is not None:
-        by_slot.setdefault(ranked.slot, []).extend(ranked.candidates)
+    for outcome in ranked:
+        by_slot.setdefault(outcome.slot, []).extend(outcome.candidates)
     return RetrievalOutcome(
         user_id="", query="", engine="", mode="", candidates_by_slot=by_slot,
         required_slots=list(CORE_SLOTS), missing_slots=[], context={}, anchor_item_id=None,

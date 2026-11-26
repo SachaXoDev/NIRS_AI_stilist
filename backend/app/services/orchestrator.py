@@ -46,7 +46,7 @@ from app.services.analysis import (
 from app.services.editing import (
     NOTHING_TO_EDIT_TEXT, LastCard, OutfitEditor, edit_comment, find_last_card, merge_context, restyle_edit,
 )
-from app.services.followup import FollowUp, classify_followup, refers_to_dialogue
+from app.services.followup import FollowUp, classify_followup, followup_in_dialogue, refers_to_dialogue
 from app.services.llm.base import LLMClient, LLMError
 from app.services.prompts import PromptContext, build_conversation_messages, build_messages, build_repair_messages
 from app.services.scoring import MATCH_SCORE_METHOD, match_score
@@ -403,8 +403,12 @@ class StylistService:
         follow_up = classify_followup(request.query)
         if follow_up is not None and follow_up.kind == "restore":
             return follow_up
+        if card is not None and follow_up is not None and follow_up.kind == "warmer":
+            return follow_up  # «потеплее образ» — правка, даже если слово «образ» похоже на новый подбор
         if starts_new_topic(request.query) or self._detailed_selection(request.query):
             return None  # «подбери образ…», «с чем носить…» — прошлая карточка ни при чём
+        if follow_up is None and card is not None and len(request.history) >= card.index + 3:
+            follow_up = followup_in_dialogue(request.query, request.history, len(request.history))
         if follow_up is None or card is not None:
             return follow_up
         if any(message.has_outfit for message in request.history):

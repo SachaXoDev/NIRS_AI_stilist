@@ -152,7 +152,8 @@ def run_wardrobe_cases(
     check_outfit(office, "office", capsule, CORE_SLOTS)
     office_retrieval = check_retrieval(office, "office", "business", CORE_SLOTS)
 
-    # Replay the actual prior turns as the frontend does, and reuse the indexed wardrobe.
+    # Legacy client without itemIds: «потеплее» still uses the full model-driven selection.
+    # Targeted edits with itemIds are covered by edit_smoke.py and the backend API tests.
     office_history = [
         *history,
         {"sender": "user", "text": OFFICE_QUERY},

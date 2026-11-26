@@ -1,8 +1,7 @@
 """Точечная правка последнего образа, вопрос о нём и новый вопрос после старого диалога.
 
-Сценарии — из таблицы «Что должен уметь стилист» и критериев приёмки задачи. Встроенный
-движок и сценарная LLM: сеть и веса не нужны. То же самое на настоящем поиске — в
-`test_wardrobe_rag_integration.py`.
+Сценарии проверяют HTTP-контракт без сети и весов; ключевые диалоги проходят
+и на встроенном движке, и с настоящим индексом wardrobe_rag.
 """
 import json
 
@@ -295,17 +294,178 @@ def test_follow_up_question_keeps_dialogue_history(make_client, wardrobe):
     assert [m["role"] for m in llm.calls[0]] == ["system", "user", "assistant", "user"]
 
 
-# --- «потеплее»: новый вариант и метаданные изменений -----------------------------------------------
+# --- правки в диалоге и доказуемое утепление -------------------------------------------------------
+
+WALK = ["item-11", "item-23", "item-32", "item-41"]  # поплин, чиносы, парка, ботинки
+WALK_REQUEST = "Подбери образ на прогулку с вещью «Хвойная утепленная парка с капюшоном»."
 
 
-def test_warmer_preserves_the_edit_metadata_and_occasion(make_client, wardrobe):
-    llm = ScriptedLLM([json.dumps({"outfit": {"item_ids": ["item-1", "item-4", "item-35", "item-28"]}})])
-    result = _ask(make_client(llm=llm), "А можно потеплее?", wardrobe, _history(OFFICE))
-    assert set(_ids(result)) == {"item-1", "item-4", "item-35", "item-28"}
-    assert result["edit"]["addedItemIds"] == ["item-28", "item-35"]
-    assert result["edit"]["removedItemIds"] == ["item-42"]
-    assert result["edit"]["operation"] == "restyle" and result["edit"]["keptItemIds"] == ["item-1", "item-4"]
-    assert result["meta"]["occasion"] == "Деловой выход", "повод прошлого образа сохранён"
+@pytest.fixture(params=["builtin", "rag_engine"])
+def dialogue_client(request, make_client):
+    engine = request.getfixturevalue("rag_engine") if request.param == "rag_engine" else None
+    return make_client(engine=engine)
+
+
+def _assert_card_change(result, base, *, removed, added):
+    kept = set(base) - removed
+    expected = kept | added
+    ids = _ids(result)
+    assert set(ids) == expected and len(ids) == len(expected)
+    assert result["referencedItemIds"] == ids
+    edit = result["edit"]
+    assert set(edit["baseItemIds"]) == set(base)
+    assert set(edit["keptItemIds"]) == kept
+    assert set(edit["removedItemIds"]) == removed
+    assert set(edit["addedItemIds"]) == added
+
+
+def _assert_text_only(result):
+    assert result["text"].strip()
+    assert "suggestedOutfit" not in result and "edit" not in result
+
+
+def test_rejecting_tee_replaces_only_tee_and_excludes_other_tees(dialogue_client, capsule50):
+    base = ["item-13", *WALK[1:]]
+    tee = capsule50["item-13"]
+    other_tee = dict(tee, id="other-tee", title="Синяя футболка в полоску")
+    wardrobe = [*(capsule50[i] for i in [*base, "item-11"]), other_tee]
+
+    result = _ask(dialogue_client, "не хочу футболку", wardrobe, _history(base, WALK_REQUEST))
+
+    _assert_card_change(result, base, removed={"item-13"}, added={"item-11"})
+
+    tees_only = [capsule50[i] for i in base] + [other_tee]
+    _assert_text_only(_ask(dialogue_client, "не хочу футболку", tees_only, _history(base, WALK_REQUEST)))
+
+def test_followup_replacement_does_not_bring_back_a_rejected_tee(dialogue_client, capsule50):
+    base = ["item-13", *WALK[1:]]
+    wardrobe = [capsule50[i] for i in [*base, "item-11", "item-12", "item-22"]]
+    history = _history(base, WALK_REQUEST, *_history(WALK, "не хочу футболку"))
+
+    result = _ask(dialogue_client, "замени верх и низ", wardrobe, history)
+
+    _assert_card_change(result, WALK, removed={"item-11", "item-23"}, added={"item-12", "item-22"})
+
+
+
+def test_compatibility_question_discusses_actual_shirt_and_chinos_without_a_card(dialogue_client, capsule50):
+    wardrobe = [capsule50[i] for i in [*WALK, "item-1", "item-22"]]
+    result = _ask(dialogue_client, "думаешь рубашка со штанами сочетается??", wardrobe,
+                  _history(WALK, WALK_REQUEST))
+
+    _assert_text_only(result)
+    for item_id in WALK[:2]:
+        assert capsule50[item_id]["title"].casefold() in result["text"].casefold()
+    for item_id in ("item-1", "item-22"):
+        assert capsule50[item_id]["title"].casefold() not in result["text"].casefold()
+
+
+def _clarify_replacement(client, wardrobe, history):
+    query = "я не думаю, поменяй"
+    result = _ask(client, query, wardrobe, history)
+    _assert_text_only(result)
+    assert "какую вещь заменить" in result["text"].casefold() and result["text"].count("?") == 1
+    return [*history, {"sender": "user", "text": query}, {"sender": "assistant", "text": result["text"]}]
+
+
+@pytest.mark.parametrize("clarified", [False, True], ids=["explicit", "clarified"])
+@pytest.mark.parametrize("missing", [False, True], ids=["complete", "no-bottom"])
+def test_replace_top_and_bottom_is_atomic(dialogue_client, capsule50, clarified, missing):
+    candidates = ["item-12"] if missing else ["item-12", "item-22"]
+    wardrobe = [capsule50[i] for i in [*WALK, *candidates]]
+    history = _history(WALK, WALK_REQUEST)
+    query = "замени верх и низ"
+    if clarified:
+        history = _clarify_replacement(dialogue_client, wardrobe, history)
+        query = "верх и низ"
+
+    result = _ask(dialogue_client, query, wardrobe, history)
+
+    if missing:
+        _assert_text_only(result)
+        assert result["referencedItemIds"] == []
+    else:
+        _assert_card_change(result, WALK, removed={"item-11", "item-23"}, added={"item-12", "item-22"})
+
+
+def test_bare_slots_do_not_edit_without_immediate_clarification(dialogue_client, capsule50):
+    wardrobe = [capsule50[i] for i in [*WALK, "item-12", "item-22"]]
+    history = _history(WALK, WALK_REQUEST)
+    _assert_text_only(_ask(dialogue_client, "верх и низ", wardrobe, history))
+
+    clarified = _clarify_replacement(dialogue_client, wardrobe, history)
+    # After another exchange, the old question no longer authorizes an edit.
+    unrelated = "думаешь рубашка со штанами сочетается??"
+    answer = _ask(dialogue_client, unrelated, wardrobe, clarified)
+    _assert_text_only(answer)
+    stale = [*clarified, {"sender": "user", "text": unrelated}, {"sender": "assistant", "text": answer["text"]}]
+    _assert_text_only(_ask(dialogue_client, "верх и низ", wardrobe, stale))
+
+
+def test_warmer_replaces_only_the_documented_stronger_layer(dialogue_client, capsule50):
+    wardrobe = [capsule50[i] for i in [*WALK, "item-19", "item-21", "item-31"]]
+    result = _ask(dialogue_client, "А можно потеплее?", wardrobe,
+                  _history(WALK, f"{WALK_REQUEST} На улице +4°C."), anchor_item_id="item-32")
+
+    _assert_card_change(result, WALK, removed={"item-11"}, added={"item-19"})
+    assert capsule50["item-19"]["title"] in result["text"]
+
+
+def test_warmer_with_no_retrievable_improvement_leaves_card_alone(dialogue_client, capsule50):
+    # Меринос есть в гардеробе, но его диапазон не подходит для +4°C. Шерстяная юбка
+    # не согреет лучше длинных брюк только потому, что у неё теплее материал.
+    unavailable = dict(capsule50["item-19"], weather={"temperature_max": 0})
+    wardrobe = [*(capsule50[i] for i in [*WALK, "item-21"]), unavailable]
+    result = _ask(dialogue_client, "А можно потеплее?", wardrobe,
+                  _history(WALK, f"{WALK_REQUEST} На улице +4°C."), anchor_item_id="item-32")
+
+    _assert_text_only(result)
+    assert "температур" not in result["text"].casefold() or "?" not in result["text"]
+
+
+def test_warmer_asks_for_temperature_then_applies_the_same_edit(dialogue_client, capsule50):
+    wardrobe = [capsule50[i] for i in [*WALK, "item-19", "item-21"]]
+    history = _history(WALK, WALK_REQUEST)
+    query = "А можно потеплее?"
+    result = _ask(dialogue_client, query, wardrobe, history, anchor_item_id="item-32")
+    _assert_text_only(result)
+    assert "температур" in result["text"].casefold() and result["text"].count("?") == 1
+
+    history += [{"sender": "user", "text": query}, {"sender": "assistant", "text": result["text"]}]
+    warmed = _ask(dialogue_client, "+4°C", wardrobe, history, anchor_item_id="item-32")
+    _assert_card_change(warmed, WALK, removed={"item-11"}, added={"item-19"})
+
+
+def test_warmer_after_compatibility_question_keeps_the_latest_outfit(dialogue_client, capsule50):
+    root = 'Подбери образ из моего гардероба с вещью «Куртка утепленная».'
+    jacket = dict(capsule50["item-32"], title="Куртка утепленная")
+    initial = ["item-13", "item-23", "item-32", "item-41"]
+    wardrobe = [jacket, *(capsule50[i] for i in ["item-13", "item-19", "item-23", "item-41", "item-21", "item-28"])]
+    history = _history(initial, root)
+
+    rejection = "не хочу футболку"
+    changed = _ask(dialogue_client, rejection, wardrobe, history)
+    _assert_card_change(changed, initial, removed={"item-13"}, added={"item-19"})
+    history += [
+        {"sender": "user", "text": rejection},
+        {"sender": "assistant", "text": changed["text"], "hasOutfit": True, "itemIds": _ids(changed)},
+    ]
+    compatibility = "водолазка со штанами сочетается?"
+    answer = _ask(dialogue_client, compatibility, wardrobe, history)
+    _assert_text_only(answer)
+    assert capsule50["item-19"]["title"] in answer["text"]
+    assert capsule50["item-23"]["title"] in answer["text"]
+    history += [{"sender": "user", "text": compatibility}, {"sender": "assistant", "text": answer["text"]}]
+
+    query = "может потеплее образ?"
+    clarification = _ask(dialogue_client, query, wardrobe, history)
+    _assert_text_only(clarification)
+    assert "температуру" in clarification["text"] and clarification["text"].count("?") == 1
+
+    history += [{"sender": "user", "text": query}, {"sender": "assistant", "text": clarification["text"]}]
+    warmed = _ask(dialogue_client, "+4°C", wardrobe, history)
+    _assert_text_only(warmed)
+    assert "состав не меняю" in warmed["text"].casefold()
 
 
 # --- поправка о холоде и возврат карточки -------------------------------------------------------

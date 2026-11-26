@@ -27,6 +27,9 @@ from app.services.followup import classify_followup, refers_to_dialogue
     ("не замёрзну в этом?", "card_question", None),
     ("а это подойдёт для офиса?", "card_question", None),
     ("Не жарко будет?", "card_question", None),
+    ("А можно потеплее?", "warmer", None),
+    ("думаешь рубашка со штанами сочетается??", "compatibility", None),
+    ("я не хочу футболку", "replace", "tops"),
 ])
 def test_follow_ups_are_recognised(query, kind, slot):
     follow_up = classify_followup(query)
@@ -34,7 +37,6 @@ def test_follow_ups_are_recognised(query, kind, slot):
 
 
 @pytest.mark.parametrize("query", [
-    "А можно потеплее?",                      # новый вариант целиком — отдельная ветка
     "другой образ",
     "есть другие варианты?",
     "а другие цвета подойдут к серому",

@@ -1,10 +1,9 @@
 """Что пользователь хочет сделать с уже показанным образом.
 
-Реплика после карточки бывает четырёх видов, и путать их нельзя:
-* точечная правка — добавить, заменить или убрать одну вещь, остальные не трогать;
-* вопрос об образе («мне в этом будет комфортно?») — ответить, карточку не менять;
-* новый подбор или самостоятельный вопрос — прошлый образ и его повод не наследуются;
-* общая просьба («потеплее», «наряднее») — новый вариант целиком (см. `analysis.outfit_revision`).
+* правка готового образа: меняются названные вещи, остальные остаются;
+* вопрос об образе: состав не меняется;
+* новый самостоятельный запрос: прежний образ не используется;
+* «потеплее» — правка текущего комплекта; «наряднее» — переподбор (см. `analysis.outfit_revision`).
 
 Разбор детерминированный: его можно проверить тестами, он не добавляет вызов LLM и не зависит
 от того, что маленькая локальная модель решит в этот раз. Если из реплики не ясно, о какой
@@ -16,9 +15,13 @@ import re
 from dataclasses import dataclass
 from typing import Literal
 
+from app.schemas import HistoryMessage
+from app.services.analysis import analyze_query
 from app.services.textutils import normalize
 
-FollowUpKind = Literal["add", "replace", "remove", "ask_item", "card_question", "restore", "cold_feedback"]
+Operation = Literal["add", "replace", "remove"]
+FollowUpKind = Literal["add", "replace", "remove", "ask_item", "card_question", "compatibility", "restore",
+                       "cold_feedback", "warmer"]
 
 _W = r"(?<![a-zа-я])"  # начало слова
 
@@ -41,6 +44,15 @@ _SLOT_RES = tuple((slot, re.compile(pattern)) for slot, pattern in _SLOT_PATTERN
 _REPLACE_RE = re.compile(_W + r"(?:замени\w*|заменить|заменим|поменя\w+|смени\w*|сменить|вместо)")
 _REMOVE_RE = re.compile(_W + r"(?:убери\w*|убрать|уберем|сними\w*|снять|исключи\w*)")
 _ADD_RE = re.compile(_W + r"(?:добав\w+|накин\w+|дополни\w*)")
+_REJECT_RE = re.compile(r"^(?:а\s+)?(?:я\s+)?не\s+хочу\s+(?:носить\s+)?(?:эт\w+\s+)?")
+_PAIR_JOIN = re.compile(r"\s*(?:,\s*(?:и\s+)?|и\s+)")
+_WARMER_RE = re.compile(r"^(?:а\s+)?(?:может(?:\s+быть)?[,\s]+)?"
+                        r"(?:(?:можно|сделай(?:те)?|хочу|нужно|давай(?:те)?)\s+)?"
+                        r"(?:(?:образ|комплект)\s+)?(?:чуть\s+|немного\s+)?(?:потеплее|теплее)\b")
+_COMPATIBILITY_RE = re.compile(r"\b(?:сочета(?:ется|ются|ть|емы)|сочетаемость|"
+                               r"(?:идет|идут|подходит|подходят)\s+(?:ли\s+)?(?:к|под))\b")
+EDIT_QUESTION_PREFIX = "Уточните, какую вещь"
+WARMER_TEMPERATURE_QUESTION = "На какую температуру нужен образ?"
 _RESTORE_RE = re.compile(
     r"^(?:пожалуйста[, ]+)?(?:верни(?:те)?|возврати(?:те)?|восстанови(?:те)?|покажи(?:те)?)\s+"
     r"(?:мне\s+)?(?:предыдущ\w*|прошл\w*|прежн\w*)\s+(?:образ\w*|комплект\w*|лук\w*|вариант\w*)\b"
@@ -79,7 +91,9 @@ class FollowUp:
     # Слово, которым пользователь назвал вещь («сумк»): по нему выбираем один из двух аксессуаров.
     mention: str | None = None
     # Какое действие осталось неясным для уточняющего вопроса
-    operation: Literal["add", "replace", "remove"] | None = None
+    operation: Operation | None = None
+    extra_targets: tuple[tuple[str, str], ...] = ()
+    reject_type: bool = False
 
 
 def _slot_mentions(text: str) -> list[tuple[int, str, str]]:
@@ -88,6 +102,57 @@ def _slot_mentions(text: str) -> list[tuple[int, str, str]]:
         for match in pattern.finditer(text):
             found.append((match.start(), slot, match.group(0)))
     return sorted(found)
+
+
+def mentioned_garments(query: str) -> list[tuple[str, str]]:
+    return [(slot, word) for _, slot, word in _slot_mentions(normalize(query))]
+
+
+def _targets(text: str, mentions: list[tuple[int, str, str]]) -> list[tuple[int, str, str]]:
+    """Читаем список через «и»/запятую, но не цель замены после «на»."""
+    targets = mentions[:1]
+    for start, slot, word in mentions[1:]:
+        prev_start, prev_slot, prev_word = targets[-1]
+        end = prev_start + len(prev_word)
+        if start < end:  # «верхняя одежда» — одно упоминание
+            continue
+        gap = text[end:start]
+        if not _PAIR_JOIN.fullmatch(gap) or slot in {target[1] for target in targets}:
+            break
+        targets.append((start, slot, word))
+    return targets
+
+
+def clarify_followup(query: str, previous_query: str, previous_answer: str) -> FollowUp | None:
+    """Дополняем последнюю незавершённую правку только в ответ на наш вопрос."""
+    previous = classify_followup(previous_query)
+    if previous is None:
+        return None
+    if previous.kind == "warmer" and previous_answer.endswith(WARMER_TEMPERATURE_QUESTION):
+        return previous if analyze_query(query).temperature_c is not None else None
+    if previous.kind != "ask_item" or previous.operation not in {"replace", "remove"}:
+        return None
+    if not previous_answer.startswith(EDIT_QUESTION_PREFIX):
+        return None
+    text = normalize(query).strip(" .!")
+    targets = _targets(text, _slot_mentions(text))
+    if not targets or targets[0][0] != 0 or targets[-1][0] + len(targets[-1][2]) != len(text):
+        return None
+    if len(targets) > 1 and previous.operation != "replace":
+        return None
+    _, slot, word = targets[0]
+    return FollowUp(kind=previous.operation, slot=slot, mention=word[:4], operation=previous.operation,
+                    extra_targets=tuple((other_slot, name[:4]) for _, other_slot, name in targets[1:]))
+
+
+def followup_in_dialogue(query: str, history: list[HistoryMessage], end: int) -> FollowUp | None:
+    follow_up = classify_followup(query)
+    if follow_up is not None or end < 2:
+        return follow_up
+    question, answer = history[end - 2:end]
+    if question.sender == "user" and answer.sender == "assistant" and not answer.has_outfit and not answer.item_ids:
+        return clarify_followup(query, question.text, answer.text)
+    return None
 
 
 def _first_operation(text: str) -> tuple[int, str] | None:
@@ -110,22 +175,34 @@ def classify_followup(query: str) -> FollowUp | None:
     if _RESTORE_RE.search(text.strip()):
         return FollowUp(kind="restore")
     cold_feedback = bool(_COLD_FEEDBACK_RE.search(text.strip()))
+    if rejection := _REJECT_RE.match(text.strip()):
+        rest = text.strip()[rejection.end():]
+        mentions = _slot_mentions(rest)
+        if mentions and mentions[0][0] == 0 and not _HEEL_RE.match(rest):
+            _, slot, word = mentions[0]
+            kind = "replace" if slot in {"tops", "bottoms", "shoes"} else "remove"
+            return FollowUp(kind=kind, slot=slot, mention=word[:4], operation=kind, reject_type=True)
     operation = _first_operation(text)
     if operation is not None:
         position, name = operation
         mentions = [m for m in _slot_mentions(text) if not (name == "remove" and _HEEL_RE.match(m[2]))]
         # Вещь обычно названа сразу после глагола: «замени туфли на кеды».
         after = [m for m in mentions if m[0] >= position]
-        chosen = (after or mentions or [None])[0]
-        if chosen is None:
+        targets = _targets(text, after or mentions) if name == "replace" else (after or mentions)[:1]
+        if not targets:
             return FollowUp(kind="ask_item", operation=name)  # type: ignore[arg-type]
-        _, slot, word = chosen
+        _, slot, word = targets[0]
         if name == "remove" and slot == "bottoms" and word.startswith("шорт") and cold_feedback:
             return FollowUp(kind="replace", slot=slot, mention="шорт", operation="replace")
-        return FollowUp(kind=name, slot=slot, mention=word[:4], operation=name)  # type: ignore[arg-type]
+        return FollowUp(kind=name, slot=slot, mention=word[:4], operation=name,  # type: ignore[arg-type]
+                        extra_targets=tuple((other_slot, label[:4]) for _, other_slot, label in targets[1:]))
 
     if cold_feedback:
         return FollowUp(kind="cold_feedback")
+    if _WARMER_RE.match(text.strip()):
+        return FollowUp(kind="warmer")
+    if _COMPATIBILITY_RE.search(text) and (_slot_mentions(text) or _ANAPHORA_RE.search(text)):
+        return FollowUp(kind="compatibility")
 
     # «В этом будет удобно?» — про образ. Короткая реплика без «в этом» считается вопросом об
     # образе, только если это вопрос: «удобно, спасибо» — не он.

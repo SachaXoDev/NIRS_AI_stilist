@@ -94,8 +94,9 @@ def run(session: Session) -> None:
     require(vague["text"].count("?") == 1 and vague["meta"].get("llmAttempts") == 0,
             "ambiguous: expected exactly one question and no model call")
 
-    warmer = session.ask("warmer", "А можно потеплее?", OFFICE_CARD, OFFICE_QUERY)
-    require(warmer.get("edit", {}).get("operation") == "restyle", "warmer: missing restyle metadata")
+    warmer = session.ask("warmer without temperature", "А можно потеплее?", OFFICE_CARD, OFFICE_QUERY,
+                         expect_card=False)
+    require("температуру" in warmer["text"], "warmer: ask for the missing temperature")
 
     advice = session.ask("birthday after beach", "С чем носить чёрные ботинки на день рождения?",
                          BEACH_CARD, BEACH_QUERY, expect_card=False)

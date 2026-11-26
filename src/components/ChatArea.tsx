@@ -59,6 +59,7 @@ export const ChatArea = ({
     onSendMessage(inputText);
     weatherPromptRef.current = '';
     setInputText('');
+    inputRef.current?.focus({ preventScroll: true });
   };
 
   return (
@@ -165,7 +166,6 @@ export const ChatArea = ({
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              disabled={isLoading}
               placeholder="Спросите стилиста (например: «С чем носить тренч?»)..."
               className="w-full bg-[#FCFAF7] dark:bg-night-field border border-[#DFD9CF] dark:border-night-outline focus:border-[#1E1B18] dark:focus:border-night-accent px-4 py-3 pr-12 text-xs sm:text-sm text-[#1E1B18] dark:text-night-fg placeholder-[#8A8175] dark:placeholder-night-muted focus:outline-none transition-colors"
             />
