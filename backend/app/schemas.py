@@ -106,11 +106,29 @@ class HistoryMessage(BaseModel):
     sender: Literal["user", "assistant"]
     text: str = Field(max_length=4000)
     has_outfit: bool = Field(default=False, validation_alias=AliasChoices("has_outfit", "hasOutfit"))
+    # ID вещей из карточки этого ответа. По ним сервер правит образ точечно, а не
+    # восстанавливает состав по названиям в тексте.
+    item_ids: list[str] = Field(
+        default_factory=list, max_length=8, validation_alias=AliasChoices("item_ids", "itemIds")
+    )
 
 
 RetrievalMode = Literal["bm25", "dense", "hybrid", "visual", "multimodal"]
-# Кто собрал ответ: настоящая LLM, mock-провайдер, детерминированный фолбэк или никто (образа нет).
-ResponseSource = Literal["llm", "mock", "fallback", "none"]
+# Кто собрал ответ: настоящая LLM, mock-провайдер, детерминированный фолбэк, правила сервера
+# (точечная правка, где выбирать было не из чего: убрать вещь или единственный кандидат)
+# или никто (образа нет).
+ResponseSource = Literal["llm", "mock", "fallback", "rules", "none"]
+
+
+class OutfitEdit(CamelModel):
+    """Что именно изменилось относительно прошлой карточки — чтобы правку можно было проверить."""
+
+    operation: Literal["add", "replace", "remove", "restyle"]
+    slot: Category | None = None
+    base_item_ids: list[str]
+    kept_item_ids: list[str] = Field(default_factory=list)
+    added_item_ids: list[str] = Field(default_factory=list)
+    removed_item_ids: list[str] = Field(default_factory=list)
 
 
 class RecommendRequest(BaseModel):
@@ -187,6 +205,8 @@ class RecommendResponse(CamelModel):
     warnings: list[str] = Field(default_factory=list)
     timings: dict[str, float] = Field(default_factory=dict)
     meta: ResponseMeta | None = None
+    # Заполняется, когда новая карточка получена правкой предыдущей
+    edit: OutfitEdit | None = None
     # Диагностика поиска в формате RetrievalResult (snake_case, как в rag/contracts) + поле engine
     retrieval: dict[str, Any] | None = None
 

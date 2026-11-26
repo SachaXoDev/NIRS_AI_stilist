@@ -39,7 +39,7 @@ OCCASIONS: tuple[OccasionSpec, ...] = (
         key="evening",
         label="Вечерний выход",
         stems=("свидан", "вечер", "ресторан", "ужин", "элегант", "театр", "праздн", "вечеринк",
-               "коктейл", "торжеств", "выставк"),
+               "коктейл", "торжеств", "выставк", "рожден", "юбиле"),
         styles=frozenset({"chic", "classic", "old-money", "accent", "french", "evening",
                           "smart-casual", "preppy", "вечерний", "тихая роскошь"}),
         expansion=("элегантный", "вечерний", "шелк", "акцент", "блейзер", "платок", "брюки",
@@ -133,6 +133,8 @@ _REVISION_RE = re.compile(
     r"\b(?:потеплее|полегче|прохладнее|теплее|наряднее|строже|попроще|удобнее|сделай его|замени\w*|"
     r"другой (?:образ|вариант)|еще (?:один |вариант)|а если|а на|а в|а для|а без)\b"
 )
+# «А на пикник?», «а для театра?» — пользователь сам назвал другой повод.
+_NEW_OCCASION_RE = re.compile(r"^\s*а\s+(?:на|в|для)\s+\w+")
 _WARMER_RE = re.compile(r"\b(?:потеплее|теплее|добавь\w* (?:слой|пальто|тренч|куртку))\b")
 
 
@@ -155,8 +157,21 @@ def outfit_revision(query: str, prior_request: str | None) -> tuple[str | None, 
     text = normalize(query)
     if not prior_request or _ADVICE_RE.search(text) or not _REVISION_RE.search(text):
         return None, False
-    occasion = _detect_occasion(text) or _detect_occasion(normalize(prior_request))
+    occasion = _detect_occasion(text)
+    if occasion is None and not _NEW_OCCASION_RE.search(text):
+        occasion = _detect_occasion(normalize(prior_request))
     return occasion, bool(_WARMER_RE.search(text))
+
+
+def starts_new_topic(query: str) -> bool:
+    """Явный новый подбор («подбери образ…») или самостоятельный вопрос о стиле («с чем носить…»):
+    такая реплика не правит прошлую карточку и не наследует её повод."""
+    text = normalize(query)
+    return bool(_OUTFIT_RE.search(text) or _ADVICE_RE.search(text))
+
+
+def names_occasion(query: str) -> bool:
+    return _detect_occasion(normalize(query)) is not None
 
 
 def is_outfit_revision(query: str) -> bool:
@@ -288,7 +303,12 @@ def analyze_query(
 
     analysis = QueryAnalysis(
         occasion=occasion,
-        occasion_label=(context.occasion.strip() if context and context.occasion and context.occasion.strip() else spec.label),
+        # Ключ повода («business») — служебное значение: человеку показываем название.
+        occasion_label=(
+            context.occasion.strip()
+            if context and context.occasion and context.occasion.strip() and ctx_occasion not in OCCASION_BY_KEY
+            else spec.label
+        ),
         weather=weather,
         temperature_c=temperature,
         vibe=(context.vibe.strip() if context and context.vibe and context.vibe.strip() else None),

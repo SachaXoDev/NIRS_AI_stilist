@@ -20,6 +20,8 @@ from app.rag.base import (
     RetrievalQuery,
     SelectionCheck,
     SlotCandidate,
+    SlotOutcome,
+    SlotQuery,
 )
 from app.schemas import WardrobeItem
 
@@ -50,6 +52,7 @@ class WardrobeRagEngine:
     def from_settings(cls, settings: Settings) -> "WardrobeRagEngine":
         from wardrobe_rag.config import RAGConfig
         from wardrobe_rag.embedding import SentenceTransformerEmbedder
+        from wardrobe_rag.embedding_cache import EmbeddingCache
         from wardrobe_rag.images import ImageLoader
         from wardrobe_rag.indexing import IndexingPipeline
         from wardrobe_rag.retrieval import RetrievalEngine
@@ -68,7 +71,12 @@ class WardrobeRagEngine:
         # Грузим модели на старте, а не на первом запросе: ошибка кеша должна быть видна сразу.
         fingerprint = embedder.fingerprint
         store = ChromaWardrobeStore(data_dir)
-        indexer = IndexingPipeline(store, embedder, images)
+        # Правка одной вещи создаёт новую ревизию гардероба; без кеша это перекодирование
+        # всего каталога, с кешем — только изменившейся вещи.
+        cache = (
+            EmbeddingCache(data_dir / "embedding_cache.sqlite3") if settings.rag_embedding_cache else None
+        )
+        indexer = IndexingPipeline(store, embedder, images, cache)
         retriever = RetrievalEngine(store, embedder, images, RAGConfig())
         return cls(
             RAGService(indexer, retriever),
@@ -77,6 +85,7 @@ class WardrobeRagEngine:
                 "offline": settings.rag_offline,
                 "device": settings.rag_device,
                 "data_dir": str(data_dir),
+                "embedding_cache": cache is not None,
             },
         )
 
@@ -103,6 +112,11 @@ class WardrobeRagEngine:
                     "updated_count": 0,
                     "deleted_count": 0,
                     "unchanged_count": len(payload),
+                    # Снимок тот же: ничего не кодировалось и не переиндексировалось.
+                    "encoded_text_count": 0,
+                    "reused_text_count": 0,
+                    "encoded_image_count": 0,
+                    "reused_image_count": 0,
                     "timings_ms": {"total_ms": 0.0},
                     "cached": True,
                 }
@@ -188,3 +202,51 @@ class WardrobeRagEngine:
     def assemble(self, outcome: RetrievalOutcome) -> SelectionCheck:
         with self._lock:
             return self._check(self._service.assemble(outcome.raw))
+
+    def get_revision(self, user_id: str) -> str:
+        with self._lock:
+            return self._service.retriever.store.get_revision(user_id)
+
+    def retrieve_slot(self, query: SlotQuery) -> SlotOutcome:
+        from wardrobe_rag.schemas import QueryContext, SlotSearchRequest
+
+        try:
+            request = SlotSearchRequest(
+                user_id=query.user_id,
+                query=query.query,
+                slot=query.slot,
+                operation=query.operation,
+                outfit_item_ids=query.outfit_item_ids,
+                replace_item_id=query.replace_item_id,
+                context=QueryContext(
+                    occasion=query.occasion, weather=query.weather, vibe=query.vibe,
+                    temperature_c=query.temperature_c, rain=query.rain, wind=query.wind,
+                ),
+                exclude_item_ids=query.exclude_item_ids,
+                # Поиск одной вещи не поддерживает чисто визуальный режим.
+                mode="hybrid" if query.mode == "visual" else query.mode,
+                alpha=query.alpha,
+                visual_weight=query.visual_weight,
+            )
+            with self._lock:
+                result = self._service.retrieve_slot(request)
+        except ValueError as exc:  # включает pydantic.ValidationError
+            raise RagEngineError(f"Поиск вещи для правки образа отклонил запрос: {exc}") from exc
+
+        return SlotOutcome(
+            slot=result.slot,
+            candidates=[
+                SlotCandidate(
+                    item=_to_api_item(candidate.item), score=candidate.score,
+                    anchored=candidate.anchored, fallback=candidate.fallback,
+                )
+                for candidate in result.candidates
+            ],
+            kept_item_ids=list(result.kept_item_ids),
+            replaced_item_id=result.replaced_item_id,
+            context=result.context.model_dump(mode="json"),
+            warnings=list(result.warnings),
+            timings_ms=dict(result.timings_ms),
+            revision=result.wardrobe_revision,
+            diagnostics={"engine": self.name, **result.model_dump(mode="json")},
+        )

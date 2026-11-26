@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     rag_upload_root: str = ""
     rag_offline: bool = False
     rag_device: str = "cpu"
+    # Переиспользовать эмбеддинги неизменённых вещей между ревизиями гардероба. Выключается
+    # только чтобы воспроизвести замер «до»: тогда любая правка перекодирует весь каталог.
+    rag_embedding_cache: bool = True
     # Гардероб демо-пользователя (user_id="demo"), который создаётся при первом старте
     seed_wardrobe_path: str = ""
 

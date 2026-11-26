@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import math
+import re
 import time
 from collections import Counter
 from typing import Any
@@ -17,10 +18,13 @@ from app.rag.base import (
     SLOT_LIMITS,
     SLOTS,
     AnchorRejected,
+    RagEngineError,
     RetrievalOutcome,
     RetrievalQuery,
     SelectionCheck,
     SlotCandidate,
+    SlotOutcome,
+    SlotQuery,
 )
 from app.schemas import CATEGORY_LABELS_RU, RecommendContext, WardrobeItem
 from app.services.analysis import QueryAnalysis, analyze_query
@@ -337,3 +341,92 @@ class BuiltinEngine:
             if palette_score(trimmed) > palette_score(chosen):
                 chosen = trimmed
         return self.validate_selection([item.id for item in chosen], outcome)
+
+    def get_revision(self, user_id: str) -> str:
+        return self._store.get_snapshot(user_id)[0]
+
+    def retrieve_slot(self, query: SlotQuery) -> SlotOutcome:
+        """Упрощённый аналог `wardrobe_rag.retrieve_slot` с теми же правилами отбора."""
+        started = time.perf_counter()
+        revision, items = self._store.get_snapshot(query.user_id)
+        by_id = {item.id: item for item in items}
+        if set(query.outfit_item_ids) - by_id.keys():
+            raise RagEngineError("The existing outfit contains IDs outside this user's current wardrobe")
+        in_slot = [i for i in query.outfit_item_ids if by_id[i].category == query.slot]
+        replaced = query.replace_item_id
+        if query.operation == "replace":
+            if replaced is None and len(in_slot) == 1:
+                replaced = in_slot[0]
+            if replaced is None or replaced not in in_slot:
+                raise RagEngineError("Choose one existing item from the requested slot to replace")
+        elif len(in_slot) >= SLOT_LIMITS[query.slot]:
+            raise RagEngineError("The requested slot is full; use operation=replace")
+
+        warnings = [
+            "Работает запасной встроенный поиск builtin-bm25 (только лексика, без эмбеддингов "
+            "и изображений), а не wardrobe_rag"
+        ]
+        blocked = set(query.outfit_item_ids) | set(query.exclude_item_ids)
+        pool = [item for item in items if item.category == query.slot and item.id not in blocked]
+        text = normalize(query.query)
+        if query.slot == "shoes" and _FLAT_REQUEST_RE.search(text):
+            pool = [item for item in pool if _is_documented_flat(item)]
+            warnings.append("Flat footwear required; candidates without an explicit flat-sole annotation were excluded")
+
+        context = RecommendContext(occasion=query.occasion, weather=query.weather, vibe=query.vibe)
+        analysis = analyze_query(query.query, context, [])
+        kept = [by_id[i] for i in query.outfit_item_ids if i != replaced]
+        search = " ".join(filter(None, [query.query, query.occasion, *(item.title for item in kept)]))
+        raw_scores = lexical_scores(search, analysis, pool)
+        top_raw = max(raw_scores.values(), default=0.0)
+        rows = sorted(
+            (
+                (
+                    _LEX_WEIGHT * (raw_scores.get(item.id, 0.0) / top_raw if top_raw > 0 else 0.0)
+                    + _FIT_WEIGHT * fit_score(item, analysis),
+                    item,
+                )
+                for item in pool
+            ),
+            key=lambda row: (-row[0], row[1].id),
+        )[: SLOT_BUDGET[query.slot]]
+        candidates = [SlotCandidate(item=item, score=score) for score, item in rows]
+        resolved = {
+            "occasion": query.occasion, "weather": query.weather, "vibe": query.vibe,
+            "temperature_c": query.temperature_c if query.temperature_c is not None else analysis.temperature_c,
+            "rain": query.rain if query.rain is not None else ("rain" in analysis.weather or None),
+            "wind": query.wind if query.wind is not None else ("wind" in analysis.weather or None),
+        }
+        timings = {"total": (time.perf_counter() - started) * 1000}
+        return SlotOutcome(
+            slot=query.slot,
+            candidates=candidates,
+            kept_item_ids=[item.id for item in kept],
+            replaced_item_id=replaced,
+            context=resolved,
+            warnings=warnings,
+            timings_ms=timings,
+            revision=revision,
+            diagnostics={
+                "engine": self.name, "user_id": query.user_id, "slot": query.slot,
+                "candidates": [
+                    {"item": c.item.model_dump(by_alias=True, mode="json"), "score": c.score,
+                     "anchored": False, "fallback": False}
+                    for c in candidates
+                ],
+                "kept_item_ids": [item.id for item in kept], "replaced_item_id": replaced,
+                "context": resolved, "warnings": warnings, "timings_ms": timings,
+                "wardrobe_revision": revision, "model_fingerprint": FINGERPRINT,
+            },
+        )
+
+
+_FLAT_REQUEST_RE = re.compile(r"без\s+каблук|плоск\w*\s+подошв|на\s+плоском\s+ходу")
+_HEEL_NOTE_RE = re.compile(r"(?:на|с)\s+(?:\w+\s+){0,2}каблук(?:е|ом)")
+
+
+def _is_documented_flat(item: WardrobeItem) -> bool:
+    parts = [normalize(part) for part in (item.title, *item.tags)]
+    return any(_FLAT_REQUEST_RE.search(part) for part in parts) and not any(
+        _HEEL_NOTE_RE.search(part) for part in parts
+    )

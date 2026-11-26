@@ -25,7 +25,7 @@ interface StylistResponse {
   suggestedOutfit?: OutfitLook;
   referencedItemIds?: string[];
   // Необязательная диагностика бэкенда (см. spec/tech/architecture.md)
-  source?: 'llm' | 'mock' | 'fallback' | 'none' | 'client-mock';
+  source?: 'llm' | 'mock' | 'fallback' | 'rules' | 'none' | 'client-mock';
   missingSlots?: ClothingCategory[];
   warnings?: string[];
   timings?: Record<string, number>;

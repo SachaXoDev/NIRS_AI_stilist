@@ -230,3 +230,110 @@ def test_auto_mode_falls_back_to_builtin_and_strict_mode_fails(settings, monkeyp
     assert build_engine(settings.model_copy(update={"rag_engine": "auto"}), store).name == "builtin-bm25"
     with pytest.raises(RuntimeError, match="wardrobe_rag"):
         build_engine(settings.model_copy(update={"rag_engine": "wardrobe_rag"}), store)
+
+
+# --- точечная правка образа поверх настоящего retrieve_slot ----------------------------------------
+# Те же три примера, что в rag/data/slot_search_examples.json, но через HTTP-контракт бэкенда.
+
+
+def _capsule50():
+    from app.storage.app_store import load_base_capsule
+
+    return {item.id: item.model_dump(by_alias=True, mode="json") for item in load_base_capsule()}
+
+
+def _edit(client, user_id, query, wardrobe_ids, card_ids, request_text, **payload):
+    capsule = _capsule50()
+    return _recommend(
+        client, query=query, user_id=user_id, wardrobe=[capsule[i] for i in wardrobe_ids], debug=True,
+        history=[
+            {"sender": "user", "text": request_text},
+            {"sender": "assistant", "text": "В образ вошли: …", "hasOutfit": True, "itemIds": card_ids},
+        ],
+        **payload,
+    )
+
+
+def test_add_rain_layer_keeps_the_outfit_and_skips_non_waterproof_jackets(make_client, rag_engine):
+    result = _edit(
+        make_client(engine=rag_engine), "slot-rain", "Добавь куртку в дождь к этому образу",
+        ["item-1", "item-4", "item-8", "item-28", "item-29", "item-33"], ["item-1", "item-4", "item-8"],
+        "Подбери образ на деловую встречу, +10°C",
+    )
+    assert result["edit"]["keptItemIds"] == ["item-1", "item-4", "item-8"]
+    assert result["edit"]["addedItemIds"] == ["item-33"], "жакет и джинсовка помечены как не для дождя"
+    assert result["source"] == "rules" and result["meta"]["retriever"] == "wardrobe_rag"
+    retrieval = result["retrieval"]
+    assert retrieval["engine"] == "wardrobe_rag" and retrieval["slot"] == "outerwear"
+    assert retrieval["context"]["rain"] is True and retrieval["context"]["temperature_c"] == 10
+    assert retrieval["wardrobe_revision"] == result["meta"]["wardrobeRevision"]
+
+
+def test_replace_heels_changes_one_id_and_never_returns_the_old_pair(make_client, rag_engine):
+    result = _edit(
+        make_client(engine=rag_engine), "slot-shoes", "Замени туфли на что-нибудь без каблука, остальное оставь",
+        ["item-1", "item-4", "item-7", "item-35", "item-36", "item-42"], ["item-1", "item-4", "item-42"],
+        "Подбери образ на встречу в стиле smart casual, +17°C",
+    )
+    ids = [item["id"] for item in result["suggestedOutfit"]["items"]]
+    assert set(ids) ^ {"item-1", "item-4", "item-42"} == {"item-42", "item-36"}
+    assert result["retrieval"]["replaced_item_id"] == "item-42"
+    assert result["retrieval"]["kept_item_ids"] == ["item-1", "item-4"]
+
+
+def test_no_flat_alternative_leaves_the_outfit_untouched(make_client, rag_engine):
+    result = _edit(
+        make_client(engine=rag_engine), "slot-empty", "Замени туфли на обувь без каблука",
+        ["item-1", "item-4", "item-7", "item-35", "item-42"], ["item-1", "item-4", "item-42"],
+        "Подбери образ на деловую встречу",
+    )
+    assert "suggestedOutfit" not in result and "edit" not in result and result["source"] == "none"
+    assert "Прежний образ оставляю без изменений" in result["text"]
+    assert result["retrieval"]["candidates"] == []
+
+
+def test_llm_picks_among_real_slot_candidates(make_client, rag_engine):
+    llm = ScriptedLLM([json.dumps({"outfit": {"item_ids": ["item-35"]}})])
+    result = _edit(
+        make_client(engine=rag_engine, llm=llm), "slot-pick", "Замени туфли",
+        ["item-1", "item-4", "item-7", "item-35", "item-36", "item-42"], ["item-1", "item-4", "item-42"],
+        "Подбери образ в офис",
+    )
+    assert result["source"] == "llm" and result["edit"]["addedItemIds"] == ["item-35"]
+    offered = llm.calls[0][1]["content"].split("Допустимые ID:")[1]
+    assert '"item-42"' not in offered and '"item-35"' in offered
+
+
+def test_editing_one_item_does_not_re_encode_the_whole_wardrobe(settings, tmp_path, monkeypatch):
+    """Бэкенд включает кеш эмбеддингов: правка одной вещи кодирует одну вещь, а не весь каталог."""
+    import wardrobe_rag.embedding as embedding
+
+    from app.main import create_app
+    from fastapi.testclient import TestClient
+    from tests.conftest import REPO_ROOT, DeterministicTestEmbedder
+
+    monkeypatch.setattr(embedding, "SentenceTransformerEmbedder", lambda **kwargs: DeterministicTestEmbedder())
+    base = {
+        "rag_engine": "wardrobe_rag", "rag_cache_dir": str(tmp_path / "models"),
+        "rag_public_root": str(REPO_ROOT / "public"), "rag_offline": True,
+    }
+    capsule = list(_capsule50().values())
+    edited = [dict(capsule[0], color="Красный"), *capsule[1:]]
+
+    def sync_counts(client, user_id, items):
+        report = client.post("/api/wardrobe/sync", json={"user_id": user_id, "items": items}).json()
+        return report["encoded_text_count"], report["encoded_image_count"]
+
+    cached = TestClient(create_app(settings.model_copy(update={**base, "rag_data_dir": str(tmp_path / "with")})))
+    assert cached.get("/health").json()["retrieval"]["embedding_cache"] is True
+    # 10 из 50 вещей уже закодированы при создании демо-пользователя на старте сервера.
+    assert sync_counts(cached, "alice", capsule) == (40, 40)
+    assert sync_counts(cached, "alice", edited) == (1, 0), "изменился текст одной вещи"
+    assert sync_counts(cached, "bob", capsule) == (0, 0), "та же капсула у другого пользователя"
+    assert (tmp_path / "with" / "embedding_cache.sqlite3").exists()
+
+    plain = TestClient(create_app(settings.model_copy(update={
+        **base, "rag_data_dir": str(tmp_path / "without"), "rag_embedding_cache": False,
+    })))
+    assert sync_counts(plain, "alice", capsule) == (50, 50)
+    assert sync_counts(plain, "alice", edited) == (50, 50), "без кеша правка перекодирует всё"

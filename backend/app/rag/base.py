@@ -82,6 +82,58 @@ class RetrievalOutcome:
 
 
 @dataclass
+class SlotQuery:
+    """Поиск одной вещи к уже собранному образу (точечная правка)."""
+
+    user_id: str
+    query: str
+    slot: str
+    operation: str  # "add" | "replace"
+    outfit_item_ids: list[str]
+    replace_item_id: str | None = None
+    mode: str = "hybrid"
+    alpha: float = 0.65
+    visual_weight: float = 0.35
+    occasion: str | None = None
+    weather: str | None = None
+    vibe: str | None = None
+    temperature_c: float | None = None
+    rain: bool | None = None
+    wind: bool | None = None
+    exclude_item_ids: list[str] = field(default_factory=list)
+
+
+@dataclass
+class SlotOutcome:
+    slot: str
+    candidates: list[SlotCandidate]  # пустой список — подходящей вещи нет, слот не заполняется
+    kept_item_ids: list[str]
+    replaced_item_id: str | None
+    context: dict[str, Any]
+    warnings: list[str]
+    timings_ms: dict[str, float]
+    revision: str
+    diagnostics: dict[str, Any]  # JSON в формате SlotSearchResult + поле engine
+
+
+def composition_errors(items: list[WardrobeItem]) -> list[str]:
+    """Правила состава готового образа — общие для подбора и точечной правки."""
+    errors: list[str] = []
+    counts: dict[str, int] = {}
+    for item in items:
+        counts[item.category] = counts.get(item.category, 0) + 1
+    if len({item.id for item in items}) != len(items):
+        errors.append("вещи в образе повторяются")
+    for slot, limit in SLOT_LIMITS.items():
+        if counts.get(slot, 0) > limit:
+            errors.append(f"в слоте {slot} больше {limit} вещей")
+    missing = [slot for slot in CORE_SLOTS if not counts.get(slot)]
+    if missing:
+        errors.append("не заполнены обязательные слоты: " + ", ".join(missing))
+    return errors
+
+
+@dataclass
 class SelectionCheck:
     valid: bool
     complete: bool
@@ -115,4 +167,12 @@ class RagEngine(Protocol):
 
     def assemble(self, outcome: RetrievalOutcome) -> SelectionCheck:
         """Детерминированная сборка образа без LLM (mock-режим и фолбэк)."""
+        ...
+
+    def retrieve_slot(self, query: SlotQuery) -> SlotOutcome:
+        """Кандидаты одной категории к существующему образу. Вещи образа в выдачу не попадают."""
+        ...
+
+    def get_revision(self, user_id: str) -> str:
+        """Текущая ревизия гардероба — чтобы не показать карточку по устаревшему поиску."""
         ...

@@ -498,6 +498,8 @@ function MainApp() {
             ? `${text.slice(0, 200)}\nВ образе: ${suggestedOutfit.items.map((item) => item.title).join(', ')}`.slice(0, 500)
             : text.slice(0, 500),
           hasOutfit: Boolean(suggestedOutfit),
+          // По этим ID сервер правит образ точечно («замени обувь»), не угадывая состав по названиям.
+          itemIds: suggestedOutfit?.items.map((item) => item.id),
         })),
         onText: (partial) => {
           if (!controller.signal.aborted) {

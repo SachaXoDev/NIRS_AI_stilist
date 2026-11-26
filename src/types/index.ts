@@ -145,6 +145,8 @@ export interface StylistHistoryMessage {
   sender: ChatMessage['sender'];
   text: string;
   hasOutfit?: boolean;
+  // ID вещей карточки этого ответа — нужны серверу для точечной правки образа
+  itemIds?: string[];
 }
 
 export interface ChatThread {

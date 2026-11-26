@@ -25,7 +25,11 @@ def _seed_demo_wardrobe(engine: RagEngine, settings: Settings) -> None:
         return
     items = load_wardrobe_file(settings.seed_wardrobe_path) if settings.seed_wardrobe_path else load_base_capsule()
     report = engine.sync(DEMO_USER_ID, items)
-    logger.info("Seeded demo wardrobe: %s items", report.get("indexed_count"))
+    logger.info(
+        "Seeded demo wardrobe: %s items in %.0f ms (encoded %s texts, %s images)",
+        report.get("indexed_count"), report.get("timings_ms", {}).get("total_ms", 0.0),
+        report.get("encoded_text_count", "?"), report.get("encoded_image_count", "?"),
+    )
 
 
 def create_app(

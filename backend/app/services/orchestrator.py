@@ -41,8 +41,12 @@ from app.schemas import (
     WardrobeItem,
 )
 from app.services.analysis import (
-    analyze_query, is_outfit_query, is_outfit_revision, outfit_revision, small_talk_reply,
+    analyze_query, is_outfit_query, is_outfit_revision, outfit_revision, small_talk_reply, starts_new_topic,
 )
+from app.services.editing import (
+    NOTHING_TO_EDIT_TEXT, LastCard, OutfitEditor, describe_changes, find_last_card,
+)
+from app.services.followup import FollowUp, classify_followup, refers_to_dialogue
 from app.services.llm.base import LLMClient, LLMError
 from app.services.prompts import PromptContext, build_conversation_messages, build_messages, build_repair_messages
 from app.services.scoring import MATCH_SCORE_METHOD, match_score
@@ -83,6 +87,8 @@ class _Prepared:
     started: float
     warnings: list[str] = field(default_factory=list)
     timings: dict[str, float] = field(default_factory=dict)
+    # Вещи прошлой карточки, если новый образ — её переработка («потеплее», «наряднее»)
+    previous: list[WardrobeItem] | None = None
 
 
 @dataclass
@@ -246,10 +252,21 @@ class StylistService:
         started = time.perf_counter()
         runtime = self.get_runtime_settings()
         context = request.context
+
+        # Правка последней карточки или вопрос о ней — отдельная ветка: остальной образ не трогаем.
+        card = find_last_card(request.history)
+        follow_up = self._follow_up(request, card)
+        if isinstance(follow_up, RecommendResponse):
+            return follow_up
+        if follow_up is not None and card is not None:
+            return await OutfitEditor(self).run(request, follow_up, card, runtime, started)
+
         if not self._uses_wardrobe(request, prior_request):
+            # Самостоятельный вопрос уходит модели без истории: прошлый повод не просочится в ответ.
+            history = request.history if refers_to_dialogue(request.query) else []
             return _Conversation(
                 query=request.query,
-                messages=build_conversation_messages(request.query, request.history, runtime.persona_prompt),
+                messages=build_conversation_messages(request.query, history, runtime.persona_prompt),
                 runtime=runtime,
                 started=started,
             )
@@ -260,27 +277,7 @@ class StylistService:
 
         timings: dict[str, float] = {}
         warnings: list[str] = []
-        user_id = request.user_id or DEMO_USER_ID
-
-        if request.wardrobe is not None:
-            phase = time.perf_counter()
-            report = await self.sync_wardrobe(user_id, request.wardrobe)
-            timings["syncMs"] = _ms_since(phase)
-            warnings.extend(report.get("warnings", []))
-
-        items = await self.get_wardrobe(user_id)
-        exclude: list[str] = []
-        if request.wardrobe is None and request.wardrobe_ids:
-            wanted = set(request.wardrobe_ids)
-            unknown = sorted(wanted - {item.id for item in items})
-            if unknown:
-                warnings.append(
-                    f"{len(unknown)} из {len(wanted)} id нет в синхронизированном гардеробе "
-                    f"пользователя ({', '.join(unknown[:5])}): передайте вещи целиком в поле "
-                    "wardrobe или вызовите POST /api/wardrobe/sync"
-                )
-            exclude = [item.id for item in items if item.id not in wanted]
-            items = [item for item in items if item.id in wanted]
+        user_id, items, exclude = await self.load_wardrobe(request, timings, warnings)
 
         if not items:
             timings["totalMs"] = _ms_since(started)
@@ -367,6 +364,12 @@ class StylistService:
             assembly=assembly,
             history=request.history,
         )
+        previous = None
+        if prior_request and card is not None:
+            current = {item.id: item for item in items}
+            # Сравниваем только если прошлый образ целиком есть в текущем гардеробе.
+            if all(item_id in current for item_id in card.item_ids):
+                previous = [current[item_id] for item_id in card.item_ids]
         return _Prepared(
             ctx=ctx,
             messages=build_messages(ctx, runtime.persona_prompt),
@@ -375,7 +378,52 @@ class StylistService:
             started=started,
             warnings=warnings,
             timings=timings,
+            previous=previous,
         )
+
+    def _follow_up(
+        self, request: RecommendRequest, card: LastCard | None
+    ) -> FollowUp | RecommendResponse | None:
+        """Правка/вопрос о последней карточке, готовый ответ «нечего менять» или None — обычный путь."""
+        if starts_new_topic(request.query):
+            return None  # «подбери образ…», «с чем носить…» — прошлая карточка ни при чём
+        follow_up = classify_followup(request.query)
+        if follow_up is None or card is not None:
+            return follow_up
+        if any(message.has_outfit for message in request.history):
+            return None  # карточка была, но клиент не прислал ID: прежнее поведение без правки по ID
+        if follow_up.slot is None:
+            return None  # «мне будет комфортно?» без образа — обычный разговор
+        return RecommendResponse(
+            text=NOTHING_TO_EDIT_TEXT, source="none",
+            timings={"totalMs": 0.0}, meta=self._meta(searched=False),
+        )
+
+    async def load_wardrobe(
+        self, request: RecommendRequest, timings: dict[str, float], warnings: list[str]
+    ) -> tuple[str, list[WardrobeItem], list[str]]:
+        """Синхронизировать присланный снимок и вернуть (user_id, вещи запроса, исключённые id)."""
+        user_id = request.user_id or DEMO_USER_ID
+        if request.wardrobe is not None:
+            phase = time.perf_counter()
+            report = await self.sync_wardrobe(user_id, request.wardrobe)
+            timings["syncMs"] = _ms_since(phase)
+            warnings.extend(report.get("warnings", []))
+
+        items = await self.get_wardrobe(user_id)
+        exclude: list[str] = []
+        if request.wardrobe is None and request.wardrobe_ids:
+            wanted = set(request.wardrobe_ids)
+            unknown = sorted(wanted - {item.id for item in items})
+            if unknown:
+                warnings.append(
+                    f"{len(unknown)} из {len(wanted)} id нет в синхронизированном гардеробе "
+                    f"пользователя ({', '.join(unknown[:5])}): передайте вещи целиком в поле "
+                    "wardrobe или вызовите POST /api/wardrobe/sync"
+                )
+            exclude = [item.id for item in items if item.id not in wanted]
+            items = [item for item in items if item.id in wanted]
+        return user_id, items, exclude
 
     async def _answer_conversation(
         self, prepared: _Conversation, *, raw: str | None = None, failed: bool = False,
@@ -504,7 +552,7 @@ class StylistService:
             "retrieval": _retrieval_payload(outcome, full=True) if prepared.debug else None,
         }
 
-        items = [_with_image(item) for item in generation.items]
+        items = [with_image(item) for item in generation.items]
         summary = "В образ вошли: " + "; ".join(item.title for item in items) + "."
         colors = list(dict.fromkeys(item.color.strip().lower() for item in items if item.color.strip()))
         palette = "Палитра образа: " + ", ".join(colors) + "." if colors else ""
@@ -518,10 +566,16 @@ class StylistService:
             match_score=match_score(generation.items, outcome),
             confidence_tips=[],
         )
+        text, edit = summary, None
+        if prepared.previous is not None:
+            # «Потеплее» может поменять образ целиком — тогда прямо говорим, что именно изменилось.
+            changes, edit = describe_changes(prepared.previous, items)
+            text = f"{summary} {changes}"
         return RecommendResponse(
-            text=summary,
+            text=text,
             suggested_outfit=outfit,
             referenced_item_ids=[item.id for item in items],
+            edit=edit,
             **common,
         )
 
@@ -578,7 +632,7 @@ def _sort_items(items: list[WardrobeItem]) -> list[WardrobeItem]:
     return sorted(items, key=lambda item: order.get(item.category, len(order)))
 
 
-def _with_image(item: WardrobeItem) -> WardrobeItem:
+def with_image(item: WardrobeItem) -> WardrobeItem:
     """Как и мок на фронте, гарантируем картинку: пустой imageUrl → векторный силуэт категории."""
     if item.image_url and item.image_url.strip():
         return item
