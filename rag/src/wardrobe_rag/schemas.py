@@ -183,6 +183,12 @@ class SyncResult(Contract):
     updated_count: int = 0
     deleted_count: int = 0
     unchanged_count: int = 0
+    # How much encoder work this sync needed. With an EmbeddingCache unchanged items are reused;
+    # all four stay 0 when the revision did not change and nothing was re-indexed.
+    encoded_text_count: int = 0
+    reused_text_count: int = 0
+    encoded_image_count: int = 0
+    reused_image_count: int = 0
     warnings: list[str] = Field(default_factory=list)
     timings_ms: dict[str, float] = Field(default_factory=dict)
 

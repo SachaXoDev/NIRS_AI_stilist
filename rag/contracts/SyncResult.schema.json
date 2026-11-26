@@ -37,6 +37,26 @@
       "title": "Unchanged Count",
       "type": "integer"
     },
+    "encoded_text_count": {
+      "default": 0,
+      "title": "Encoded Text Count",
+      "type": "integer"
+    },
+    "reused_text_count": {
+      "default": 0,
+      "title": "Reused Text Count",
+      "type": "integer"
+    },
+    "encoded_image_count": {
+      "default": 0,
+      "title": "Encoded Image Count",
+      "type": "integer"
+    },
+    "reused_image_count": {
+      "default": 0,
+      "title": "Reused Image Count",
+      "type": "integer"
+    },
     "warnings": {
       "items": {
         "type": "string"

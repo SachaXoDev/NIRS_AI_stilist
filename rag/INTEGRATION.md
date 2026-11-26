@@ -32,6 +32,8 @@ result = rag.retrieve_slot(SlotSearchRequest(
 
 ## Жизненный цикл и Python API
 
+Backend создаёт `IndexingPipeline(store, embedder, images, EmbeddingCache(data_dir / "embedding_cache.sqlite3"))`: правка одной вещи не перекодирует весь каталог. Без четвёртого аргумента поведение прежнее.
+
 Создавайте embedder, хранилище и ретривер при старте сервиса. Модели не загружаются заново на каждый HTTP-запрос. Пути в примере относятся к рабочей папке процесса; в конфигурации сервера удобнее абсолютные пути.
 
 ```python
