@@ -21,23 +21,10 @@ def _color_note(first: WardrobeItem | None, second: WardrobeItem | None) -> str:
     return f"Оттенки «{a}» и «{b}» задают палитру; дополнительные акценты лучше оставить спокойными."
 
 
-def styling_comment(items: list[WardrobeItem], analysis: QueryAnalysis, *, focus: WardrobeItem | None = None) -> str:
+def styling_comment(items: list[WardrobeItem], analysis: QueryAnalysis) -> str:
     by_slot = {item.category: item for item in items}
     top, bottom = by_slot.get("tops"), by_slot.get("bottoms")
     layer = by_slot.get("outerwear")
-    if focus is not None:
-        labels = _labels(focus)
-        if focus.category == "shoes":
-            if "кеды" in labels or "кроссовки" in labels:
-                return "С этой парой образ выглядит менее формально. Если брюки длинные, проверьте, чтобы край не касался земли."
-            if "плоская подошва" in labels or "без каблука" in labels:
-                return "Плоская подошва смягчает строгость комплекта. Если низ длинный, проверьте, чтобы край не касался земли."
-            return _color_note(focus, bottom) or "Повторите оттенок обуви в небольшой детали, чтобы связать её с остальным образом."
-        if focus.category == "outerwear":
-            return "Верхний слой обрамляет комплект. В помещении можно снять его, не меняя основу образа."
-        if focus.category == "accessories":
-            return _color_note(focus, top) or "Пусть этот аксессуар будет единственным заметным акцентом."
-
     top_labels = _labels(top) if top else ""
     bottom_labels = _labels(bottom) if bottom else ""
     palette = _color_note(top, bottom)

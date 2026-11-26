@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import time
 import uuid
 from dataclasses import dataclass, replace
@@ -38,7 +39,7 @@ from app.schemas import (
     WardrobeItem,
 )
 from app.services.analysis import (
-    COOL_MAX_C,
+    COLD_MAX_C,
     DEFAULT_OCCASION,
     HOT_MIN_C,
     QueryAnalysis,
@@ -55,8 +56,10 @@ from app.services.prompts import (
     build_slot_messages,
 )
 from app.services.scoring import match_score
-from app.services.styling import styling_comment
-from app.services.suitability import FROST_CRITICAL_SLOTS, frost_gap_text, is_severe_frost, unsuitable_reason
+from app.services.suitability import (
+    FROST_CRITICAL_SLOTS, frost_gap_text, is_insulated_outerwear_or_shoes, is_severe_frost,
+    is_shorts, unsuitable_reason,
+)
 from app.services.textutils import normalize
 from app.services.validation import MAX_TEXT_CHARS, DraftParseError, parse_draft
 
@@ -72,6 +75,9 @@ _SLOT_GEN = {"tops": "верха", "bottoms": "низа", "shoes": "обуви",
 # Название категории («аксессуар», «обувь») не указывает на конкретную вещь из двух.
 _GENERIC_MENTIONS = frozenset({"аксе", "обув", "верх", "низ", "низа", "низу", "слой", "слоя"})
 _FLAT_WORDS = ("без каблук", "плоск", "на плоском ходу")
+_LONG_BOTTOM_RE = re.compile(r"\b(?:брюк\w*|джинс\w*|штан\w*|чинос\w*|леггинс\w*|легинс\w*)\b")
+_THERMAL_QUESTION = re.compile(r"\b(?:жарко|холодно|прохладно|тепло|замерз\w*|вспотею)\b")
+_FIT_QUESTION = re.compile(r"\b(?:комфорт\w*|удобн\w*)\b")
 NOTHING_TO_EDIT_TEXT = (
     "Пока нечего менять: сначала попросите собрать образ — например, «Подбери образ в офис», — "
     "а потом скажите, что в нём заменить, добавить или убрать."
@@ -82,54 +88,66 @@ NOTHING_TO_EDIT_TEXT = (
 class LastCard:
     item_ids: list[str]
     root_request: str | None  # запрос, с которого начался этот образ: его повод и погода
+    index: int
+    followups: tuple[str, ...] = ()
 
 
-def find_last_card(history: list[HistoryMessage]) -> LastCard | None:
-    """Последняя карточка в диалоге, для которой фронтенд прислал ID вещей."""
-    index = next(
-        (i for i in range(len(history) - 1, -1, -1)
-         if history[i].sender == "assistant" and history[i].item_ids),
-        None,
-    )
+def find_last_card(history: list[HistoryMessage], *, before: int | None = None) -> LastCard | None:
+    """Последняя карточка до указанной позиции и запросы, которые её уточняли."""
+    stop = len(history) if before is None else before
+    index = next((i for i in range(stop - 1, -1, -1)
+                  if history[i].sender == "assistant" and history[i].item_ids), None)
     if index is None:
         return None
     root = None
-    for position in range(index - 1, -1, -1):
-        message = history[position]
+    followups: list[str] = []
+    for message in reversed(history[index + 1:stop]):
+        follow_up = classify_followup(message.text) if message.sender == "user" else None
+        if follow_up is not None and follow_up.kind == "cold_feedback":
+            followups.append(message.text)
+    for message in reversed(history[:index]):
         if message.sender != "user":
             continue
-        # Правки и «потеплее» продолжают прошлый образ; его повод задан более ранним запросом.
-        if classify_followup(message.text) is None and not is_outfit_revision(message.text):
+        follow_up = classify_followup(message.text)
+        if follow_up is None and not is_outfit_revision(message.text):
             root = message.text
             break
-    return LastCard(item_ids=list(dict.fromkeys(history[index].item_ids)), root_request=root)
+        if follow_up is None or follow_up.kind not in {"card_question", "restore"}:
+            followups.append(message.text)
+    return LastCard(list(dict.fromkeys(history[index].item_ids)), root, index, tuple(reversed(followups)))
 
 
 def merge_context(
-    request: RecommendRequest, root_request: str | None, items: list[WardrobeItem]
+    request: RecommendRequest, card: LastCard, items: list[WardrobeItem]
 ) -> QueryAnalysis:
     """Повод и погода прошлого образа, если в новой реплике они не названы заново."""
     current = analyze_query(request.query, request.context, items)
-    if not root_request:
-        return current
-    prior = analyze_query(root_request, None, [])
+    prior = analyze_query(card.root_request or "")
+    for query in card.followups:
+        prior = _merge_weather(prior, analyze_query(query))
     explicit_occasion = names_occasion(request.query) or bool(request.context and request.context.occasion)
-    # Погода из новой реплики важнее прошлой; чего в реплике нет — берём из запроса образа.
-    if current.temperature_c is not None:
-        temperature, weather = current.temperature_c, current.weather
-    else:
-        temperature = prior.temperature_c
-        weather = list(dict.fromkeys([*prior.weather, *current.weather]))
-        if temperature is not None:
-            conflicting = ("cold", "snow") if temperature >= HOT_MIN_C else ("heat",) if temperature <= COOL_MAX_C else ()
-            weather = [flag for flag in weather if flag not in conflicting]
+    current = _merge_weather(prior, current)
     return replace(
         current,
         occasion=current.occasion if explicit_occasion else prior.occasion,
         occasion_label=current.occasion_label if explicit_occasion else prior.occasion_label,
-        weather=weather,
-        temperature_c=temperature,
     )
+
+
+def _merge_weather(prior: QueryAnalysis, current: QueryAnalysis) -> QueryAnalysis:
+    if current.temperature_c is not None:
+        return current
+    temperature = prior.temperature_c
+    weather = list(dict.fromkeys([*prior.weather, *current.weather]))
+    if current.is_cold:
+        weather = [flag for flag in weather if flag != "heat"]
+        if temperature is not None and temperature > COLD_MAX_C:
+            temperature = None  # актуальное «холодно» важнее старого тёплого прогноза
+    elif current.is_hot:
+        weather = [flag for flag in weather if flag not in {"cold", "snow"}]
+        if temperature is not None and temperature < HOT_MIN_C:
+            temperature = None
+    return replace(current, temperature_c=temperature, weather=weather)
 
 
 _DRESSY_OCCASIONS = frozenset({"business", "evening"})
@@ -202,7 +220,7 @@ class OutfitEditor:
         user_id, items, _ = await self._service.load_wardrobe(request, timings, warnings)
         by_id = {item.id: item for item in items}
         base = [by_id[item_id] for item_id in card.item_ids if item_id in by_id]
-        analysis = merge_context(request, card.root_request, items)
+        analysis = merge_context(request, card, items)
         reply = _Reply(self._service, analysis, timings, warnings, started)
 
         gone = [item_id for item_id in card.item_ids if item_id not in by_id]
@@ -215,6 +233,10 @@ class OutfitEditor:
             )
         if follow_up.kind == "card_question":
             return await self._answer_question(request, base, analysis, runtime, reply)
+        if follow_up.kind == "cold_feedback":
+            if not any(is_shorts(item) for item in base):
+                return reply.text("Какая часть образа кажется слишком лёгкой? Могу заменить её, не меняя остальное.")
+            follow_up = FollowUp(kind="replace", slot="bottoms", mention="шорт", operation="replace")
         if follow_up.kind == "ask_item" or follow_up.slot is None:
             return reply.text(_ask_which_item(follow_up.operation, base))
 
@@ -224,6 +246,37 @@ class OutfitEditor:
             return self._remove(base, slot, in_slot, follow_up, reply)
         return await self._add_or_replace(
             request, user_id, items, base, slot, in_slot, follow_up, analysis, runtime, reply
+        )
+
+    async def restore(self, request: RecommendRequest, card: LastCard | None, started: float) -> RecommendResponse:
+        previous = find_last_card(request.history, before=card.index) if card else None
+        timings: dict[str, float] = {}
+        warnings: list[str] = []
+        if previous is None or card is None:
+            reply = _Reply(self._service, analyze_query(request.query), timings, warnings, started)
+            return reply.text("В этом диалоге ещё нет предыдущего образа, который можно вернуть.")
+
+        _, wardrobe, _ = await self._service.load_wardrobe(request, timings, warnings)
+        by_id = {item.id: item for item in wardrobe}
+        reply = _Reply(self._service, merge_context(request, previous, wardrobe), timings, warnings, started)
+        if any(item_id not in by_id for item_id in previous.item_ids):
+            return reply.text("Не могу вернуть предыдущий образ целиком: в гардеробе уже нет части его вещей.")
+
+        from app.services.orchestrator import with_image
+
+        items = [with_image(by_id[item_id]) for item_id in previous.item_ids]
+        text = "Вернула предыдущий образ из этого диалога. Состав тот же."
+        weather = replace(merge_context(request, card, wardrobe), occasion=DEFAULT_OCCASION)
+        if any(unsuitable_reason(item, weather) for item in items):
+            text += " По текущей погоде не все вещи в нём подходят."
+        label = reply.analysis.occasion_label
+        return RecommendResponse(
+            text=text, referenced_item_ids=previous.item_ids,
+            suggested_outfit=OutfitLook(
+                id=f"outfit-{uuid.uuid4().hex[:12]}", title=f"Образ · {label}", description=text,
+                occasion=label, items=items, stylist_reasoning="", match_score=0, confidence_tips=[],
+            ),  # История передаёт состав, но не оценку поисковой выдачи.
+            **reply._common("rules", 0, ""),
         )
 
     # --- убрать -------------------------------------------------------------------
@@ -253,7 +306,7 @@ class OutfitEditor:
                 operation="remove", slot=slot, base_item_ids=[item.id for item in base],
                 kept_item_ids=[item.id for item in kept], removed_item_ids=[target.id],
             ),
-            ranked=None,
+            ranked=None, before=base,
         )
 
     # --- добавить или заменить ----------------------------------------------------
@@ -293,6 +346,13 @@ class OutfitEditor:
         # здесь не применяем: пользователь сам попросил конкретную вещь.
         weather_only = replace(analysis, occasion=DEFAULT_OCCASION)
         unsuitable = [item.id for item in items if unsuitable_reason(item, weather_only)]
+        if slot == "bottoms" and not analysis.is_hot:
+            if analysis.is_cold and target is not None and is_shorts(target):
+                unsuitable.extend(item.id for item in items if item.category == slot and not any(
+                    _LONG_BOTTOM_RE.search(normalize(label)) for label in (item.title, *item.tags)
+                ))
+            elif any(is_insulated_outerwear_or_shoes(item) for item in base):
+                unsuitable.extend(item.id for item in items if is_shorts(item))
         if analysis.occasion in _DRESSY_OCCASIONS:
             # Пляжные сандалии формально «без каблука», но в офисный или вечерний образ не годятся.
             unsuitable += [item.id for item in items if _is_beach_item(item) and item.id not in unsuitable]
@@ -314,7 +374,7 @@ class OutfitEditor:
             temperature_c=analysis.temperature_c,
             rain=True if "rain" in analysis.weather else None,
             wind=True if "wind" in analysis.weather else None,
-            exclude_item_ids=[item_id for item_id in unsuitable if item_id not in base_ids],
+            exclude_item_ids=list(dict.fromkeys(item_id for item_id in unsuitable if item_id not in base_ids)),
         )
         phase = time.perf_counter()
         outcome = await asyncio.to_thread(self._engine.retrieve_slot, query)
@@ -327,6 +387,12 @@ class OutfitEditor:
             temperature = analysis.temperature_c
             if slot in FROST_CRITICAL_SLOTS and temperature is not None and is_severe_frost(temperature):
                 return reply.text(frost_gap_text(temperature, {slot}), revision=outcome.revision)
+            if slot == "bottoms" and target is not None and is_shorts(target) and analysis.is_cold:
+                return reply.text(
+                    "Шорты для холода не подойдут, а подходящей замены из гардероба я не нашла. "
+                    "Остальные вещи можно оставить. Есть брюки или джинсы, которых пока нет в гардеробе?",
+                    revision=outcome.revision,
+                )
             return reply.text(_no_alternative_text(request.query, operation, slot, target), revision=outcome.revision)
 
         chosen, source, attempts = await self._pick(
@@ -352,7 +418,7 @@ class OutfitEditor:
                 kept_item_ids=[item.id for item in kept], added_item_ids=[chosen.item.id],
                 removed_item_ids=[target.id] if target else [],
             ),
-            ranked=outcome,
+            ranked=outcome, before=base,
         )
 
     async def _pick(
@@ -423,6 +489,11 @@ class OutfitEditor:
         reply: "_Reply",
     ) -> RecommendResponse:
         """Ответ про вещи последней карточки. Карточка не меняется; чего не знаем — говорим прямо."""
+        query = normalize(request.query)
+        thermal = bool(_THERMAL_QUESTION.search(query))
+        if thermal or _FIT_QUESTION.search(query):
+            return reply.text(_comfort_answer(base, analysis, thermal=thermal), source="rules")
+
         notes, unknown = _card_facts(base, analysis)
         text, source, attempts = "", "fallback", 0
         if self._llm.provider != "mock":
@@ -475,7 +546,8 @@ class _Reply:
             "warnings": list(dict.fromkeys(self.warnings)),
             "timings": {key: round(value, 1) for key, value in self.timings.items()},
             "meta": self._service._meta(
-                attempts=attempts, revision=revision, occasion=self.analysis.occasion_label
+                attempts=attempts, revision=revision, occasion=self.analysis.occasion_label,
+                searched="retrievalMs" in self.timings,
             ),
             "retrieval": self.retrieval,
         }
@@ -491,6 +563,7 @@ class _Reply:
     def card(
         self, items: list[WardrobeItem], *, source: str,
         attempts: int, revision: str, edit: OutfitEdit, ranked: SlotOutcome | None,
+        before: list[WardrobeItem],
     ) -> RecommendResponse:
         from app.services.orchestrator import with_image  # общий помощник карточек
 
@@ -504,8 +577,7 @@ class _Reply:
             if gaps:
                 return self.text(f"{frost_gap_text(temperature, gaps)} Лучше собрать образ заново.",
                                  revision=revision, missing_slots=sorted(gaps))
-        focus = next((item for item in items if item.id in edit.added_item_ids), None)
-        text = styling_comment(items, self.analysis, focus=focus)
+        text = edit_comment(before, items, edit)
         outfit = OutfitLook(
             id=f"outfit-{uuid.uuid4().hex[:12]}",
             title=f"Образ · {self.analysis.occasion_label}",
@@ -523,6 +595,24 @@ class _Reply:
 
 
 # --- тексты и факты -----------------------------------------------------------------
+
+def edit_comment(before: list[WardrobeItem], after: list[WardrobeItem], edit: OutfitEdit) -> str:
+    added = [item for item in after if item.id in edit.added_item_ids]
+    removed = [item for item in before if item.id in edit.removed_item_ids]
+    if edit.operation == "replace" and removed and added:
+        return f"Вместо {quote(removed[0])} — {quote(added[0])}. Остальные вещи оставила."
+    if edit.operation == "add" and added:
+        return f"Добавила {quote(added[0])}. Остальные вещи оставила."
+    if edit.operation == "remove" and removed:
+        return f"Убрала {quote(removed[0])}. Остальные вещи оставила."
+    changes = []
+    if removed:
+        changes.append(f"Убрала: {_listing(removed)}.")
+    if added:
+        changes.append(f"Добавила: {_listing(added)}.")
+    if changes and edit.kept_item_ids:
+        changes.append(f"Оставила: {_listing([item for item in after if item.id in edit.kept_item_ids])}.")
+    return " ".join(changes) or "Другой подходящий комплект не получился: состав остался прежним."
 
 
 def _count(n: int) -> str:
@@ -550,6 +640,54 @@ def _no_alternative_text(
     else:
         lead = f"Добавить {_SLOT_ACC[slot]} не получится: {reason}."
     return f"{lead} Прежний образ оставляю без изменений."
+
+
+def _comfort_answer(items: list[WardrobeItem], analysis: QueryAnalysis, *, thermal: bool) -> str:
+    """Use the facts that change the advice, not an inventory of missing fields."""
+    temperature = analysis.temperature_c
+    # A question like «Не жарко будет?» is not itself a measurement or a forecast.
+    if not thermal or temperature is not None:
+        weather_only = replace(analysis, occasion=DEFAULT_OCCASION)
+        for item in items:
+            reason = unsuitable_reason(item, weather_only)
+            if reason is None:
+                continue
+            limits = item.weather
+            if temperature is not None and limits is not None:
+                if limits.temperature_max is not None and temperature > limits.temperature_max:
+                    return (f"Для {temperature:+d} °C я бы не выбирала {quote(item)}: "
+                            f"для этой вещи указано не выше {limits.temperature_max:+g} °C.")
+                if limits.temperature_min is not None and temperature < limits.temperature_min:
+                    return (f"Для {temperature:+d} °C я бы не выбирала {quote(item)}: "
+                            f"для этой вещи указано не ниже {limits.temperature_min:+g} °C.")
+            return f"В этом образе стоит обратить внимание на {quote(item)}: {reason}."
+
+    if thermal:
+        if temperature is None:
+            return "По одному составу образа не скажу, будет ли жарко или холодно. Какая температура ожидается?"
+        layers = [item for item in items if item.category != "accessories"]
+        fully_rated = layers and all(
+            item.weather is not None and item.weather.temperature_min is not None
+            and item.weather.temperature_max is not None for item in layers
+        )
+        if fully_rated:
+            return (f"{temperature:+d} °C попадает в указанные диапазоны вещей. "
+                    "Если предстоит долго быть на улице, учитывайте ещё ветер и осадки.")
+        return (f"Для {temperature:+d} °C не у всех вещей указаны температурные пределы. "
+                "Если будете долго на улице, лучше выбрать вещи с указанным диапазоном.")
+
+    for item in items:
+        if item.category != "shoes":
+            continue
+        labels = normalize(" ".join((item.title, *item.tags)))
+        if any(marker in labels for marker in ("без каблук", "плоская подошва", "на плоском ходу")):
+            return (f"У {quote(item)} указана плоская подошва или отсутствие каблука. "
+                    "Перед выходом пройдитесь в этой паре: пальцам должно хватать места, а пятка не должна выскальзывать.")
+        if "каблук" in labels:
+            return (f"Я бы в первую очередь проверила обувь: {quote(item)} — пара на каблуке. "
+                    "Если предстоит много ходить или стоять, примерьте её заранее: важно, чтобы обувь не давила и не натирала.")
+    return ("Чтобы оценить удобство, попробуйте сесть и пройтись в этом комплекте: "
+            "одежда не должна стеснять движения, а обувь — давить. Вам предстоит много ходить или в основном сидеть?")
 
 
 def _context_summary(analysis: QueryAnalysis) -> str:

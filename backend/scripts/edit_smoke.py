@@ -86,8 +86,9 @@ def run(session: Session) -> None:
     require(shoes["text"].rstrip().endswith("?"), "remove only shoes: expected a clarifying question")
 
     comfort = session.ask("comfort question", "Мне в этом будет комфортно?", OFFICE_CARD, OFFICE_QUERY, expect_card=False)
-    require("Чего я не знаю" in comfort["text"], "comfort question: unknowns must be stated")
-    require(comfort.get("source") in session.allowed, f"comfort question: unexpected source {comfort.get('source')!r}")
+    require("каблук" in comfort["text"] and "Чего я не знаю" not in comfort["text"],
+            "comfort question: use a fact from the card, not an inventory of missing fields")
+    require(comfort.get("source") == "rules", "comfort question: expected an answer without the model")
 
     vague = session.ask("ambiguous", "Замени вот это", OFFICE_CARD, OFFICE_QUERY, expect_card=False)
     require(vague["text"].count("?") == 1 and vague["meta"].get("llmAttempts") == 0,

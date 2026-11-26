@@ -1,12 +1,28 @@
 """Консервативные продуктовые правила; исследовательский поиск не меняется."""
 from __future__ import annotations
 
+import re
+
 from app.schemas import WardrobeItem
 from app.services.analysis import QueryAnalysis
 from app.services.textutils import normalize
 
 SEVERE_FROST_MAX_C = -15
 FROST_CRITICAL_SLOTS = frozenset({"shoes", "outerwear"})
+_SHORTS_RE = re.compile(r"\bшорт\w*\b")
+_INSULATED_RE = re.compile(r"\b(?:утепл\w*|пуховик\w*|зимн\w*)\b")
+
+
+def is_shorts(item: WardrobeItem) -> bool:
+    return item.category == "bottoms" and any(
+        _SHORTS_RE.search(normalize(label)) for label in (item.title, *item.tags)
+    )
+
+
+def is_insulated_outerwear_or_shoes(item: WardrobeItem) -> bool:
+    return item.category in FROST_CRITICAL_SLOTS and any(
+        _INSULATED_RE.search(normalize(label)) for label in (item.title, *item.tags)
+    )
 
 
 def is_severe_frost(temperature: int | float | None) -> bool:
@@ -25,6 +41,8 @@ def frost_gap_text(temperature: int | float, slots: set[str]) -> str:
 def unsuitable_reason(item: WardrobeItem, analysis: QueryAnalysis) -> str | None:
     facts = item.weather
     temperature = analysis.temperature_c
+    if analysis.is_cold and is_shorts(item):
+        return "шорты не подходят для холода на улице"
     if facts and temperature is not None:
         if facts.temperature_min is not None and temperature < facts.temperature_min:
             return "ниже указанного для вещи диапазона температур"

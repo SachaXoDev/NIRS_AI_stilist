@@ -18,7 +18,7 @@ from typing import Literal
 
 from app.services.textutils import normalize
 
-FollowUpKind = Literal["add", "replace", "remove", "ask_item", "card_question"]
+FollowUpKind = Literal["add", "replace", "remove", "ask_item", "card_question", "restore", "cold_feedback"]
 
 _W = r"(?<![a-zа-я])"  # начало слова
 
@@ -41,6 +41,16 @@ _SLOT_RES = tuple((slot, re.compile(pattern)) for slot, pattern in _SLOT_PATTERN
 _REPLACE_RE = re.compile(_W + r"(?:замени\w*|заменить|заменим|поменя\w+|смени\w*|сменить|вместо)")
 _REMOVE_RE = re.compile(_W + r"(?:убери\w*|убрать|уберем|сними\w*|снять|исключи\w*)")
 _ADD_RE = re.compile(_W + r"(?:добав\w+|накин\w+|дополни\w*)")
+_RESTORE_RE = re.compile(
+    r"^(?:пожалуйста[, ]+)?(?:верни(?:те)?|возврати(?:те)?|восстанови(?:те)?|покажи(?:те)?)\s+"
+    r"(?:мне\s+)?(?:предыдущ\w*|прошл\w*|прежн\w*)\s+(?:образ\w*|комплект\w*|лук\w*|вариант\w*)\b"
+    r"|^(?:отмени(?:те)?\s+(?:последнюю\s+)?(?:правку|замену)|верни(?:те)?\s+как\s+было)[.!\s]*$"
+)
+_COLD_FEEDBACK_RE = re.compile(
+    r"(?:^|[.!,:;–—-]\s*|\b(?:мне|на улице|в них|в этом|в шортах)\s+)(?:слишком\s+)?"
+    r"(?:холодно|прохладно|мороз)(?:\s+на улице)?(?:[.!\s]*$|\s*[,.;!—–-])"
+    r"|\b(?:зачем|почему)\s+(?:мне\s+)?шорт\w*\b[^.]*\b(?:холодно|прохладно|мороз)\b"
+)
 # Эти обороты значат правку, только если сразу за ними названа вещь: «без сумки», «не надо шарф»,
 # «другую обувь». Иначе «не надо, спасибо» или «другие варианты?» — обычный разговор.
 _BOUND_RES = (
@@ -97,6 +107,9 @@ def _first_operation(text: str) -> tuple[int, str] | None:
 def classify_followup(query: str) -> FollowUp | None:
     """Точечная правка или вопрос о последнем образе; None — всё остальное."""
     text = normalize(query)
+    if _RESTORE_RE.search(text.strip()):
+        return FollowUp(kind="restore")
+    cold_feedback = bool(_COLD_FEEDBACK_RE.search(text.strip()))
     operation = _first_operation(text)
     if operation is not None:
         position, name = operation
@@ -107,7 +120,12 @@ def classify_followup(query: str) -> FollowUp | None:
         if chosen is None:
             return FollowUp(kind="ask_item", operation=name)  # type: ignore[arg-type]
         _, slot, word = chosen
+        if name == "remove" and slot == "bottoms" and word.startswith("шорт") and cold_feedback:
+            return FollowUp(kind="replace", slot=slot, mention="шорт", operation="replace")
         return FollowUp(kind=name, slot=slot, mention=word[:4], operation=name)  # type: ignore[arg-type]
+
+    if cold_feedback:
+        return FollowUp(kind="cold_feedback")
 
     # «В этом будет удобно?» — про образ. Короткая реплика без «в этом» считается вопросом об
     # образе, только если это вопрос: «удобно, спасибо» — не он.

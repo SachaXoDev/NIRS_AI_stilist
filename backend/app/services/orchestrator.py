@@ -44,7 +44,7 @@ from app.services.analysis import (
     analyze_query, is_outfit_query, is_outfit_revision, outfit_revision, small_talk_reply, starts_new_topic,
 )
 from app.services.editing import (
-    NOTHING_TO_EDIT_TEXT, LastCard, OutfitEditor, find_last_card, restyle_edit,
+    NOTHING_TO_EDIT_TEXT, LastCard, OutfitEditor, edit_comment, find_last_card, merge_context, restyle_edit,
 )
 from app.services.followup import FollowUp, classify_followup, refers_to_dialogue
 from app.services.llm.base import LLMClient, LLMError
@@ -266,6 +266,8 @@ class StylistService:
         follow_up = self._follow_up(request, card)
         if isinstance(follow_up, RecommendResponse):
             return follow_up
+        if follow_up is not None and follow_up.kind == "restore":
+            return await OutfitEditor(self).restore(request, card, started)
         if follow_up is not None and card is not None:
             return await OutfitEditor(self).run(request, follow_up, card, runtime, started)
 
@@ -299,7 +301,9 @@ class StylistService:
             )
 
         analysis = analyze_query(request.query, context, items)
-        if prior_request and analysis.temperature_c is None:
+        if prior_request and card is not None and not starts_new_topic(request.query) and not request.query_image:
+            analysis = merge_context(request.model_copy(update={"context": context}), card, items)
+        elif prior_request and analysis.temperature_c is None:
             analysis.temperature_c = analyze_query(prior_request).temperature_c
         known_ids = {item.id for item in items}
         anchor = request.anchor_item_id or next(iter(analysis.anchor_item_ids), None)
@@ -396,9 +400,11 @@ class StylistService:
         self, request: RecommendRequest, card: LastCard | None
     ) -> FollowUp | RecommendResponse | None:
         """Правка/вопрос о последней карточке, готовый ответ «нечего менять» или None — обычный путь."""
+        follow_up = classify_followup(request.query)
+        if follow_up is not None and follow_up.kind == "restore":
+            return follow_up
         if starts_new_topic(request.query) or self._detailed_selection(request.query):
             return None  # «подбери образ…», «с чем носить…» — прошлая карточка ни при чём
-        follow_up = classify_followup(request.query)
         if follow_up is None or card is not None:
             return follow_up
         if any(message.has_outfit for message in request.history):
@@ -564,7 +570,9 @@ class StylistService:
         }
 
         items = [with_image(item) for item in generation.items]
-        text = styling_comment(items, ctx.analysis)
+        edit = restyle_edit(prepared.previous, items) if prepared.previous is not None else None
+        text = (edit_comment(prepared.previous, items, edit) if prepared.previous is not None and edit is not None
+                else styling_comment(items, ctx.analysis))
         outfit = OutfitLook(
             id=f"outfit-{uuid.uuid4().hex[:12]}",
             title=f"Образ · {ctx.analysis.occasion_label}",
@@ -575,7 +583,6 @@ class StylistService:
             match_score=match_score(generation.items, outcome),
             confidence_tips=[],
         )
-        edit = restyle_edit(prepared.previous, items) if prepared.previous is not None else None
         return RecommendResponse(
             text=text,
             suggested_outfit=outfit,

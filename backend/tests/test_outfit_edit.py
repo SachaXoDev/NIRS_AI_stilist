@@ -117,7 +117,8 @@ def test_replace_shoes_changes_exactly_one_id(make_client, wardrobe):
     assert result["edit"]["keptItemIds"] == ["item-1", "item-4"]
     assert (result["edit"]["removedItemIds"], result["edit"]["addedItemIds"]) == (["item-42"], ["item-36"])
     assert result["source"] == "rules" and llm.calls == []
-    assert "Заменил обувь" not in result["text"] and "→" not in result["text"]
+    assert all(item["title"] in result["text"] for item in wardrobe if item["id"] in {"item-42", "item-36"})
+    assert "Остальные вещи оставила" in result["text"]
 
 
 def test_office_edit_does_not_offer_beach_sandals_as_flat_shoes(make_client, capsule50):
@@ -196,17 +197,14 @@ def test_removing_absent_category_changes_nothing(make_client, wardrobe):
 # --- вопрос об образе ---------------------------------------------------------------------------
 
 
-def test_comfort_question_answers_about_last_card_without_changing_it(make_client, wardrobe):
-    llm = ScriptedLLM(['{"text": "Образ собран из спокойных офисных вещей.", "outfit": null}'])
-    result = _ask(make_client(llm=llm), "Мне в этом будет комфортно?", wardrobe, _history(OFFICE))
-    assert "suggestedOutfit" not in result and "edit" not in result and result["source"] == "llm"
+def test_comfort_question_uses_the_shoes_from_the_last_card_without_editing(make_client, wardrobe):
+    llm = ScriptedLLM([])
+    result = _ask(make_client(llm=llm), "Будет ли мне удобно в этом образе?", wardrobe, _history(OFFICE))
+    assert "suggestedOutfit" not in result and "edit" not in result
     text = result["text"]
-    assert text.startswith("Образ собран из спокойных офисных вещей.")
-    assert "Чего я не знаю" in text and "температуру и погоду" in text and "посадку и размер" in text
-    assert "обещать, что будет комфортно, не могу" in text
-    prompt = llm.calls[0][1]["content"]
-    assert "Черные лодочки на устойчивом каблуке" in prompt and "Неизвестно:" in prompt
-    assert "item-36" not in prompt and "Кеды" not in prompt, "в ответ попадают только вещи последней карточки"
+    assert "Черные лодочки на устойчивом каблуке" in text and "натирала" in text
+    assert "Кеды" not in text and "Неизвестно" not in text and "Чего я не знаю" not in text
+    assert llm.calls == []
 
 
 def test_comfort_question_uses_documented_weather_limits(make_client, capsule50):
@@ -215,15 +213,17 @@ def test_comfort_question_uses_documented_weather_limits(make_client, capsule50)
     result = _ask(make_client(), "Не жарко будет в этом?", wardrobe, history)  # mock-провайдер
     assert "suggestedOutfit" not in result
     assert "Шоколадные утепленные ботинки на шнуровке" in result["text"]
-    assert "выше указанного для вещи диапазона температур" in result["text"]
-    assert "температуру и погоду" not in result["text"], "температура известна из запроса образа"
+    assert "+25 °C" in result["text"] and "+8 °C" in result["text"]
+    assert "?" not in result["text"], "температура известна из запроса образа"
 
 
-def test_comfort_question_survives_llm_outage(make_client, wardrobe):
-    result = _ask(make_client(llm=ScriptedLLM([LLMError("down")])), "Мне в этом будет комфортно?",
-                  wardrobe, _history(OFFICE))
-    assert result["source"] == "fallback" and "Чего я не знаю" in result["text"]
-    assert "Белая хлопковая рубашка оверсайз" in result["text"]
+def test_heat_question_without_forecast_asks_for_temperature(make_client, capsule50):
+    ids = ["item-18", "item-27", "item-41"]
+    result = _ask(make_client(), "Не жарко будет в этом?",
+                  [capsule50[i] for i in ids], _history(ids, "Подбери образ на прогулку"))
+    text = result["text"]
+    assert text.count("?") == 1 and "температура" in text
+    assert "не выбирала" not in text and "зимнего сезона" not in text
 
 
 # --- удалённая вещь, образ без карточки ---------------------------------------------------------
@@ -306,6 +306,54 @@ def test_warmer_preserves_the_edit_metadata_and_occasion(make_client, wardrobe):
     assert result["edit"]["removedItemIds"] == ["item-42"]
     assert result["edit"]["operation"] == "restyle" and result["edit"]["keptItemIds"] == ["item-1", "item-4"]
     assert result["meta"]["occasion"] == "Деловой выход", "повод прошлого образа сохранён"
+
+
+# --- поправка о холоде и возврат карточки -------------------------------------------------------
+
+
+def test_cold_bottom_edit_filters_shorts_and_preserves_the_other_items(make_client, capsule50):
+    jacket = dict(capsule50["item-2"], title="Куртка утепленная")
+    original = ["item-1", "item-23", "item-41", "item-2"]
+    wardrobe = [jacket, *(capsule50[i] for i in ("item-1", "item-23", "item-41", "item-25", "item-22"))]
+    root = "Подбери образ из моего гардероба с вещью «Куртка утепленная»."
+    llm = ScriptedLLM([])
+    client = make_client(llm=llm)
+
+    replacement = _ask(client, "хочу другой низ", wardrobe, _history(original, root))
+    assert set(_ids(replacement)) == set(original) - {"item-23"} | {"item-22"}
+    assert capsule50["item-22"]["title"] in replacement["text"]
+
+    # Уже показанная неудачная карточка остаётся в старых диалогах.
+    with_shorts = ["item-1", "item-25", "item-41", "item-2"]
+    history = _history(original, root, *_history(with_shorts, "хочу другой низ"))
+    corrected = _ask(client, "ты дурак, зачем шорты - холодно", wardrobe, history)
+    assert corrected["edit"]["removedItemIds"] == ["item-25"]
+    assert set(corrected["edit"]["keptItemIds"]) == {"item-1", "item-41", "item-2"}
+    assert "item-25" not in _ids(corrected) and capsule50["item-25"]["title"] in corrected["text"]
+
+    history += _history(_ids(corrected), "ты дурак, зачем шорты - холодно")
+    restored = _ask(client, "верни предыдущий образ", wardrobe, history, debug=True)
+    assert _ids(restored) == with_shorts and restored["source"] == "rules"
+    assert "retrieval" not in restored and restored["meta"]["llmAttempts"] == 0
+    assert "погоде" in restored["text"]
+
+
+def test_cold_feedback_without_long_bottom_does_not_publish_another_card(make_client, capsule50):
+    base = ["item-1", "item-25", "item-41"]
+    wardrobe = [capsule50[i] for i in [*base, "item-27", "item-21"]]
+    result = _ask(make_client(llm=ScriptedLLM([])), "В шортах холодно", wardrobe, _history(base))
+    assert "suggestedOutfit" not in result and "не нашла" in result["text"]
+
+
+def test_restore_does_not_invent_a_card_when_previous_is_missing(make_client, wardrobe):
+    llm = ScriptedLLM([])
+    client = make_client(llm=llm)
+    only_one = _ask(client, "Верни предыдущий образ", wardrobe, _history(OFFICE))
+    assert "suggestedOutfit" not in only_one and "ещё нет" in only_one["text"]
+    deleted = _ask(client, "Верни предыдущий образ", wardrobe,
+                   _history(["item-1", "deleted", "item-42"], OFFICE_REQUEST, *_history(OFFICE, "Замени низ")))
+    assert "suggestedOutfit" not in deleted and "нет части" in deleted["text"]
+    assert llm.calls == []
 
 
 # --- поток и гонка -------------------------------------------------------------------------------

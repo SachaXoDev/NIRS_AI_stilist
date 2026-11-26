@@ -132,10 +132,8 @@ export const OutfitCard = ({
         </div>
       )}
 
-      {/* Match Quality */}
-      <div className="mt-4 pt-3 border-t border-[#EFECE6] dark:border-night-divider flex items-center justify-between text-[11px] text-[#7C7469] dark:text-night-muted">
-        <span>Согласованность силуэта: {outfit.matchScore}%</span>
-        <span>Капсула 12 STOREEZ</span>
+      <div className="mt-4 pt-3 border-t border-[#EFECE6] dark:border-night-divider text-right text-[11px] text-[#7C7469] dark:text-night-muted">
+        Капсула 12 STOREEZ
       </div>
     </div>
   );
