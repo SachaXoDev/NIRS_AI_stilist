@@ -188,6 +188,39 @@ def test_hot_beach_outfit_excludes_closed_shoes(make_client, rag_engine, has_san
         assert "suggestedOutfit" not in result and not llm.calls
 
 
+def test_beach_with_flip_flops_uses_that_pair_from_the_wardrobe(make_client, rag_engine):
+    capsule = _capsule50()
+    shoes = {"id": "slides", "category": "shoes", "title": "Белые шлёпки"}
+    outfit = ["item-18", "item-27", "slides"]
+    llm = ScriptedLLM([_answer(["item-18", "item-27", "item-39"]), _answer(outfit)])
+    result = _recommend(
+        make_client(engine=rag_engine, llm=llm), user_id="beach-with-slides",
+        query="Хочу собрать образ со шлепками на пляж", wardrobe=[*capsule.values(), shoes],
+    )
+    assert result["suggestedOutfit"]["occasion"] == "Пляж"
+    assert set(result["referencedItemIds"]) == set(outfit)
+
+
+def test_beach_flip_flop_retry_keeps_request_until_the_user_changes_it(make_client, rag_engine):
+    client = make_client(engine=rag_engine)
+    wardrobe = list(_capsule50().values())
+    query = "Хочу собрать образ со шлепками на пляж"
+    history = [{"sender": "user", "text": "привет"}, {"sender": "assistant", "text": "Привет!"}]
+    for text in (query, "создай образ"):
+        result = _recommend(client, query=text, user_id="beach-retry", wardrobe=wardrobe, history=history)
+        assert result["meta"]["occasion"] == "Пляж" and result["missingSlots"] == ["shoes"]
+        assert "suggestedOutfit" not in result and "шлёпки" in result["text"] and "сандалии" in result["text"]
+        history.extend([{"sender": "user", "text": text}, {"sender": "assistant", "text": result["text"]}])
+
+    result = _recommend(client, query="Создай образ с сандалиями на пляж", user_id="beach-retry",
+                        wardrobe=wardrobe, history=history)
+    assert {"item-18", "item-27", "item-39"} <= set(result["referencedItemIds"])
+
+    result = _recommend(client, query="Создай образ в офис", user_id="beach-retry",
+                        wardrobe=wardrobe, history=history)
+    assert result["suggestedOutfit"]["occasion"] == "Деловой выход"
+
+
 def test_engine_is_built_from_settings_like_in_integration_md(settings, tmp_path, monkeypatch):
     """Проверяем проводку `from_settings` (пути, аргументы конструкторов) без скачивания весов."""
     import wardrobe_rag.embedding as embedding
@@ -242,6 +275,34 @@ def _capsule50():
     return {item.id: item.model_dump(by_alias=True, mode="json") for item in load_base_capsule()}
 
 
+RUNNING_REQUEST = "Собери образ для пробежки в тёплый день"
+RUNNING_IDS = ["item-16", "item-25", "item-37"]
+
+
+def test_running_search_and_model_repair_on_full_capsule(make_client, rag_engine):
+    unsuitable = ["item-5", "item-22", "item-41"]  # комплект из воспроизведённого промаха
+    llm = ScriptedLLM([_answer(unsuitable), _answer(RUNNING_IDS)])
+    result = _recommend(
+        make_client(engine=rag_engine, llm=llm), query=RUNNING_REQUEST, user_id="running-capsule",
+        wardrobe=list(_capsule50().values()), debug=True,
+    )
+    slots = result["retrieval"]["candidates_by_slot"]
+    assert [entry["item"]["id"] for entry in slots["shoes"]] == ["item-37"]
+    assert set(result["referencedItemIds"]) == set(RUNNING_IDS)
+    assert result["source"] == "llm" and result["meta"]["llmAttempts"] == 2
+
+
+def test_running_without_running_shoes_does_not_substitute_casual_shoes(make_client, rag_engine):
+    capsule = _capsule50()
+    del capsule["item-37"]
+    result = _recommend(
+        make_client(engine=rag_engine), query="Что надеть, чтобы побегать в парке?", user_id="running-no-shoes",
+        wardrobe=list(capsule.values()),
+    )
+    assert result["missingSlots"] == ["shoes"] and "suggestedOutfit" not in result
+    assert "беговых кроссовок" in result["text"]
+
+
 def _edit(client, user_id, query, wardrobe_ids, card_ids, request_text, **payload):
     capsule = _capsule50()
     return _recommend(
@@ -252,6 +313,15 @@ def _edit(client, user_id, query, wardrobe_ids, card_ids, request_text, **payloa
         ],
         **payload,
     )
+
+
+def test_running_shoe_edit_keeps_original_when_only_casual_alternatives_exist(make_client, rag_engine):
+    result = _edit(
+        make_client(engine=rag_engine), "running-shoe-edit", "Замени обувь, остальное оставь",
+        [*RUNNING_IDS, "item-36", "item-41"], RUNNING_IDS, RUNNING_REQUEST,
+    )
+    assert "suggestedOutfit" not in result and "edit" not in result
+    assert result["retrieval"]["candidates"] == []
 
 
 def test_add_rain_layer_keeps_the_outfit_and_skips_non_waterproof_jackets(make_client, rag_engine):

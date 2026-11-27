@@ -43,6 +43,7 @@ from app.services.analysis import (
     analyze_query,
     is_outfit_revision,
     names_occasion,
+    outfit_request_text,
 )
 from app.services.followup import (
     EDIT_QUESTION_PREFIX, WARMER_TEMPERATURE_QUESTION, FollowUp, classify_followup, followup_in_dialogue,
@@ -59,7 +60,7 @@ from app.services.scoring import match_score
 from app.services.styling import compatibility_answer
 from app.services.suitability import (
     FROST_CRITICAL_SLOTS, frost_gap_text, is_insulated_outerwear_or_shoes, is_severe_frost,
-    is_shorts, unsuitable_reason,
+    is_shorts, running_unsuitable_reason, unsuitable_reason,
 )
 from app.services.textutils import normalize
 from app.services.validation import MAX_TEXT_CHARS, DraftParseError, parse_draft
@@ -119,7 +120,7 @@ def find_last_card(history: list[HistoryMessage], *, before: int | None = None) 
             continue
         follow_up = followup_in_dialogue(message.text, history, i)
         if follow_up is None and not is_outfit_revision(message.text):
-            root = message.text
+            root = outfit_request_text(message.text, history, before=i)
             break
         if follow_up is None or follow_up.kind not in {"card_question", "compatibility", "restore"}:
             followups.append(message.text)
@@ -411,16 +412,16 @@ class OutfitEditor:
             slots.insert(0, "outerwear")
         base_ids = {item.id for item in base}
         options: list[tuple[int, _SlotEdit, str]] = []
+        constraints = analysis if analysis.occasion == "running" else replace(analysis, occasion=DEFAULT_OCCASION)
         for slot in slots:
             target = base_by_slot.get(slot)
             if target is None and slot != "outerwear" or target is not None and target.id in pinned:
                 continue
-            weather = replace(analysis, occasion=DEFAULT_OCCASION)
-            if any(unsuitable_reason(item, weather) for item in base if item is not target):
+            if any(unsuitable_reason(item, constraints) for item in base if item is not target):
                 continue  # после этой замены комплект всё ещё не подходит под известную погоду
             eligible = {
                 item.id: hint for item in items if item.category == slot and item.id not in base_ids
-                and item.id not in exclude and not unsuitable_reason(item, weather)
+                and item.id not in exclude and not unsuitable_reason(item, constraints)
                 and (hint := _more_warmth(target, item))[0] > 0
             }
             if not eligible:
@@ -521,10 +522,9 @@ class OutfitEditor:
                         f"В образе несколько вещей этой категории: {_listing(in_slot)}. Какую заменить?"
                     )
 
-        # Погодные ограничения вещей действуют и при правке. Белый список «только пляжное»
-        # здесь не применяем: пользователь сам попросил конкретную вещь.
-        weather_only = replace(analysis, occasion=DEFAULT_OCCASION)
-        unsuitable = [item.id for item in items if unsuitable_reason(item, weather_only)]
+        # Учитываем погоду и требования пробежки. Узкую пляжную разметку при правке не требуем.
+        constraints = analysis if analysis.occasion == "running" else replace(analysis, occasion=DEFAULT_OCCASION)
+        unsuitable = [item.id for item in items if unsuitable_reason(item, constraints)]
         if slot == "bottoms" and not analysis.is_hot:
             if analysis.is_cold and target is not None and is_shorts(target):
                 unsuitable.extend(item.id for item in items if item.category == slot and not any(
@@ -544,6 +544,9 @@ class OutfitEditor:
             temperature = analysis.temperature_c
             if slot in FROST_CRITICAL_SLOTS and temperature is not None and is_severe_frost(temperature):
                 return reply.text(frost_gap_text(temperature, {slot}), revision=outcome.revision)
+            if analysis.occasion == "running" and slot == "shoes":
+                return reply.text("Другой пары для бега в гардеробе не нашла. Прежний образ оставляю без изменений.",
+                                  revision=outcome.revision)
             if slot == "bottoms" and target is not None and is_shorts(target) and analysis.is_cold:
                 return reply.text(
                     "Шорты для холода не подойдут, а подходящей замены из гардероба я не нашла. "
@@ -734,6 +737,9 @@ class _Reply:
         from app.services.orchestrator import with_image  # общий помощник карточек
 
         items = [with_image(item) for item in sort_items(items)]
+        if any(running_unsuitable_reason(item, self.analysis) for item in items):
+            return self.text("После этой правки комплект не подойдёт для пробежки. Прежний образ оставляю без изменений.",
+                             revision=revision)
         temperature = self.analysis.temperature_c
         if temperature is not None and is_severe_frost(temperature):
             weather_only = replace(self.analysis, occasion=DEFAULT_OCCASION)

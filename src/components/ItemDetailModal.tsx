@@ -40,6 +40,7 @@ export const ItemDetailModal = ({
 
   const [title, setTitle] = useState('');
   const [color, setColor] = useState('');
+  const [brand, setBrand] = useState('');
   const [material, setMaterial] = useState('');
   const [materialDetails, setMaterialDetails] = useState<MaterialDetails>({});
   const [category, setCategory] = useState<ClothingCategory>('tops');
@@ -49,6 +50,7 @@ export const ItemDetailModal = ({
     if (item) {
       setTitle(item.title);
       setColor(item.color);
+      setBrand(item.brand ?? '');
       setMaterial(item.material || '');
       setMaterialDetails(item.materialDetails ?? {});
       setCategory(item.category);
@@ -67,7 +69,8 @@ export const ItemDetailModal = ({
     const updated: WardrobeItem = {
       ...item,
       title: title.trim(),
-      color: color.trim() || 'Базовый',
+      color: color.trim(),
+      brand: brand.trim() || undefined,
       material: material.trim() || undefined,
       materialDetails: cleanMaterialDetails(materialDetails),
       category,
@@ -233,20 +236,30 @@ export const ItemDetailModal = ({
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-[#EFECE6] dark:border-night-divider">
                       <span className="text-[#8A8175] dark:text-night-muted">Оттенок</span>
-                      <span className="text-[#1E1B18] dark:text-night-fg">{item.color}</span>
+                      <span className="text-[#1E1B18] dark:text-night-fg">{item.color || 'Не указан'}</span>
                     </div>
-                    {item.material && (
+                    {!item.brand && (
                       <div className="flex justify-between py-1.5 border-b border-[#EFECE6] dark:border-night-divider">
-                        <span className="text-[#8A8175] dark:text-night-muted">Состав ткани</span>
-                        <span className="text-[#1E1B18] dark:text-night-fg">{item.material}</span>
+                        <span className="text-[#8A8175] dark:text-night-muted">Бренд</span>
+                        <span className="text-[#1E1B18] dark:text-night-fg">Не указан</span>
                       </div>
                     )}
+                    <div className="flex justify-between gap-2 py-1.5 border-b border-[#EFECE6] dark:border-night-divider">
+                      <span className="text-[#8A8175] dark:text-night-muted">Состав ткани</span>
+                      <span className="text-right text-[#1E1B18] dark:text-night-fg">{item.material || 'Не указан'}</span>
+                    </div>
                     {MATERIAL_PART_KEYS.map((part) => item.materialDetails?.[part] && (
                       <div key={part} className="flex justify-between gap-2 py-1.5 border-b border-[#EFECE6] dark:border-night-divider">
                         <span className="text-[#8A8175] dark:text-night-muted">{MATERIAL_PARTS[part]}</span>
                         <span className="text-right text-[#1E1B18] dark:text-night-fg">{item.materialDetails[part]}</span>
                       </div>
                     ))}
+                    {!MATERIAL_PART_KEYS.some((part) => item.materialDetails?.[part]) && (
+                      <div className="flex justify-between py-1.5 border-b border-[#EFECE6] dark:border-night-divider">
+                        <span className="text-[#8A8175] dark:text-night-muted">Состав по частям</span>
+                        <span className="text-[#1E1B18] dark:text-night-fg">Не указан</span>
+                      </div>
+                    )}
                     <div className="flex justify-between py-1.5 border-b border-[#EFECE6] dark:border-night-divider">
                       <span className="text-[#8A8175] dark:text-night-muted">Сезон</span>
                       <span className="text-[#1E1B18] dark:text-night-fg">
@@ -302,6 +315,15 @@ export const ItemDetailModal = ({
                         className="w-full px-2.5 py-1.5 text-xs bg-[#EFECE6] dark:bg-night-field border border-[#DFD9CF] dark:border-night-divider text-[#1E1B18] dark:text-night-fg focus:outline-none"
                       />
                     </div>
+                  </div>
+                  <div>
+                    <label htmlFor="edit-item-brand" className="block text-[10px] uppercase tracking-wider text-[#8A8175] dark:text-night-muted mb-1">
+                      Бренд
+                    </label>
+                    <input id="edit-item-brand" type="text" value={brand} onChange={(e) => setBrand(e.target.value)}
+                      placeholder="Не указан"
+                      className="w-full px-2.5 py-1.5 text-xs bg-[#EFECE6] dark:bg-night-field border border-[#DFD9CF] dark:border-night-divider text-[#1E1B18] dark:text-night-fg focus:outline-none"
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
