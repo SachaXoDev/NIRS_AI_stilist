@@ -11,6 +11,8 @@ from snowballstemmer import stemmer
 
 _TOKEN = re.compile(r"[^\W_]+")
 _RUSSIAN = re.compile(r"[а-я]+")
+# Keep negations and exclusions such as «не» and «без».
+_QUERY_STOPWORDS = frozenset("а в во для и из к ко как ли на о об от по под при с со у".split())
 K1 = 1.2
 B = 0.75
 TOP_K = 3
@@ -19,10 +21,13 @@ FEEDBACK_TERMS = 16
 FEEDBACK_WEIGHT = 0.5
 
 
-def tokens(text: str) -> list[str]:
+def _stem_words(words: Iterable[str]) -> list[str]:
     russian = stemmer("russian")
-    return [russian.stemWord(word) if _RUSSIAN.fullmatch(word) else word
-            for word in _TOKEN.findall(text.casefold().replace("ё", "е"))]
+    return [russian.stemWord(word) if _RUSSIAN.fullmatch(word) else word for word in words]
+
+
+def tokens(text: str) -> list[str]:
+    return _stem_words(_TOKEN.findall(text.casefold().replace("ё", "е")))
 
 
 # Function words and generic interrogatives add little evidence in a second pass.
@@ -57,7 +62,8 @@ class Hit:
 class BM25Index:
     """Build once at startup; a query visits only postings for its distinct terms."""
 
-    def __init__(self, documents: Iterable[Document]) -> None:
+    def __init__(self, documents: Iterable[Document], *, feedback: bool = False) -> None:
+        self._feedback = feedback
         self._documents: dict[str, Document] = {}
         self._lengths: dict[str, int] = {}
         self._terms_by_doc: dict[str, tuple[str, ...]] = {}
@@ -95,6 +101,15 @@ class BM25Index:
         ranked = sorted(scores, key=lambda doc_id: (-scores[doc_id], doc_id))[:k]
         return [Hit(self._documents[doc_id], scores[doc_id]) for doc_id in ranked]
 
+    def search(self, question: str, k: int = TOP_K) -> list[Hit]:
+        if self._feedback:
+            return self.search_feedback(question, k)
+        if k < 1:
+            raise ValueError("k must be positive")
+        words = _TOKEN.findall(question.casefold().replace("ё", "е"))
+        terms = dict.fromkeys(_stem_words(word for word in words if word not in _QUERY_STOPWORDS), 1.0)
+        return self._hits(self._score(terms), k)
+
     def search_stemmed(self, question: str, k: int = TOP_K) -> list[Hit]:
         """Original stemmed BM25, retained as a reproducible baseline."""
         if k < 1:
@@ -112,7 +127,7 @@ class BM25Index:
         ranked = sorted(weights, key=lambda term: (-weights[term] * self._idf[term], term))
         return {term: weights[term] for term in ranked[:FEEDBACK_TERMS]}
 
-    def search(self, question: str, k: int = TOP_K) -> list[Hit]:
+    def search_feedback(self, question: str, k: int = TOP_K) -> list[Hit]:
         """Keep the first BM25 hit and rank companions using lexical feedback."""
         if k < 1:
             raise ValueError("k must be positive")

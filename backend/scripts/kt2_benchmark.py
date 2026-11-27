@@ -285,7 +285,7 @@ def compare_retrieval(output: Path) -> int:
     sys.path.insert(0, str(DATA.parent))
     from app.kt2_search import BM25Index, Document, FEEDBACK_DOCS, FEEDBACK_TERMS, FEEDBACK_WEIGHT
 
-    files = {name: (DATA / name).read_bytes() for name in ("corpus.json", "questions.json")}
+    files = {name: (DATA / "workshop_archive" / name).read_bytes() for name in ("corpus.json", "questions.json")}
     hashes, dataset_hash = dataset_fingerprints(files)
     _, lf_hash = dataset_fingerprints({name: data.replace(b"\r\n", b"\n") for name, data in files.items()})
     docs, questions = validate_dataset(files)
@@ -307,7 +307,7 @@ def compare_retrieval(output: Path) -> int:
     for question in questions:
         text, relevant = question["question"], set(question["relevant_ids"])
         before = measure(index.search_stemmed(text, k=K), relevant)
-        after = measure(index.search(text, k=K), relevant)
+        after = measure(index.search_feedback(text, k=K), relevant)
         old_ids, new_ids = before["top_3_ids"], after["top_3_ids"]
         rows.append({
             "id": question["id"], "kind": "positive" if relevant else "trap", "question": text,
@@ -350,7 +350,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default="http://127.0.0.1:8012", help="Base URL of the running demo API")
     parser.add_argument("--timeout", type=float, default=120.0, help="HTTP timeout in seconds (default: %(default)s)")
-    parser.add_argument("--retrieval-only", action="store_true", help="Compare local BM25 rankings without HTTP or Qwen")
+    parser.add_argument("--retrieval-only", action="store_true", help="Compare BM25 rankings on the archived workshop dataset")
     parser.add_argument("--output", type=Path, help="Directory for summary.json and per_query.json")
     args = parser.parse_args()
     if args.retrieval_only:
@@ -359,7 +359,7 @@ def main() -> int:
         except (OSError, ValueError) as exc:
             print(f"FAIL: {exc}", file=sys.stderr)
             return 1
-    args.output = args.output or DATA / "results"
+    args.output = args.output or DATA / "capsule_reproduced"
     if not math.isfinite(args.timeout) or args.timeout <= 0:
         parser.error("--timeout must be finite and positive")
 

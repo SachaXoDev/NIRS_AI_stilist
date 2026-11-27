@@ -2,10 +2,10 @@
   "schema_version": 1,
   "mode": "retrieval_only",
   "k": 3,
-  "dataset_sha256": "4ede7a8eee0e3a0baa69448fbdd9fa806f86007c68e40d24d5830048b6f40d74",
+  "dataset_sha256": "d05aca10f04cd75cb80ac6bc9dc881e5f6245638d6aadc67349c329483657843",
   "dataset_files_sha256": {
-    "corpus.json": "e495ffb6d8a9216e379ab217712e0e2deec65d966bb0d1f7248bae3b3fccdd27",
-    "questions.json": "2dcc88cd41372679024a7e9f6ba29e4f8e7ef05d7dd6fcc6de3e843bf521caa7"
+    "corpus.json": "eaf41165090e2dda51235208326b9edd1c62c00ae462db9649d0deced4c2dedc",
+    "questions.json": "e6198c3153c986852ae422ac43beaedb7a20968fff4f643d0f5c11fa8a92c5ae"
   },
   "dataset_lf_sha256": "d05aca10f04cd75cb80ac6bc9dc881e5f6245638d6aadc67349c329483657843",
   "document_count": 30,

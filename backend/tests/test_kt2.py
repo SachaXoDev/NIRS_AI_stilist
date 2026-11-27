@@ -39,6 +39,14 @@ def test_bm25_matches_russian_inflection_and_preserves_numbers():
     assert [hit.document.id for hit in index.search("водолазкой 30")] == ["D01"]
 
 
+def test_query_function_words_do_not_promote_unrelated_cards():
+    index = BM25Index([
+        Document("D01", "Водолазка", "В комплекте как теплый слой"),
+        Document("D02", "Шорты", "Разрезы сбоку"),
+    ])
+    assert [hit.document.id for hit in index.search("Как в капсуле найти шорты с разрезами?")] == ["D02"]
+
+
 def test_feedback_retrieves_companion_without_query_terms_and_preserves_first_hit():
     index = BM25Index([
         Document("record", "Калибровка датчика С-28", "Лист настройки. В коробке лежит эталонный резистор."),
@@ -50,7 +58,7 @@ def test_feedback_retrieves_companion_without_query_terms_and_preserves_first_hi
         Document("D07", "Покраска", "Валик с ручкой."),
         Document("D08", "Сборка", "Струбцина."),
         Document("D09", "Точение", "Державка резца."),
-    ])
+    ], feedback=True)
     question = "Как выполнить настройку и калибровку датчика С-28?"
     before = index.search_stemmed(question)
     after = index.search(question)
