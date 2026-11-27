@@ -140,7 +140,8 @@ class RetrievalEngine:
         slots = [scope.target] if scope else required_slots(request, context, self.config)
         conditions = query_conditions(request.query, scope.target if scope else None)
         explicit_slots = {condition.slot for condition in conditions
-                          if condition.slot is not None and not condition.preferred}
+                          if condition.slot is not None and not condition.preferred
+                          and not (condition.kind == "type" and condition.exclude)}
         if not scope:
             slots.extend(slot for slot in CATEGORIES if slot in explicit_slots and slot not in slots)
         by_id = {item.id: item for item in items}

@@ -15,7 +15,7 @@ import asyncio
 import logging
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, AsyncIterator
 
 from app.config import Settings
@@ -41,7 +41,8 @@ from app.schemas import (
     WardrobeItem,
 )
 from app.services.analysis import (
-    analyze_query, is_outfit_query, is_outfit_revision, outfit_revision, small_talk_reply, starts_new_topic,
+    QueryAnalysis, analyze_query, is_outfit_query, is_outfit_revision, outfit_request_text, outfit_revision,
+    small_talk_reply, starts_new_topic,
 )
 from app.services.editing import (
     NOTHING_TO_EDIT_TEXT, LastCard, OutfitEditor, edit_comment, find_last_card, merge_context, restyle_edit,
@@ -52,7 +53,10 @@ from app.services.prompts import PromptContext, build_conversation_messages, bui
 from app.services.scoring import MATCH_SCORE_METHOD, match_score
 from app.services.streaming import JsonStringFieldExtractor
 from app.services.styling import styling_comment
-from app.services.suitability import FROST_CRITICAL_SLOTS, frost_gap_text, is_severe_frost, unsuitable_reason
+from app.services.suitability import (
+    FROST_CRITICAL_SLOTS, frost_gap_text, is_severe_frost,
+    running_unsuitable_reason, unsuitable_reason,
+)
 from app.services.validation import (
     MAX_TEXT_CHARS,
     DraftParseError,
@@ -260,6 +264,9 @@ class StylistService:
         started = time.perf_counter()
         runtime = self.get_runtime_settings()
         context = request.context
+        effective_query = request.query
+        if not (request.anchor_item_id or request.query_image or context):
+            effective_query = outfit_request_text(request.query, request.history)
 
         # Правка последней карточки или вопрос о ней — отдельная ветка: остальной образ не трогаем.
         card = find_last_card(request.history)
@@ -300,7 +307,7 @@ class StylistService:
                 meta=self._meta(),
             )
 
-        analysis = analyze_query(request.query, context, items)
+        analysis = analyze_query(effective_query, context, items)
         if prior_request and card is not None and not starts_new_topic(request.query) and not request.query_image:
             analysis = merge_context(request.model_copy(update={"context": context}), card, items)
         elif prior_request and analysis.temperature_c is None:
@@ -320,13 +327,14 @@ class StylistService:
 
         query = RetrievalQuery(
             user_id=user_id,
-            query=request.query,
+            query=effective_query,
             mode=request.mode or runtime.mode,
             alpha=request.alpha if request.alpha is not None else runtime.alpha,
             visual_weight=(
                 request.visual_weight if request.visual_weight is not None else runtime.visual_weight
             ),
-            occasion="beach" if analysis.occasion == "beach" else (context.occasion if context else None),
+            occasion=(analysis.occasion if analysis.occasion in {"beach", "running"}
+                      else (context.occasion if context else None)),
             weather=context.weather if context else None,
             vibe=context.vibe if context else None,
             anchor_item_id=anchor,
@@ -353,6 +361,9 @@ class StylistService:
         assembly: SelectionCheck | None = None
         if not outcome.missing_slots:
             assembly = await asyncio.to_thread(self._engine.assemble, outcome)
+            problems = _activity_errors(assembly.items, analysis)
+            if problems:
+                assembly = replace(assembly, valid=False, complete=False, violations=[*assembly.violations, *problems])
             warnings.extend(assembly.warnings)
         if assembly is None or not assembly.complete:
             # Не выдаём неполный комплект за законченный образ.
@@ -361,9 +372,8 @@ class StylistService:
                 warnings.extend(assembly.violations)
             timings["totalMs"] = _ms_since(started)
             return RecommendResponse(
-                text=_incomplete_text(missing, outcome, unsuitable_slots={
-                    item.category for item in items if item.id in unsuitable
-                }),
+                text=_incomplete_text(missing, outcome, items=[item for item in items if item.id not in exclude],
+                                      unsuitable_slots={item.category for item in items if item.id in unsuitable}),
                 source="none",
                 missing_slots=missing,
                 warnings=_unique(warnings),
@@ -373,7 +383,7 @@ class StylistService:
             )
 
         ctx = PromptContext(
-            query=request.query,
+            query=effective_query,
             analysis=analysis,
             outcome=outcome,
             assembly=assembly,
@@ -498,6 +508,7 @@ class StylistService:
                 "Гардероб изменился, пока стилист подбирал образ. Повторите запрос."
             )
         errors = list(check.violations)
+        errors.extend(_activity_errors(check.items, ctx.analysis))
         if check.missing_slots:
             errors.append(
                 "в образе не заполнены обязательные слоты: " + ", ".join(check.missing_slots)
@@ -555,6 +566,8 @@ class StylistService:
         )
         if not check.complete:
             raise RagEngineError("Гардероб изменился, пока стилист подбирал образ. Повторите запрос.")
+        if _activity_errors(check.items, ctx.analysis):
+            raise RagEngineError("Резервный комплект не подходит для пробежки. Повторите запрос.")
         return _Generation(_sort_items(check.items), attempts, "fallback")
 
     def _build_response(self, prepared: _Prepared, generation: _Generation) -> RecommendResponse:
@@ -608,13 +621,49 @@ def _last_outfit_request(request: RecommendRequest) -> str | None:
     return previous
 
 
-def _incomplete_text(missing: list[str], outcome: RetrievalOutcome, *, unsuitable_slots: set[str]) -> str:
+def _activity_errors(items: list[WardrobeItem], analysis: QueryAnalysis) -> list[str]:
+    return [f"{item.title}: {reason}" for item in items if (reason := running_unsuitable_reason(item, analysis))]
+
+
+def _missing_requested_types(outcome: RetrievalOutcome, missing: list[str], items: list[WardrobeItem]) -> str:
+    if outcome.engine != "wardrobe_rag":
+        return ""
+    from wardrobe_rag.constraints import item_violations
+    from wardrobe_rag.query_attributes import attribute_violations, query_conditions
+    from wardrobe_rag.schemas import QueryContext, RetrievalRequest, WardrobeItem as IndexedItem
+
+    conditions = query_conditions(outcome.query)
+    requested = tuple(c for c in conditions if c.kind == "type" and c.slot in missing
+                      and not c.preferred and not c.exclude)
+    if not requested:
+        return ""
+    labels = "; ".join(dict.fromkeys(" или ".join((c.value, *c.alternatives)) for c in requested))
+    text = f"В гардеробе не нашла вещей под требование: {labels}."
+    slots = {c.slot for c in requested}
+    if len(missing) == len(slots) == 1:
+        other = tuple(c for c in conditions if c not in requested)
+        context = QueryContext.model_validate(outcome.context)
+        request = RetrievalRequest(user_id=outcome.user_id, query=outcome.query, context=context)
+        for item in items:
+            if item.category not in slots:
+                continue
+            indexed = IndexedItem.model_validate(item.model_dump(by_alias=True))
+            if attribute_violations(indexed, requested) and not item_violations(indexed, request, context, conditions=other):
+                return f"{text} Хотите собрать образ с другой вещью из гардероба: «{item.title}»?"
+    return f"{text} Добавьте подходящую вещь или скажите, чем её можно заменить."
+
+
+def _incomplete_text(
+    missing: list[str], outcome: RetrievalOutcome, *, items: list[WardrobeItem], unsuitable_slots: set[str],
+) -> str:
     if not missing:
         return (
-            "Не получилось собрать из гардероба образ, который проходит проверку слотов и "
-            "погодных ограничений. Попробуйте уточнить запрос или добавить вещи."
+            "Не получилось собрать из гардероба образ, который подходит под запрос. "
+            "Попробуйте уточнить условия или добавить вещи."
         )
     labels = ", ".join(CATEGORY_LABELS_RU[slot] for slot in missing)
+    if requirement_gap := _missing_requested_types(outcome, missing, items):
+        return requirement_gap
     if set(missing) & set(outcome.diagnostics.get("attribute_blocked_slots", [])):
         return (f"Не могу подтвердить, что вещи в этих категориях подходят под условия запроса: {labels}. "
                 "Проверьте характеристики в гардеробе или уточните, какое условие можно смягчить.")
@@ -626,6 +675,11 @@ def _incomplete_text(missing: list[str], outcome: RetrievalOutcome, *, unsuitabl
     frost_slots = set(missing) & FROST_CRITICAL_SLOTS
     if frost_slots and temperature is not None and is_severe_frost(temperature):
         return f"{frost_gap_text(temperature, frost_slots)} Для улицы я бы не заменял их демисезонными вещами."
+    if outcome.context.get("occasion") == "running":
+        running_labels = {"tops": "спортивного верха", "bottoms": "бегового низа", "shoes": "беговых кроссовок",
+                          "outerwear": "подходящей верхней одежды", "accessories": "подходящих аксессуаров"}
+        gaps = ", ".join(running_labels[slot] for slot in missing)
+        return f"Не могу собрать образ для пробежки: в гардеробе не хватает {gaps} под эти условия."
     if "outerwear" in missing and temperature is not None:
         text += f" При {temperature:+g}°C без верхней одежды не обойтись."
     elif "outerwear" in missing:

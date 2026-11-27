@@ -4,7 +4,7 @@ from __future__ import annotations
 import re
 from dataclasses import asdict, dataclass, field
 
-from app.schemas import RecommendContext, WardrobeItem
+from app.schemas import HistoryMessage, RecommendContext, WardrobeItem
 from app.services.textutils import normalize
 
 
@@ -53,9 +53,16 @@ OCCASIONS: tuple[OccasionSpec, ...] = (
         expansion=("удобный", "базовый", "кеды", "джинсы", "сумка", "casual"),
     ),
     OccasionSpec(
+        key="running",
+        label="Пробежка",
+        stems=(),
+        styles=frozenset({"sport", "спорт"}),
+        expansion=("бег", "беговой", "спортивный", "кроссовки"),
+    ),
+    OccasionSpec(
         key="sport",
         label="Активный день",
-        stems=("спорт", "трениров", "пробежк", "фитнес", "йог", "велосипед"),
+        stems=("спорт", "трениров", "фитнес", "йог", "велосипед"),
         styles=frozenset({"sport", "streetwear", "casual", "спорт"}),
         expansion=("спортивный", "кроссовки", "кеды", "удобный", "streetwear"),
     ),
@@ -126,10 +133,13 @@ def small_talk_reply(query: str) -> str | None:
 
 _ADVICE_RE = re.compile(r"\b(?:что такое|как (?:носить|сочетать|выбрать)|с чем носить|какие? (?:цвета|тренды)|объясни\w*|расскажи\w*)\b")
 _WARDROBE_RE = re.compile(r"\b(?:из (?:моих вещей|моей капсулы|(?:моего )?гардероба)|в мо[её]м гардеробе)\b")
+_ASSEMBLE = r"(?:соб(?:ери|рать|ерите)|подб(?:ери|рать|ерите)|состав(?:ь|ить|ьте)|предлож(?:и|ить|ите)|созда(?:й|ть|йте)|сдела(?:й|ть|йте))"
+_OUTFIT = r"(?:образ|лук|комплект|аутфит)"
 _OUTFIT_RE = re.compile(
-    r"\b(?:(?:собери\w*|подбери\w*|составь\w*|предложи\w*)[^.!?]*\b(?:образ\w*|лук\w*|комплект\w*|аутфит\w*)"
-    r"|(?:что|как) (?:надеть|одеться)|(?:образ|лук|комплект|аутфит)(?:\s+(?:в|для|на|под|к)\b|[.!?]*$))"
+    rf"\b(?:{_ASSEMBLE}\b[^.!?]*\b{_OUTFIT}\w*"
+    rf"|(?:что|как) (?:надеть|одеться)|{_OUTFIT}\b(?:\s+(?:в|для|на|под|к|с|со|без)\b|[.!?]*$))"
 )
+_OUTFIT_RETRY_RE = re.compile(rf"(?:ну\s+)?{_ASSEMBLE}\s+{_OUTFIT}(?:\s*,?\s*пожалуйста)?[.!?…]*")
 _REVISION_RE = re.compile(
     r"\b(?:потеплее|полегче|прохладнее|теплее|наряднее|строже|попроще|удобнее|сделай его|замени\w*|"
     r"другой (?:образ|вариант)|еще (?:один |вариант)|а если|а на|а в|а для|а без)\b"
@@ -151,6 +161,20 @@ def is_outfit_query(query: str) -> bool:
     return _detect_temperature(text) is not None or any(
         _has_stem(text, stem) for stems in WEATHER_STEMS.values() for stem in stems
     )
+
+
+def outfit_request_text(query: str, history: list[HistoryMessage], *, before: int | None = None) -> str:
+    """Короткая просьба повторяет только последний запрос, завершившийся без карточки."""
+    stop = len(history) if before is None else before
+    while stop >= 2 and _OUTFIT_RETRY_RE.fullmatch(normalize(query).strip()):
+        user, reply = history[stop - 2], history[stop - 1]
+        if (user.sender != "user" or reply.sender != "assistant" or reply.has_outfit or reply.item_ids
+                or not is_outfit_query(user.text)):
+            break
+        if not _OUTFIT_RETRY_RE.fullmatch(normalize(user.text).strip()):
+            return user.text
+        stop -= 2
+    return query
 
 
 def outfit_revision(query: str, prior_request: str | None) -> tuple[str | None, bool]:
@@ -231,7 +255,19 @@ def _has_stem(text: str, stem: str) -> bool:
     return re.search(rf"(?<![a-zа-я]){re.escape(stem)}", text) is not None
 
 
+_RUNNING_RE = re.compile(
+    r"\b(?:пробеж(?:к\w*|аться)|бег(?:а|е|ом|ать|ов\w*)?|побегать|джоггинг\w*|running)\b"
+)
+_NEGATED_RUNNING_RE = re.compile(r"\b(?:без|не\s+(?:для|на))\s+" + _RUNNING_RE.pattern)
+
+
+def mentions_running(text: str) -> bool:
+    return bool(_RUNNING_RE.search(_NEGATED_RUNNING_RE.sub("", normalize(text))))
+
+
 def _detect_occasion(text: str) -> str | None:
+    if mentions_running(text):
+        return "running"
     if any(_has_stem(text, stem) for stem in OCCASION_BY_KEY["beach"].stems):
         return "beach"
     best_key, best_hits = None, 0

@@ -5,7 +5,7 @@ import { USE_REAL_BACKEND } from '../services/backendConfig';
 import { prepareWardrobePhoto, recognizeWardrobePhoto, WARDROBE_PHOTO_ACCEPT } from '../services/wardrobeRecognition';
 import { cleanMaterialDetails } from '../services/materialDetails';
 import { categoryFromTitle } from '../services/wardrobeCategory';
-import { CLOTHING_SEASONS, CLOTHING_SEASON_VALUES, isClothingSeason } from '../services/wardrobeSeason';
+import { CLOTHING_SEASONS, CLOTHING_SEASON_VALUES, isClothingSeason, suggestWardrobeSeason } from '../services/wardrobeSeason';
 import { MaterialDetailsFields } from './MaterialDetailsFields';
 
 interface AddItemModalProps {
@@ -43,20 +43,29 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
   const [photoStatus, setPhotoStatus] = useState(IDLE_PHOTO_STATUS);
   const [labelSuggestion, setLabelSuggestion] = useState<WardrobeRecognitionResponse['suggestion']>(null);
   const [labelStatus, setLabelStatus] = useState(IDLE_PHOTO_STATUS);
-  const request = useRef<AbortController | null>(null);
+  const photoRequest = useRef<AbortController | null>(null);
+  const labelRequest = useRef<AbortController | null>(null);
 
-  useLayoutEffect(() => () => request.current?.abort(), []);
+  useLayoutEffect(() => () => {
+    photoRequest.current?.abort();
+    labelRequest.current?.abort();
+  }, []);
 
   const editField = <K extends keyof ItemFields,>(key: K, value: ItemFields[K]) => {
     setFields((current) => ({ ...current, [key]: value }));
   };
 
   const clearPhoto = () => {
-    request.current?.abort();
-    request.current = null;
+    photoRequest.current?.abort();
+    photoRequest.current = null;
     setPhotoPreview(null);
     setSuggestion(null);
     setPhotoStatus(IDLE_PHOTO_STATUS);
+  };
+
+  const clearLabel = () => {
+    labelRequest.current?.abort();
+    labelRequest.current = null;
     setLabelSuggestion(null);
     setLabelStatus(IDLE_PHOTO_STATUS);
   };
@@ -66,12 +75,9 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
     e.currentTarget.value = '';
     if (!file) return;
 
-    if (labelOnly) {
-      request.current?.abort();
-      setLabelSuggestion(null);
-    } else {
-      clearPhoto();
-    }
+    if (labelOnly) clearLabel();
+    else clearPhoto();
+    const request = labelOnly ? labelRequest : photoRequest;
     const setStatus = labelOnly ? setLabelStatus : setPhotoStatus;
     const setResult = labelOnly ? setLabelSuggestion : setSuggestion;
     const controller = new AbortController();
@@ -109,7 +115,8 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
   };
 
   const handleClose = () => {
-    request.current?.abort();
+    photoRequest.current?.abort();
+    labelRequest.current?.abort();
     onClose();
   };
 
@@ -119,14 +126,23 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
   const identity = labelCategory ? labelSuggestion : suggestion;
   const title = fields.title ?? identity?.title ?? labelSuggestion?.title ?? '';
   const category = fields.category ?? categoryFromTitle(title) ?? (labelCategory || identity?.category || '');
+  const recognitionFinished = [photoStatus.state, labelStatus.state].some((state) =>
+    state !== 'idle' && state !== 'pending');
   const photoSeason = suggestion?.season;
   const labelSeason = labelSuggestion?.season;
-  const season = fields.season ?? (photoSeason && labelSeason && photoSeason !== labelSeason
-    ? 'unknown' : labelSeason ?? photoSeason ?? 'unknown');
+  const conflictingSeasons = Boolean(photoSeason && labelSeason && photoSeason !== labelSeason);
+  const readSeason = conflictingSeasons ? undefined : labelSeason ?? photoSeason;
   const color = fields.color ?? labelSuggestion?.color ?? suggestion?.color ?? '';
   const material = fields.material ?? labelSuggestion?.material ?? suggestion?.material ?? '';
   const brand = fields.brand ?? labelSuggestion?.brand ?? suggestion?.brand ?? '';
   const materialDetails = { ...suggestion?.materialDetails, ...labelSuggestion?.materialDetails, ...editedDetails };
+  const estimatedSeason = fields.season === undefined && !readSeason && !conflictingSeasons
+    ? suggestWardrobeSeason(title, category, materialDetails.insulation) : 'unknown';
+  const season = fields.season ?? readSeason ?? estimatedSeason;
+  const seasonHint = fields.season === undefined ? (conflictingSeasons ? 'Сезоны на фото и бирке различаются. Выберите вручную.'
+    : estimatedSeason !== 'unknown' ? 'Предположили по типу вещи или утеплению. Можно изменить.'
+    : readSeason ? 'Прочитали в описании или на бирке.'
+    : recognitionFinished ? 'Сезон не распознан. Можно выбрать вручную.' : '') : '';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,10 +210,10 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
             </div>
             <p id="add-item-photo-status" role="status" data-status={photoStatus.state} className={UPLOAD_STATUS}>{photoStatus.message}</p>
           </div>
-          {USE_REAL_BACKEND && photoPreview && (
+          {USE_REAL_BACKEND && (
             <div>
               <div className={UPLOAD_ROW}>
-                <label htmlFor="add-item-label" className={`${UPLOAD_ACTION} has-disabled:cursor-not-allowed has-disabled:opacity-50`}>
+                <label htmlFor="add-item-label" className={UPLOAD_ACTION}>
                   <input
                     id="add-item-label"
                     type="file"
@@ -205,19 +221,13 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
                     className="sr-only"
                     aria-label={labelStatus.state === 'idle' ? 'Добавить бирку или скриншот' : 'Заменить бирку или скриншот'}
                     aria-describedby="add-item-label-status"
-                    disabled={photoStatus.state === 'pending'}
                     onChange={handlePhotoUpload(true)}
                   />
                   {labelStatus.state === 'success' ? <Check className="size-4 shrink-0" aria-hidden="true" /> : <FileText className="size-4 shrink-0" aria-hidden="true" />}
                   {labelStatus.state === 'idle' ? 'Бирка или скриншот' : 'Заменить бирку или скриншот'}
                 </label>
                 {labelStatus.state !== 'idle' && (
-                  <button type="button" aria-label="Удалить бирку или скриншот" className={ICON_BUTTON} onClick={() => {
-                    request.current?.abort();
-                    request.current = null;
-                    setLabelSuggestion(null);
-                    setLabelStatus(IDLE_PHOTO_STATUS);
-                  }}>
+                  <button type="button" aria-label="Удалить бирку или скриншот" className={ICON_BUTTON} onClick={clearLabel}>
                     <X className="size-4" aria-hidden="true" />
                   </button>
                 )}
@@ -237,6 +247,7 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
               type="text"
               required
               value={title}
+              placeholder={recognitionFinished ? 'Укажите название' : undefined}
               onChange={(e) => editField('title', e.target.value)}
               className={FIELD_INPUT}
             />
@@ -271,6 +282,7 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
                 id="add-item-color"
                 type="text"
                 value={color}
+                placeholder={recognitionFinished ? 'Не распознан' : undefined}
                 onChange={(e) => editField('color', e.target.value)}
                 className={FIELD_INPUT}
               />
@@ -286,6 +298,7 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
                 id="add-item-material"
                 type="text"
                 value={material}
+                placeholder={recognitionFinished ? 'Не распознан' : undefined}
                 onChange={(e) => editField('material', e.target.value)}
                 className={FIELD_INPUT}
               />
@@ -299,6 +312,7 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
                 id="add-item-brand"
                 type="text"
                 value={brand}
+                placeholder={recognitionFinished ? 'Не распознан' : undefined}
                 onChange={(e) => editField('brand', e.target.value)}
                 className={FIELD_INPUT}
               />
@@ -307,14 +321,16 @@ const AddItemForm = ({ onClose, onAdd }: Omit<AddItemModalProps, 'isOpen'>) => {
 
           <div>
             <label htmlFor="add-item-season" className={FIELD_LABEL}>Сезон</label>
-            <select id="add-item-season" value={season} className={FIELD_INPUT} onChange={({ target }) => {
-              if (isClothingSeason(target.value)) editField('season', target.value);
-            }}>
+            <select id="add-item-season" value={season} className={FIELD_INPUT}
+              aria-describedby={seasonHint ? 'add-item-season-hint' : undefined} onChange={({ target }) => {
+                if (isClothingSeason(target.value)) editField('season', target.value);
+              }}>
               {CLOTHING_SEASON_VALUES.map((value) => <option key={value} value={value}>{CLOTHING_SEASONS[value]}</option>)}
             </select>
+            {seasonHint && <p id="add-item-season-hint" className={UPLOAD_STATUS}>{seasonHint}</p>}
           </div>
 
-          <MaterialDetailsFields value={materialDetails} onChange={(part, value) =>
+          <MaterialDetailsFields value={materialDetails} showUnrecognized={recognitionFinished} onChange={(part, value) =>
             setEditedDetails((current) => ({ ...current, [part]: value }))} />
 
           <div className="pt-1">

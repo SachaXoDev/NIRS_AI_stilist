@@ -2,10 +2,11 @@
 import asyncio
 import json
 from io import BytesIO
+from pathlib import Path
 
 import pytest
 
-from app.services.label_ocr import parse_label
+from app.services.label_ocr import _ocr_command, parse_label
 from app.services.photo_recognition import MAX_PHOTO_BYTES
 from app.services.product_text import suggest_from_text
 
@@ -15,6 +16,23 @@ PATH = "/api/wardrobe/recognize"
 def test_builtin_engine_has_no_fake_recognition(client):
     response = client.post(PATH, headers={"Content-Type": "image/jpeg"}, content=b"placeholder")
     assert response.status_code == 503
+
+
+def test_real_label_photo_works_without_clip_or_model(client):
+    command = _ocr_command()
+    if command is None or "eng" not in command[1].split("+"):
+        pytest.skip("Tesseract with eng.traineddata is needed for real-photo OCR")
+
+    # Cropped and re-encoded from MAx 92's "Bluza IPFU - metka.JPG" (CC BY-SA 3.0).
+    # https://commons.wikimedia.org/wiki/File:Bluza_IPFU_-_metka.JPG
+    # https://creativecommons.org/licenses/by-sa/3.0/
+    photo = Path(__file__).with_name("fixtures") / "ocr" / "jacket-fiber-label.jpg"
+    response = client.post(f"{PATH}?label_only=true", headers={"Content-Type": "image/jpeg"}, content=photo.read_bytes())
+    assert response.status_code == 200
+    assert response.json() == {"suggestion": {
+        "title": None, "category": None, "color": None, "season": None,
+        "brand": None, "material": "100% полиамид", "materialDetails": None,
+    }}
 
 
 @pytest.mark.parametrize("media_type", ["image/png", "image/svg+xml", "application/json"])
@@ -64,7 +82,9 @@ def test_photo_recognition_suggests_best_color_even_when_scores_are_close(make_c
     Image.new("RGB", (32, 32)).save(photo, format="PNG")
     response = make_client(engine=rag_engine).post(PATH, headers={"Content-Type": "image/png"}, content=photo.getvalue())
     assert response.status_code == 200
-    assert response.json()["suggestion"]["color"] == "Чёрный"
+    suggestion = response.json()["suggestion"]
+    assert suggestion["color"] == "Чёрный"
+    assert all(suggestion[field] is None for field in ("brand", "material", "materialDetails", "season"))
 
 
 @pytest.mark.parametrize(("lines", "expected"), [
@@ -105,6 +125,70 @@ def test_component_compositions_remain_independent():
         'material': '100% хлопок',
         'materialDetails': {'lining': '97,5% вискоза, 2,5% эластан', 'sole': 'Резина'},
     }
+
+
+def test_compact_multilingual_label_keeps_parts_separate():
+    assert parse_label([
+        "THE NORTH", "FACE®",
+        "Shell / Oberstoff 80% wool 20% polyamide",
+        "Futter / Lining", "97,5%", "viscose", "2,5% elastane",
+        "Fill 90% goose down, 10% feathers",
+        "Upper is made of leather for abrasion resistance",
+        "Outer sole rubber; Insole textile; Trim: genuine leather",
+        "Midsole: EVA",
+    ]) == {
+        "brand": "The North Face",
+        "material": "80% шерсть, 20% полиамид",
+        "materialDetails": {
+            "lining": "97,5% вискоза, 2,5% эластан", "insulation": "90% пух, 10% перо",
+            "sole": "Резина", "insole": "Текстиль", "trim": "Натуральная кожа",
+        },
+    }
+
+
+@pytest.mark.parametrize("rows", [
+    ["Состав, % Хлопок - 100%", "Материал подкладки, % Без подкладки", "Сезон Мульти", "Цвет Розовый"],
+    ["Состав, %", "Хлопок - 100%", "Материал подкладки, %", "Без подкладки", "Сезон", "Мульти", "Цвет", "Розовый"],
+])
+def test_product_table_fields_survive_ocr_layout(rows):
+    assert parse_label(["Товар размещен на Lamoda нашим партнером", *rows, "Артикул MP002XG063ZW"]) == {
+        "material": "100% хлопок", "materialDetails": {"lining": "Без подкладки"},
+        "color": "Розовый", "season": "all",
+    }
+
+
+def test_product_table_does_not_resolve_conflicting_lining_or_invent_a_brand():
+    assert parse_label([
+        "Цвет модели на фото", "О бренде", "Материал подкладки, % Без подкладки", "Lining: 100% viscose",
+        "Состав, % Хлопок -100%",
+    ]) == {}
+
+
+@pytest.mark.parametrize(("lines", "expected"), [
+    (["Бренд:", "Ателье Север", "Верх 100% шерсти", "Подкладка 100% вискозы", "Утеплитель 100% полиэстера"], {
+        "brand": "Ателье Север", "material": "100% шерсть",
+        "materialDetails": {"lining": "100% вискоза", "insulation": "100% полиэстер"},
+    }),
+    (["H & M™", "BRAND: H&M"], {"brand": "H&M"}),
+    (["Brand: Uniqlo", "ZARA"], {}),
+    (["Made in Italy", "Use with Nike accessories", "Shell / Lining: 100% Cotton"], {}),
+    (["Lining 100% polyester", "Care instructions", "Rubber"], {"materialDetails": {"lining": "100% полиэстер"}}),
+    (["Shell: 80% wool", "Contrast: 20% cotton", "Lining: rubber"], {"materialDetails": {"lining": "Резина"}}),
+    (["Lining: 100% polyester", "Doublure: 100% cotton", "Shell: 100% wool"], {"material": "100% шерсть"}),
+    (["Lining: -100% polyester", "Shell: 100% cotton, 20% ?"], {}),
+    (["Shell: 80% wool 20% nylon", "Oberstoff: 20% polyamide 80% laine"], {"material": "80% шерсть, 20% полиамид"}),
+])
+def test_recognition_requires_unambiguous_brand_and_component_evidence(lines, expected):
+    assert parse_label(lines) == expected
+
+
+def test_model_cannot_turn_weak_ocr_into_brand_material_or_title():
+    class Reader:
+        async def complete(self, *args, **kwargs):
+            return '{"title":"Boulevard Atelier","brand":"Boulevard Atelier","material":"wool"}'
+
+    suggestion = asyncio.run(suggest_from_text(["Boulevard Atelier", "Shell 90% wool", "Lining 100% cotton"], Reader()))
+    assert suggestion.model_dump(exclude_none=True) == {"materialDetails": {"lining": "100% хлопок"}}
 
 
 def test_incomplete_explicit_composition_does_not_become_exact_suggestion():
@@ -210,6 +294,8 @@ def test_photo_api_replaces_garment_identity_only_with_a_grounded_pair(
 @pytest.mark.parametrize(("lines", "season"), [
     (["Зимние кроссовки", "Утеплитель: 100% полиэстер"], None),
     (["Сезонность: Всесезонно"], "all"),
+    (["Сезон: зима"], "autumn/winter"),
+    (["Season Summer", "Сезон: весна / лето"], "spring/summer"),
     (["Сезон: осень — зима", "Season: Spring/Summer"], None),
     (["Season: All-season", "Season: Summer"], None),
 ])

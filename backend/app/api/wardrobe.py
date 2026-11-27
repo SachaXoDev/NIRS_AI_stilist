@@ -66,7 +66,7 @@ def base_capsule() -> list[WardrobeItem]:
 )
 async def recognize_photo(request: Request, label_only: bool = False) -> PhotoRecognitionResponse:
     recognizer = request.app.state.photo_recognizer
-    if recognizer is None:
+    if recognizer is None and not label_only:
         raise HTTPException(status_code=503, detail="Модель распознавания фото недоступна.")
     media_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if media_type not in PHOTO_FORMATS:
@@ -78,8 +78,8 @@ async def recognize_photo(request: Request, label_only: bool = False) -> PhotoRe
         photo.extend(chunk)
     try:
         image = await run_in_threadpool(decode_photo, photo, media_type)
-        lines = await run_in_threadpool(read_text, image)
-        suggestion = None if label_only else await run_in_threadpool(recognizer, image)
+        lines = await run_in_threadpool(read_text, image, dense=True) if label_only else await run_in_threadpool(read_text, image)
+        suggestion = await run_in_threadpool(recognizer, image) if recognizer is not None and not label_only else None
     except InvalidPhoto as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except (RuntimeError, ValueError) as exc:

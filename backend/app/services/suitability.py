@@ -4,13 +4,39 @@ from __future__ import annotations
 import re
 
 from app.schemas import WardrobeItem
-from app.services.analysis import QueryAnalysis
+from app.services.analysis import QueryAnalysis, mentions_running
 from app.services.textutils import normalize
 
 SEVERE_FROST_MAX_C = -15
 FROST_CRITICAL_SLOTS = frozenset({"shoes", "outerwear"})
 _SHORTS_RE = re.compile(r"\bшорт\w*\b")
 _INSULATED_RE = re.compile(r"\b(?:утепл\w*|пуховик\w*|зимн\w*)\b")
+_RUNNING_TOP_RE = re.compile(r"\b(?:майк\w*|футболк\w*|топ(?:ы|а)?|лонгслив\w*)\b")
+_RUNNING_SHOE_RE = re.compile(r"\b(?:кроссовк\w*|кроссовок|шиповк\w*|кед\w*|обув\w*|shoes|trainers)\b")
+_RUNNING_BOTTOM_RE = re.compile(r"\b(?:шорт\w*|легинс\w*|леггинс\w*|тайтс\w*|брюк\w*|штан\w*)\b")
+_FLIP_FLOPS = r"(?:шлеп(?:к|ок|анц|анец)\w*|сланц\w*|сланец|вьетнамк\w*|flip[ -]flops?)"
+_FLIP_FLOP_RE = re.compile(rf"\b{_FLIP_FLOPS}\b")
+
+
+def is_flip_flop(item: WardrobeItem) -> bool:
+    return item.category == "shoes" and any(_FLIP_FLOP_RE.search(normalize(label)) for label in (item.title, *item.tags))
+
+
+def running_unsuitable_reason(item: WardrobeItem, analysis: QueryAnalysis) -> str | None:
+    if analysis.occasion != "running":
+        return None
+    # Назначение подтверждают поля самой вещи, а не поисковый сниппет с упоминаниями комплекта.
+    labels = normalize(" ".join((item.title, *item.tags)))
+    running = mentions_running(labels)
+    if item.category == "shoes" and not (running and _RUNNING_SHOE_RE.search(labels)):
+        return "нет подтверждения, что пара предназначена для бега"
+    if item.category == "bottoms" and not (running and _RUNNING_BOTTOM_RE.search(labels)):
+        return "нет признаков низа для бега"
+    if item.category == "tops":
+        sport = any(normalize(style).strip() in {"sport", "спорт"} for style in item.style)
+        if not running and not (_RUNNING_TOP_RE.search(labels) and (sport or re.search(r"\bспортивн\w*\b", labels))):
+            return "нет признаков спортивного верха для бега"
+    return None
 
 
 def is_shorts(item: WardrobeItem) -> bool:
@@ -75,12 +101,12 @@ def unsuitable_reason(item: WardrobeItem, analysis: QueryAnalysis) -> str | None
             if facts and facts.open_shoes is False:
                 return "закрытая обувь для пляжа"
             if not any(
-                word.startswith(("сандал", "босонож", "сланц", "вьетнам", "шлепан"))
+                word.startswith(("сандал", "босонож"))
                 for label in labels for word in label.split()
-            ) and not (facts and facts.open_shoes and beach):
+            ) and not is_flip_flop(item) and not (facts and facts.open_shoes and beach):
                 return "нет признаков пляжной обуви"
         elif not beach:
             return "нет признаков пляжной вещи"
         if item.season == "autumn/winter":
             return "зимняя вещь для пляжа"
-    return None
+    return running_unsuitable_reason(item, analysis)

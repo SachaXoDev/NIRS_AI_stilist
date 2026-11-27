@@ -76,6 +76,8 @@ def item_violations(
     violations: list[str] = []
     if item.id in request.exclude_item_ids:
         violations.append("item explicitly excluded")
+    if item.category == "shoes" and requests_flat_shoes(request.query) and not is_documented_flat(item):
+        violations.append("flat sole is not documented")
     colors, materials = request.exclude_colors, request.exclude_materials
     actual_color = color_tokens(item.color)
     if any(actual_color & color_tokens(color) for color in colors):

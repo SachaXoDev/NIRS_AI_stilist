@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from typing import Literal, cast
 
@@ -40,7 +40,7 @@ FIBERS = {
 GARMENTS: dict[Category, dict[str, str]] = {
     "tops": {"верх": r"верх(?:а|у|ом)?(?!\s+(?:из|состоит|без))", "рубашка": r"рубашк\w*", "блузка": r"блуз\w*", "футболка": r"футболк\w*", "свитер": r"свитер\w*", "джемпер": r"джемпер\w*", "топ": r"топ(?:а|у|ом|ы|ов)?", "кардиган": r"кардиган\w*", "водолазка": r"водолазк\w*", "худи": r"худи", "майка": r"майк\w*", "свитшот": r"свитшот\w*"},
     "bottoms": {"низ": r"низ(?:а|у|ом)?", "брюки": r"брюк\w*|штан\w*", "джинсы": r"джинс(?:ы|ами|ах|ов|ам)?", "юбка": r"юбк\w*", "шорты": r"шорт\w*", "легинсы": r"лег{1,2}инс\w*"},
-    "shoes": {"обувь": r"обув\w*", "кроссовки": r"кроссов(?:к\w*|ок)", "кеды": r"кед(?:ы|а|ами|ах|ам)?", "лоферы": r"лофер\w*", "ботинки": r"ботин\w*", "туфли": r"туфл\w*|туфель", "сапоги": r"сапог\w*|сапожк\w*", "сандалии": r"сандал\w*", "босоножки": r"босонож\w*", "балетки": r"балетк\w*", "мокасины": r"мокасин\w*"},
+    "shoes": {"обувь": r"обув\w*", "кроссовки": r"кроссов(?:к\w*|ок)", "кеды": r"кед(?:ы|а|ами|ах|ам)?", "лоферы": r"лофер\w*", "ботинки": r"ботин\w*", "туфли": r"туфл\w*|туфель|лодочк\w*", "сапоги": r"сапог\w*|сапожк\w*", "сандалии": r"сандал\w*", "босоножки": r"босонож\w*", "балетки": r"балетк\w*", "мокасины": r"мокасин\w*", "шлёпки": r"шлеп(?:к|ок|анц|анец)\w*|сланц\w*|сланец|вьетнамк\w*|flip[ -]flops?"},
     "outerwear": {"верхняя одежда": r"верхн\w+\s+(?:одежд\w+|слой)", "пальто": r"пальто", "куртка": r"куртк\w*|курток", "тренч": r"тренч\w*", "плащ": r"плащ\w*", "жакет": r"жакет\w*|блейзер\w*|пиджак\w*", "пуховик": r"пуховик\w*", "ветровка": r"ветровк\w*", "бомбер": r"бомбер\w*"},
     "accessories": {"аксессуары": r"аксессуар\w*", "сумка": r"сумк\w*|сумок|сумочк\w*|тоут\w*", "шарф": r"шарф\w*", "платок": r"плат(?:ок|к\w*)", "рюкзак": r"рюкзак\w*", "ремень": r"рем(?:ень|н\w+)", "шапка": r"шапк\w*", "кепка": r"кепк\w*", "серьги": r"серьг\w*|сережк\w*"},
 }
@@ -56,6 +56,10 @@ _GLOBAL = re.compile(r"\b(?:образ\w*|лук\w*|комплект\w*|везд
 _ALTERNATIVE = re.compile(r"\b(?:или|либо)\b")
 _NEGATIVE_LIST = re.compile(r"\s*(?:,|и|или|либо|ни)\s*$")
 _INTENT = re.compile(r"^\s*(?:(?:я\s+)?(?:хочу|ищу)|нуж(?:ен|на|но|ны)|подбери\w*|предложи\w*)\b")
+_OUTFIT_HEAD = re.compile(r"\b(?:образ|лук|комплект|аутфит)\w*\b")
+_ATTACH = re.compile(r"\b(?:с|со)\s+(?:(?!(?:чем|а|но|и|или|либо|без|для|на)\b)[а-я-]+\s+){0,3}$")
+_EDIT_TARGET = re.compile(r"\b(?:замен\w*[^.!?]*\bна|добав\w*)\s+(?:(?!(?:без|для|на)\b)[а-я-]+\s+){0,3}$")
+_LINK = re.compile(r"\s*(?:(?P<or>или|либо)\b|и\b|,)\s+(?:[а-я-]+\s+){0,2}$")
 _SHARE = re.compile(r"(?:(?P<op>не менее|не меньше|от|минимум|не более|не больше|до|максимум)\s+)?(?P<value>\d{1,3}(?:[,.]\d+)?)\s*%\s*$")
 _SHARES_IN_VALUE = re.compile(r"(?P<value>\d{1,3}(?:[,.]\d+)?)\s*%\s*(?P<fiber>[^,;]+)")
 
@@ -75,6 +79,7 @@ _COLOR = _matcher(COLORS)
 _FIBER = _matcher(FIBERS)
 _GARMENT = _matcher({key: pattern for entries in GARMENTS.values() for key, pattern in entries.items()})
 _CATEGORY = {key: category for category, entries in GARMENTS.items() for key in entries}
+_GARMENT_BY_CATEGORY = {category: _matcher(entries) for category, entries in GARMENTS.items()}
 
 
 @dataclass(frozen=True)
@@ -88,10 +93,49 @@ class Condition:
     whole: bool = False
     share: float | None = None
     comparison: str = "="
+    alternatives: tuple[str, ...] = ()
 
 
 def is_detailed_selection(query: str) -> bool:
     return bool(_INTENT.match(normalize(query)) and any(condition.slot for condition in query_conditions(query)))
+
+
+def _garment_conditions(clause: str, nouns: list[tuple[re.Match[str], str]], target: Category | None) -> list[Condition]:
+    outfit = _OUTFIT_HEAD.search(clause) if target is None else None
+    conditions: list[Condition] = []
+    last: tuple[int, int] | None = None  # конец существительного, индекс его условия
+    for noun, name in nouns:
+        slot = _CATEGORY[name]
+        if name in GENERIC or (target is not None and target != slot):
+            continue
+        prefix = clause[:noun.start()]
+        previous = conditions[last[1]] if last else None
+        link = _LINK.fullmatch(clause[last[0]:noun.start()]) if last else None
+        negative = _NEGATION.search(prefix)
+        if link and link["or"] and previous and not (previous.exclude or negative):
+            if previous.slot == slot:
+                conditions[last[1]] = replace(previous, alternatives=(*previous.alternatives, name))
+                last = noun.end(), last[1]
+            else:
+                # Alternatives across different slots are preferences, not two mandatory items.
+                conditions[last[1]] = replace(previous, preferred=True)
+                conditions.append(Condition(slot, "type", name, preferred=True))
+                last = noun.end(), len(conditions) - 1
+            continue
+        span_start = last[0] if link and last else (outfit.end() if outfit else 0)
+        window = prefix[span_start:]
+        explicit = bool(
+            (outfit and noun.start() >= outfit.end() and (_ATTACH.search(window) or negative or link
+                or re.fullmatch(r"\s*[:—–]\s*(?:[а-я-]+\s+){0,3}", window)))
+            or (target is not None and _EDIT_TARGET.search(prefix))
+        )
+        if explicit:
+            conditions.append(Condition(slot, "type", name, exclude=bool(negative or (link and previous and previous.exclude)),
+                                        preferred=bool(_PREFERENCE.search(window) or (link and previous and previous.preferred))))
+            last = noun.end(), len(conditions) - 1
+        else:
+            last = None
+    return conditions
 
 
 @lru_cache(maxsize=512)
@@ -118,6 +162,8 @@ def query_conditions(query: str, target: Category | None = None) -> tuple[Condit
         prefer = list(_PREFERENCE.finditer(clause))
         # Do not turn disjunctions into simultaneous hard requirements.
         alternative = bool(_ALTERNATIVE.search(clause))
+        garment_conditions = _garment_conditions(clause, nouns, target)
+        conditions.extend(garment_conditions)
         for kind, matcher in (("color", _COLOR), ("material", _FIBER)):
             last_negative_end = -1
             for match, value in _matches(matcher, clause):
@@ -174,7 +220,10 @@ def query_conditions(query: str, target: Category | None = None) -> tuple[Condit
                 comparison = ">=" if op in {"не менее", "не меньше", "от", "минимум"} else "<=" if op else "="
                 conditions.append(Condition(slot, kind, value, negative, preferred, part,
                                             kind == "material" and negative and bool(_WHOLE.search(prefix)), amount, comparison))
-                if owner and owner[1] not in GENERIC:
+                if owner and owner[1] not in GENERIC and not any(
+                    condition.slot == slot and owner[1] in (condition.value, *condition.alternatives)
+                    for condition in garment_conditions
+                ):
                     kind_soft = (alternative and not negative) or (
                         preferred and any(p.start() < owner[0].start() for p in prefer)
                     )
@@ -215,7 +264,13 @@ def _evidence(item: WardrobeItem, condition: Condition) -> bool | None:
         return condition.value in colors if colors else None
     if condition.kind == "type":
         facts = " ".join([item.title, *item.tags])
-        return any(value == condition.value for _, value in _matches(_GARMENT, normalize(facts)))
+        wanted = (condition.value, *condition.alternatives)
+        pattern = _GARMENT_BY_CATEGORY[item.category]
+        # A broad tag like «кеды и кроссовки» must not override «Кеды» in the title.
+        title_types = {value for _, value in _matches(pattern, normalize(item.title)) if value not in GENERIC}
+        return bool(title_types.intersection(wanted)) if title_types else any(
+            value in wanted for _, value in _matches(pattern, normalize(facts))
+        )
     details = item.materialDetails or {}
     if condition.part == "any":
         texts = [item.material or "", *details.values()]

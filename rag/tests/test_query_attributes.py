@@ -56,3 +56,26 @@ def test_slot_replacement_checks_lining_without_changing_kept_items(embedder, ma
     ))
     assert [row.item_id for row in result.candidates] == ['textile']
     assert result.kept_item_ids == ['shirt']
+
+
+def test_outfit_requires_requested_types_but_accepts_same_slot_alternatives(embedder, make_item):
+    items = [make_item('shirt', 'tops', 'Рубашка'), make_item('blouse', 'tops', 'Блузка'),
+             make_item('pants', 'bottoms', 'Брюки'), make_item('trainers', 'shoes', 'Кроссовки'),
+             make_item('canvas', 'shoes', 'Кеды', tags=['кеды и кроссовки']),
+             make_item('loafers', 'shoes', 'Лоферы'), make_item('bag', 'accessories', 'Сумка')]
+    engine = engine_for(ControlledStore({'alice': items}), embedder)
+    request = RetrievalRequest(user_id='alice', query='Собери образ с рубашкой и кедами или кроссовками, без сумки')
+    result = engine.retrieve(request)
+    assert {c.item_id for c in result.candidates_by_slot['shoes']} == {'canvas', 'trainers'}
+    assert not result.candidates_by_slot['accessories'] and 'accessories' not in result.required_slots
+    assert not validate_selection(['blouse', 'pants', 'canvas'], result).valid
+    assert validate_selection(['shirt', 'pants', 'trainers'], result).complete
+
+
+def test_precise_replacement_does_not_match_a_broad_catalog_tag(embedder, make_item):
+    items = [make_item('old', 'shoes', 'Лоферы'), make_item('wrong', 'shoes', 'Кеды', tags=['кеды и кроссовки']),
+             make_item('right', 'shoes', 'Кроссовки')]
+    result = engine_for(ControlledStore({'alice': items}), embedder).retrieve_slot(SlotSearchRequest(
+        user_id='alice', query='Замени лоферы на кроссовки', slot='shoes', operation='replace', outfit_item_ids=['old'],
+    ))
+    assert [c.item_id for c in result.candidates] == ['right']

@@ -28,6 +28,9 @@ def styling_comment(items: list[WardrobeItem], analysis: QueryAnalysis) -> str:
     by_slot = {item.category: item for item in items}
     top, bottom = by_slot.get("tops"), by_slot.get("bottoms")
     layer = by_slot.get("outerwear")
+    if analysis.occasion == "running":
+        return ("Подобрала спортивный комплект с обувью для бега. Перед выходом проверьте, что обувь не жмёт "
+                "и одежда не сковывает движения.")
     top_labels = _labels(top) if top else ""
     bottom_labels = _labels(bottom) if bottom else ""
     palette = _color_note(top, bottom)
