@@ -49,6 +49,10 @@
       <section class="panel" aria-labelledby="answer-heading">
         <h2 id="answer-heading">Ответ</h2>
         <p id="answer"></p>
+        <div id="checks" hidden>
+          <p class="metadata">Проверка ответа сервером:</p>
+          <ul id="checks-list" class="metadata"></ul>
+        </div>
         <p id="model" class="metadata"></p>
       </section>
       <section class="panel" aria-labelledby="sources-heading">
@@ -128,6 +132,16 @@
       sourcesNote.hidden = data.sources.length > 0;
       sourcesNote.textContent = data.refused ? 'При отказе источники не цитируются.' : 'В ответе нет цитат.';
       renderAnswer(data.answer, anchors);
+      // Что сервер изменил в ответе модели: перенёс ссылку, убрал искажённое число, добавил цитату.
+      const checks = Array.isArray(data.checks) ? data.checks.filter((note) => typeof note === 'string') : [];
+      const checksList = byId('checks-list');
+      checksList.textContent = '';
+      for (const note of checks) {
+        const item = document.createElement('li');
+        item.textContent = note;
+        checksList.append(item);
+      }
+      byId('checks').hidden = checks.length === 0;
       const model = byId('model');
       model.hidden = !data.model;
       model.textContent = data.model ? `Модель: ${data.model}` : '';

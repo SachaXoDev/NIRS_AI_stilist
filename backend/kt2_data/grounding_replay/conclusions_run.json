@@ -1,0 +1,1838 @@
+[
+  {
+    "id": "Q01",
+    "kind": "positive",
+    "answer": "В четверг стойка приёма вещей на подгонку работает до 18:00, поэтому приход в 19:00 не успеет к стойке. [D01]\nЕсли клиент приходит позже 18:00, уже оформленный заказ можно сдать через ячейку вечернего приёма. [D01]\nПакеты из ячейки вечернего приёма администратор разбирает на следующий рабочий день и до 12:00 этого дня отправляет подтверждение приёма в переписке по заказу. [D03]",
+    "checks": [],
+    "unverified": [],
+    "unused": [
+      {
+        "id": "D01",
+        "text": "«Складка» — вымышленная мастерская; все регламенты, карточки вещей и результаты проб в этой учебной подборке придуманы."
+      },
+      {
+        "id": "D03",
+        "text": "Пятница — рабочий день по обычному расписанию."
+      },
+      {
+        "id": "D03",
+        "text": "Тут подтверждается только получение вещи, а не срок подгонки."
+      }
+    ],
+    "before": {
+      "top_3_ids": [
+        "D01",
+        "D03",
+        "D07"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2
+      ],
+      "inline_citation_ids": [
+        "D01",
+        "D03"
+      ],
+      "source_ids": [
+        "D01",
+        "D03"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "стойка уже закрыта",
+            "стойка закрыта",
+            "стойка работает до 18:00",
+            "к стойке не успеете",
+            "после закрытия стойки"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "ячейке вечернего приёма",
+            "ячейку вечернего приёма",
+            "ячейка вечернего приёма",
+            "ячейке вечернего приема",
+            "ячейку вечернего приема",
+            "ячейка вечернего приема"
+          ],
+          "affirmative_matches": [
+            "ячейку вечернего приема",
+            "ячейку вечернего приёма"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "у бокового входа со двора",
+            "у бокового входа во дворе",
+            "боковой вход со двора"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "закрытом пакете",
+            "закрытый пакет",
+            "закрыть пакет",
+            "закройте пакет"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "номером заказа",
+            "номер заказа"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "в пятницу",
+            "в пятницу утром"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "до 12:00",
+            "до полудня",
+            "до 12 часов",
+            "не позднее 12:00"
+          ],
+          "affirmative_matches": [
+            "до 12:00"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 0.6666666666666666,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D01",
+        "D03",
+        "D07"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2
+      ],
+      "inline_citation_ids": [
+        "D01",
+        "D03"
+      ],
+      "source_ids": [
+        "D01",
+        "D03"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "стойка уже закрыта",
+            "стойка закрыта",
+            "стойка работает до 18:00",
+            "к стойке не успеете",
+            "после закрытия стойки"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "ячейке вечернего приёма",
+            "ячейку вечернего приёма",
+            "ячейка вечернего приёма",
+            "ячейке вечернего приема",
+            "ячейку вечернего приема",
+            "ячейка вечернего приема"
+          ],
+          "affirmative_matches": [
+            "ячейку вечернего приема",
+            "ячейку вечернего приёма"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "у бокового входа со двора",
+            "у бокового входа во дворе",
+            "боковой вход со двора"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "закрытом пакете",
+            "закрытый пакет",
+            "закрыть пакет",
+            "закройте пакет"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "номером заказа",
+            "номер заказа"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "в пятницу",
+            "в пятницу утром"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "до 12:00",
+            "до полудня",
+            "до 12 часов",
+            "не позднее 12:00"
+          ],
+          "affirmative_matches": [
+            "до 12:00"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 0.6666666666666666,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    }
+  },
+  {
+    "id": "Q02",
+    "kind": "positive",
+    "answer": "Нужен ракурс спереди, где изделие видно целиком от плеч до нижнего края. [D06]\nНужен матовы серый фон. [D04]\nЕсли в кадр попало лицо, снимок кадрируют так, чтобы лицо осталось за пределами кадра. [D05]",
+    "checks": [],
+    "unverified": [],
+    "unused": [
+      {
+        "id": "D06",
+        "text": "Снимок со спины и крупные планы швов, манжет и подкладки добавляют в галерею."
+      },
+      {
+        "id": "D06",
+        "text": "Если модель повернулась в три четверти, фото тоже остаётся в галерее."
+      },
+      {
+        "id": "D04",
+        "text": "Тёмный однотонный жакет снимают на матовом сером фоне: на нём лучше виден край рукава."
+      },
+      {
+        "id": "D04",
+        "text": "Перед съёмкой фотограф убирает из кадра стойки и края фонового полотна."
+      },
+      {
+        "id": "D05",
+        "text": "Для открытого каталога лицо модели не оставляют в кадре."
+      },
+      {
+        "id": "D05",
+        "text": "Размытие лица вместо кадрирования не принимают; если срезаются плечи изделия, снимок переснимают."
+      }
+    ],
+    "before": {
+      "top_3_ids": [
+        "D05",
+        "D06",
+        "D04"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D06",
+        "D04",
+        "D05"
+      ],
+      "source_ids": [
+        "D06",
+        "D04",
+        "D05"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "общий вид спереди",
+            "снимок спереди",
+            "фото спереди",
+            "вид спереди",
+            "фронтальный снимок",
+            "прямо спереди",
+            "анфас"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "жакет целиком",
+            "жакет полностью",
+            "весь жакет",
+            "изделие целиком",
+            "изделие полностью",
+            "от плеч до нижнего края"
+          ],
+          "affirmative_matches": [
+            "от плеч до нижнего края"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "матовом сером фоне",
+            "матовый серый фон",
+            "серый матовый фон",
+            "сером матовом фоне"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "убирают кадрированием",
+            "кадрировать",
+            "кадрируйте",
+            "кадрируют",
+            "обрезать кадр",
+            "лицо за пределами кадра"
+          ],
+          "affirmative_matches": [
+            "кадрируют"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D05",
+        "D06",
+        "D04"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D06",
+        "D04",
+        "D05"
+      ],
+      "source_ids": [
+        "D06",
+        "D04",
+        "D05"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "общий вид спереди",
+            "снимок спереди",
+            "фото спереди",
+            "вид спереди",
+            "фронтальный снимок",
+            "прямо спереди",
+            "анфас"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "жакет целиком",
+            "жакет полностью",
+            "весь жакет",
+            "изделие целиком",
+            "изделие полностью",
+            "от плеч до нижнего края"
+          ],
+          "affirmative_matches": [
+            "от плеч до нижнего края"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "матовом сером фоне",
+            "матовый серый фон",
+            "серый матовый фон",
+            "сером матовом фоне"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "убирают кадрированием",
+            "кадрировать",
+            "кадрируйте",
+            "кадрируют",
+            "обрезать кадр",
+            "лицо за пределами кадра"
+          ],
+          "affirmative_matches": [
+            "кадрируют"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    }
+  },
+  {
+    "id": "Q03",
+    "kind": "positive",
+    "answer": "Кардиган надо сушить горизонтально на сушильной сетке. [D07]\nВещь нужно убрать в карантинный бокс Ш-2 с крышкой. [D08]\nВ журнале надо поставить дату обнаружения признака — 6 марта. [D09]",
+    "checks": [],
+    "unverified": [],
+    "unused": [
+      {
+        "id": "D07",
+        "text": "Когда кардиган высохнет, кладовщик осматривает складки и только потом решает, можно ли вернуть вещь в шкаф."
+      },
+      {
+        "id": "D08",
+        "text": "Пустая личиночная оболочка считается основанием для изоляции шерстяной вещи, даже если живых насекомых не видно."
+      },
+      {
+        "id": "D08",
+        "text": "Сухое изделие убирают в карантинный бокс Ш-2 с крышкой и не возвращают на общую полку до решения хранителя."
+      },
+      {
+        "id": "D09",
+        "text": "После помещения шерстяной вещи в карантин в журнал записывают её инвентарный номер и дату обнаружения признака."
+      },
+      {
+        "id": "D09",
+        "text": "Даже если кардиган перенесли в бокс только на следующий день, в записи остаётся дата находки при осмотре."
+      }
+    ],
+    "before": {
+      "top_3_ids": [
+        "D09",
+        "D08",
+        "D07"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D07",
+        "D08",
+        "D09"
+      ],
+      "source_ids": [
+        "D07",
+        "D08",
+        "D09"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "горизонтально",
+            "в горизонтальном положении",
+            "разложить плашмя"
+          ],
+          "affirmative_matches": [
+            "горизонтально"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "сушильной сетке",
+            "сетке для сушки",
+            "сушильную сетку"
+          ],
+          "affirmative_matches": [
+            "сушильной сетке"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "ш-2",
+            "ш‑2",
+            "ш–2"
+          ],
+          "affirmative_matches": [
+            "ш-2",
+            "ш‑2",
+            "ш–2"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "6 марта",
+            "06.03",
+            "6-го марта"
+          ],
+          "affirmative_matches": [
+            "6 марта"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": true,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D09",
+        "D08",
+        "D07"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D07",
+        "D08",
+        "D09"
+      ],
+      "source_ids": [
+        "D07",
+        "D08",
+        "D09"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "горизонтально",
+            "в горизонтальном положении",
+            "разложить плашмя"
+          ],
+          "affirmative_matches": [
+            "горизонтально"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "сушильной сетке",
+            "сетке для сушки",
+            "сушильную сетку"
+          ],
+          "affirmative_matches": [
+            "сушильной сетке"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "ш-2",
+            "ш‑2",
+            "ш–2"
+          ],
+          "affirmative_matches": [
+            "ш-2",
+            "ш‑2",
+            "ш–2"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "6 марта",
+            "06.03",
+            "6-го марта"
+          ],
+          "affirmative_matches": [
+            "6 марта"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": true,
+      "correct_refusal": null
+    }
+  },
+  {
+    "id": "Q04",
+    "kind": "positive",
+    "answer": "В поле «Год покупки» ставят 1998, так как в чеке указано 14 сентября 1998 года. [D11]\nВ поле «Год выпуска» ставят «не установлен», так как год на бирке не напечатан и паспорта изделия в папке нет. [D11]\nЧек не годится для подтверждения года выпуска, потому что кассовый чек подтверждает покупку, а не изготовление, и вещь могла лежать в магазине несколько сезонов. [D10]",
+    "checks": [],
+    "unverified": [],
+    "unused": [
+      {
+        "id": "D10",
+        "text": "Номер модели без года тоже не считают датировкой."
+      }
+    ],
+    "before": {
+      "top_3_ids": [
+        "D12",
+        "D11",
+        "D10"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D11",
+        "D10"
+      ],
+      "source_ids": [
+        "D11",
+        "D10"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "год покупки: 1998",
+            "год покупки — 1998",
+            "год покупки - 1998",
+            "год покупки 1998",
+            "год покупки — в 1998",
+            "в поле «год покупки» — 1998",
+            "куплен в 1998",
+            "купили в 1998",
+            "приобретён в 1998",
+            "приобретен в 1998",
+            "покупка в 1998",
+            "покупка — 1998"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "год выпуска не установлен",
+            "год выпуска: не установлен",
+            "год выпуска — не установлен",
+            "год выпуска — «не установлен»",
+            "год выпуска неизвестен",
+            "год выпуска не подтверждён",
+            "год выпуска не подтвержден",
+            "год изготовления не установлен"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "чек подтверждает покупку",
+            "чек подтверждает только покупку",
+            "чек подтверждает дату покупки",
+            "чек доказывает покупку",
+            "чек датирует покупку",
+            "чек не подтверждает год выпуска",
+            "чек не доказывает год выпуска"
+          ],
+          "affirmative_matches": [
+            "чек подтверждает покупку"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D12",
+        "D11",
+        "D10"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D11",
+        "D10"
+      ],
+      "source_ids": [
+        "D11",
+        "D10"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "год покупки: 1998",
+            "год покупки — 1998",
+            "год покупки - 1998",
+            "год покупки 1998",
+            "год покупки — в 1998",
+            "в поле «год покупки» — 1998",
+            "куплен в 1998",
+            "купили в 1998",
+            "приобретён в 1998",
+            "приобретен в 1998",
+            "покупка в 1998",
+            "покупка — 1998"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "год выпуска не установлен",
+            "год выпуска: не установлен",
+            "год выпуска — не установлен",
+            "год выпуска — «не установлен»",
+            "год выпуска неизвестен",
+            "год выпуска не подтверждён",
+            "год выпуска не подтвержден",
+            "год изготовления не установлен"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "чек подтверждает покупку",
+            "чек подтверждает только покупку",
+            "чек подтверждает дату покупки",
+            "чек доказывает покупку",
+            "чек датирует покупку",
+            "чек не подтверждает год выпуска",
+            "чек не доказывает год выпуска"
+          ],
+          "affirmative_matches": [
+            "чек подтверждает покупку"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    }
+  },
+  {
+    "id": "Q05",
+    "kind": "positive",
+    "answer": "Сценический жилет не считается возвращённым, если оставлен на вешалке в фойе, поэтому актёр должен вернуть полный комплект, а не оставить жилет на вешалке. [D13]\nБлижайшее окно возвратов после воскресного показа — в понедельник с 09:30 до 11:00. [D14]\nПолный комплект включает сценический жилет, съёмную ленту и тканевой чехол, лента отстёгивается и складывается вместе с жилетом в чехол, поэтому актёр должен вернуть чехол с жилетом и лентой. [D15]",
+    "checks": [],
+    "unverified": [],
+    "unused": [
+      {
+        "id": "D13",
+        "text": "После показа выданную одежду принимают только из рук в руки у костюмерной стойки."
+      },
+      {
+        "id": "D13",
+        "text": "При закрытой стойке комплект остаётся у получателя до ближайшего окна."
+      },
+      {
+        "id": "D14",
+        "text": "Сценические вещи для воскресного показа выдают заранее в пятницу."
+      },
+      {
+        "id": "D14",
+        "text": "На время этого окна выдачу новых комплектов не назначают."
+      },
+      {
+        "id": "D15",
+        "text": "Деревянная вешалка остаётся на площадке и в комплект не входит."
+      }
+    ],
+    "before": {
+      "top_3_ids": [
+        "D13",
+        "D14",
+        "D15"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D13",
+        "D14",
+        "D15"
+      ],
+      "source_ids": [
+        "D13",
+        "D14",
+        "D15"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "в понедельник"
+          ],
+          "affirmative_matches": [
+            "в понедельник"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "09:30",
+            "9:30"
+          ],
+          "affirmative_matches": [
+            "09:30"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "11:00"
+          ],
+          "affirmative_matches": [
+            "11:00"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "костюмерной стойки",
+            "костюмерной стойке",
+            "костюмерную стойку",
+            "стойки костюмерной",
+            "стойке костюмерной"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "из рук в руки",
+            "лично",
+            "сотруднику",
+            "в руки костюмеру"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "поясную ленту",
+            "поясной ленты",
+            "ленту для талии",
+            "съёмную ленту",
+            "съемную ленту",
+            "отстегнуть ленту",
+            "отстегните ленту",
+            "ленту для пояса"
+          ],
+          "affirmative_matches": [
+            "съемную ленту",
+            "съёмную ленту"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "чехол",
+            "чехле"
+          ],
+          "affirmative_matches": [
+            "чехол"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "вешалку оставить",
+            "оставить вешалку",
+            "вешалка остаётся",
+            "вешалка остается",
+            "вешалку не сдавать",
+            "без деревянной вешалки",
+            "вешалка в комплект не входит",
+            "вешалка не входит в комплект"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D13",
+        "D14",
+        "D15"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D13",
+        "D14",
+        "D15"
+      ],
+      "source_ids": [
+        "D13",
+        "D14",
+        "D15"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "в понедельник"
+          ],
+          "affirmative_matches": [
+            "в понедельник"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "09:30",
+            "9:30"
+          ],
+          "affirmative_matches": [
+            "09:30"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "11:00"
+          ],
+          "affirmative_matches": [
+            "11:00"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "костюмерной стойки",
+            "костюмерной стойке",
+            "костюмерную стойку",
+            "стойки костюмерной",
+            "стойке костюмерной"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "из рук в руки",
+            "лично",
+            "сотруднику",
+            "в руки костюмеру"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "поясную ленту",
+            "поясной ленты",
+            "ленту для талии",
+            "съёмную ленту",
+            "съемную ленту",
+            "отстегнуть ленту",
+            "отстегните ленту",
+            "ленту для пояса"
+          ],
+          "affirmative_matches": [
+            "съемную ленту",
+            "съёмную ленту"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "чехол",
+            "чехле"
+          ],
+          "affirmative_matches": [
+            "чехол"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "вешалку оставить",
+            "оставить вешалку",
+            "вешалка остаётся",
+            "вешалка остается",
+            "вешалку не сдавать",
+            "без деревянной вешалки",
+            "вешалка в комплект не входит",
+            "вешалка не входит в комплект"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    }
+  },
+  {
+    "id": "Q06",
+    "kind": "positive",
+    "answer": "За ремонт пальто Р-26 выставить 2 единицы работ по восстановлению шва, так как два разрыва вдоль одного шва тарифицируются как один шов. [D17]\nУстановка двух пуговиц считается поштучно, поэтому в стоимость включается 2 единицы работ по установке пугиц. [D16]\nПотёртость на воротнике не включается в стоимость ремонта, так как она отмечена как «наблюдение». [D17]",
+    "checks": [],
+    "unverified": [],
+    "unused": [],
+    "before": {
+      "top_3_ids": [
+        "D17",
+        "D16",
+        "D06"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2
+      ],
+      "inline_citation_ids": [
+        "D17",
+        "D16"
+      ],
+      "source_ids": [
+        "D17",
+        "D16"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "400 рублей",
+            "400 руб",
+            "400 ₽",
+            "400₽"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "один шов",
+            "одного шва",
+            "1 шов",
+            "1 × 220",
+            "1 x 220"
+          ],
+          "affirmative_matches": [
+            "один шов",
+            "одного шва"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "две пуговицы",
+            "двух пуговиц",
+            "2 пуговицы",
+            "2 × 90",
+            "2 x 90"
+          ],
+          "affirmative_matches": [
+            "двух пуговиц"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 0.6666666666666666,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D17",
+        "D16",
+        "D06"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2
+      ],
+      "inline_citation_ids": [
+        "D17",
+        "D16"
+      ],
+      "source_ids": [
+        "D17",
+        "D16"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "400 рублей",
+            "400 руб",
+            "400 ₽",
+            "400₽"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "один шов",
+            "одного шва",
+            "1 шов",
+            "1 × 220",
+            "1 x 220"
+          ],
+          "affirmative_matches": [
+            "один шов",
+            "одного шва"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "две пуговицы",
+            "двух пуговиц",
+            "2 пуговицы",
+            "2 × 90",
+            "2 x 90"
+          ],
+          "affirmative_matches": [
+            "двух пуговиц"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 0.6666666666666666,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    }
+  },
+  {
+    "id": "Q07",
+    "kind": "positive",
+    "answer": "Нет, нельзя подписать пару тканей «Шалфей» и «Мох» на планшете как точное совпадение, потому что под тёплой лампой 2700 К «Мох» стал выглядеть более жёлтым, чем «Шалфей». [D20]\nЭффект называется метамерией. [D19]\nПометку «Проверить при освещении клиента» нужно поставить для пары тканей «Шалфей» и «Мох». [D21]",
+    "checks": [
+      "убран повтор с искажённым значением (27)"
+    ],
+    "unverified": [],
+    "unused": [
+      {
+        "id": "D20",
+        "text": "Зелёные образцы «Шалфей» и «Мох» выглядели одинаковыми на столе при дневном свете."
+      },
+      {
+        "id": "D19",
+        "text": "Две ткани могут выглядеть одинаково под одним источником света, но отличаться под другим."
+      },
+      {
+        "id": "D21",
+        "text": "Пометка относится к паре образцов, а не к качеству отдельной ткани."
+      }
+    ],
+    "before": {
+      "top_3_ids": [
+        "D21",
+        "D20",
+        "D19"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D20",
+        "D19",
+        "D21"
+      ],
+      "source_ids": [
+        "D20",
+        "D19",
+        "D21"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "метамерия",
+            "метамерию",
+            "метамерией",
+            "метамерный эффект",
+            "метамерная пара",
+            "пара метамерная"
+          ],
+          "affirmative_matches": [
+            "метамерией",
+            "метамерию"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "при дневном свете ткани совпали",
+            "при дневном свете совпали",
+            "при дневном свете они совпали",
+            "при дневном свете ткани выглядели одинаково",
+            "под дневным светом выглядели одинаково",
+            "при дневном освещении цвета совпали",
+            "совпали при дневном свете",
+            "одинаково при дневном свете",
+            "при дневном свете образцы выглядят одинаково"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "под лампой 2700 к",
+            "при 2700 к",
+            "при свете лампы 2700 к",
+            "под тёплой лампой",
+            "под теплой лампой",
+            "при тёплом искусственном свете",
+            "при теплом искусственном свете"
+          ],
+          "affirmative_matches": [
+            "под теплой лампой",
+            "под тёплой лампой"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "выглядел желтее",
+            "стал желтее",
+            "казался желтее",
+            "более жёлтым",
+            "более желтым",
+            "более жёлтый",
+            "более желтый",
+            "мох желтел",
+            "мох желтее",
+            "мох оказался желтее"
+          ],
+          "affirmative_matches": [
+            "более желтым",
+            "более жёлтым"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "проверить при освещении клиента",
+            "проверить при свете клиента",
+            "проверка при освещении клиента"
+          ],
+          "affirmative_matches": [
+            "проверить при освещении клиента"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D21",
+        "D20",
+        "D19"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D20",
+        "D19",
+        "D21"
+      ],
+      "source_ids": [
+        "D20",
+        "D19",
+        "D21"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "метамерия",
+            "метамерию",
+            "метамерией",
+            "метамерный эффект",
+            "метамерная пара",
+            "пара метамерная"
+          ],
+          "affirmative_matches": [
+            "метамерией"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "при дневном свете ткани совпали",
+            "при дневном свете совпали",
+            "при дневном свете они совпали",
+            "при дневном свете ткани выглядели одинаково",
+            "под дневным светом выглядели одинаково",
+            "при дневном освещении цвета совпали",
+            "совпали при дневном свете",
+            "одинаково при дневном свете",
+            "при дневном свете образцы выглядят одинаково"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "под лампой 2700 к",
+            "при 2700 к",
+            "при свете лампы 2700 к",
+            "под тёплой лампой",
+            "под теплой лампой",
+            "при тёплом искусственном свете",
+            "при теплом искусственном свете"
+          ],
+          "affirmative_matches": [
+            "под теплой лампой",
+            "под тёплой лампой"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "выглядел желтее",
+            "стал желтее",
+            "казался желтее",
+            "более жёлтым",
+            "более желтым",
+            "более жёлтый",
+            "более желтый",
+            "мох желтел",
+            "мох желтее",
+            "мох оказался желтее"
+          ],
+          "affirmative_matches": [
+            "более желтым",
+            "более жёлтым"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "проверить при освещении клиента",
+            "проверить при свете клиента",
+            "проверка при освещении клиента"
+          ],
+          "affirmative_matches": [
+            "проверить при освещении клиента"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    }
+  },
+  {
+    "id": "Q08",
+    "kind": "positive",
+    "answer": "Плащ П-9 допустить к дождевой примерке, так как на изнанке он остался полностью сухой, что соответствует критерию допуска по Д22. [D23] [D22]\nПлащ П-4 не допустить к дождевой примерке, так как на изнанке под плечевым швом появилась влажная дорожка, что означает пропуск воды по шву. [D23]\nШов плаща П-4 герметизировать изнутри шовной лентой и повторить пробу распылением. [D24]",
+    "checks": [
+      "ссылка на D22 перенесена из текста в источники"
+    ],
+    "unverified": [],
+    "unused": [
+      {
+        "id": "D24",
+        "text": "Для промокшей только снаружи ткани такой ремонт шва не назначают."
+      }
+    ],
+    "before": {
+      "top_3_ids": [
+        "D22",
+        "D23",
+        "D24"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D23",
+        "D24"
+      ],
+      "source_ids": [
+        "D23",
+        "D24"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "допустить п-9",
+            "допустить плащ п-9",
+            "выбрать п-9",
+            "выбрать плащ п-9",
+            "берут п-9",
+            "подходит п-9",
+            "п-9 подходит",
+            "п-9 проходит",
+            "п-9 можно допустить",
+            "допускается плащ п-9"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "изнанка осталась сухой",
+            "сухая изнанка",
+            "изнанка сухая",
+            "сухой изнанкой",
+            "изнанка полностью сухая"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "плечевой шов",
+            "плечевого шва",
+            "плечевому шву"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "шовной лентой",
+            "шовную ленту",
+            "лентой для швов",
+            "лентой для герметизации швов"
+          ],
+          "affirmative_matches": [
+            "шовной лентой"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "изнутри",
+            "с изнанки",
+            "с внутренней стороны"
+          ],
+          "affirmative_matches": [
+            "изнутри"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D22",
+        "D23",
+        "D24"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2,
+        3
+      ],
+      "inline_citation_ids": [
+        "D23",
+        "D22",
+        "D24"
+      ],
+      "source_ids": [
+        "D23",
+        "D22",
+        "D24"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "допустить п-9",
+            "допустить плащ п-9",
+            "выбрать п-9",
+            "выбрать плащ п-9",
+            "берут п-9",
+            "подходит п-9",
+            "п-9 подходит",
+            "п-9 проходит",
+            "п-9 можно допустить",
+            "допускается плащ п-9"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "изнанка осталась сухой",
+            "сухая изнанка",
+            "изнанка сухая",
+            "сухой изнанкой",
+            "изнанка полностью сухая"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "плечевой шов",
+            "плечевого шва",
+            "плечевому шву"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "шовной лентой",
+            "шовную ленту",
+            "лентой для швов",
+            "лентой для герметизации швов"
+          ],
+          "affirmative_matches": [
+            "шовной лентой"
+          ],
+          "negated_matches": [],
+          "passed": true
+        },
+        {
+          "alternatives": [
+            "изнутри",
+            "с изнанки",
+            "с внутренней стороны"
+          ],
+          "affirmative_matches": [
+            "изнутри"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 1.0,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    }
+  },
+  {
+    "id": "Q09",
+    "kind": "positive",
+    "answer": "Подойдёт чистовой лист Л-15, так как на бумаге рабочий лист Л-14 имеет сгиб, перекрывающий линию около боковой вытачки, а чистовой лист Л-15 той же модели размера 48 лежит на соседней полке, и размер Л-14 — 46, что совпадает с размером Л-15 в модели. [D26]\nВ карточке цифрового лекала нужно записать «вставка с дубля» и указать шифр дубля, так как часть контура перенесена с архивного экземпляра, и номер рабной версии файла не заменяет ссылку на бумажный источник. [D27]",
+    "checks": [],
+    "unverified": [],
+    "unused": [],
+    "before": {
+      "top_3_ids": [
+        "D26",
+        "D27",
+        "D17"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2
+      ],
+      "inline_citation_ids": [
+        "D26",
+        "D27"
+      ],
+      "source_ids": [
+        "D26",
+        "D27"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "л-14д",
+            "л‑14д",
+            "л–14д"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "того же размера",
+            "одинакового размера",
+            "совпадает размер",
+            "совпадает по размеру",
+            "оба размера 46",
+            "оба листа размера 46"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "вставка с дубля",
+            "вставка из дубля",
+            "вставка с архивного дубля"
+          ],
+          "affirmative_matches": [
+            "вставка с дубля"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 0.6666666666666666,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    },
+    "after": {
+      "top_3_ids": [
+        "D26",
+        "D27",
+        "D17"
+      ],
+      "relevant_hit_ranks": [
+        1,
+        2
+      ],
+      "inline_citation_ids": [
+        "D26",
+        "D27"
+      ],
+      "source_ids": [
+        "D26",
+        "D27"
+      ],
+      "citations_match_sources": true,
+      "expected_evidence": true,
+      "non_refusal": true,
+      "canonical_refusal_text": false,
+      "fact_checks": [
+        {
+          "alternatives": [
+            "л-14д",
+            "л‑14д",
+            "л–14д"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "того же размера",
+            "одинакового размера",
+            "совпадает размер",
+            "совпадает по размеру",
+            "оба размера 46",
+            "оба листа размера 46"
+          ],
+          "affirmative_matches": [],
+          "negated_matches": [],
+          "passed": false
+        },
+        {
+          "alternatives": [
+            "вставка с дубля",
+            "вставка из дубля",
+            "вставка с архивного дубля"
+          ],
+          "affirmative_matches": [
+            "вставка с дубля"
+          ],
+          "negated_matches": [],
+          "passed": true
+        }
+      ],
+      "recall_at_3": 0.6666666666666666,
+      "mrr_at_3": 1.0,
+      "accuracy": false,
+      "correct_refusal": null
+    }
+  }
+]
