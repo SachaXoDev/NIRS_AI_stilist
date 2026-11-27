@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "started_at_utc": "2026-11-27T06:46:16.782942+00:00",
+  "api": {
+    "base_url": "http://127.0.0.1:8014",
+    "method": "POST",
+    "path": "/api/kt2/ask",
+    "timeout_s": 120.0
+  },
+  "dataset_sha256": "23504b930f0c6710f6248becadd8253268fa8afc9b3b7faa0fc9a4fc007ad8d9",
+  "dataset_files_sha256": {
+    "corpus.json": "3f79862d9eac3025461f41f6bebd299758cc8fd933fca8400e28fea304f30375",
+    "questions.json": "cf98f6b01f81505923b53aa065d49c269a04a0ef99827fb942581ac9f5a36090"
+  },
+  "dataset_sha256_method": "SHA-256 of sorted compact JSON mapping file names to SHA-256 of original bytes",
+  "dataset_sha256_scope": "Local inputs. Returned hit titles and texts are checked against the local corpus.",
+  "expected_counts": {
+    "documents": 30,
+    "positive": 10,
+    "trap": 5
+  },
+  "status": "complete",
+  "model": "qwen3:4b-instruct-2507-q4_K_M",
+  "metric_rules": {
+    "recall_at_3": "Macro over positives: relevant IDs in the first 3 hits / all labeled relevant IDs.",
+    "mrr_at_3": "Macro over positives: reciprocal of the rank of the first relevant hit, or 0.",
+    "accuracy": "Positives only: all required fact groups match, not refused, and nonempty inline citations match sources in order and cite only labeled relevant hits.",
+    "refusal_accuracy": "Traps only: refused=true, canonical refusal text (normalized), and no citations.",
+    "phrase_matching": "Match one contiguous whole-token phrase per group within a clause, ignoring citation markers, case, ё/е and cosmetic punctuation. Decimal commas match points; time colons remain distinct. Reject apparent negation up to four tokens before or immediately after a phrase. This can miss paraphrases, negation and contradictions and does not verify extra claims or which source supports each fact. Review answers manually.",
+    "incomplete_run": "Any request, generation or response error (or a model change) invalidates aggregate metrics; errors are not refusals."
+  },
+  "metrics": {
+    "recall_at_3": 1.0,
+    "mrr_at_3": 1.0,
+    "accuracy": 0.9,
+    "refusal_accuracy": 1.0
+  },
+  "errors": [],
+  "document_count": 30,
+  "observed_models": [
+    "qwen3:4b-instruct-2507-q4_K_M"
+  ],
+  "counts": {
+    "attempted": 15,
+    "answered": 15,
+    "answered_by_kind": {
+      "positive": 10,
+      "trap": 5
+    },
+    "errors_by_kind": {}
+  },
+  "elapsed_s": 67.33014983300018
+}
