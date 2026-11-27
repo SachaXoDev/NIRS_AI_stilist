@@ -11,15 +11,21 @@ from snowballstemmer import stemmer
 
 _TOKEN = re.compile(r"[^\W_]+")
 _RUSSIAN = re.compile(r"[а-я]+")
+# Ignore common function words in queries, not in document lengths or statistics.
+# Keep negations and exclusion terms such as «не» and «без».
+_QUERY_STOPWORDS = frozenset("а в во для и из к ко как ли на о об от по под при с со у".split())
 K1 = 1.2
 B = 0.75
 TOP_K = 3
 
 
-def tokens(text: str) -> list[str]:
+def _stem_words(words: Iterable[str]) -> list[str]:
     russian = stemmer("russian")
-    return [russian.stemWord(word) if _RUSSIAN.fullmatch(word) else word
-            for word in _TOKEN.findall(text.casefold().replace("ё", "е"))]
+    return [russian.stemWord(word) if _RUSSIAN.fullmatch(word) else word for word in words]
+
+
+def tokens(text: str) -> list[str]:
+    return _stem_words(_TOKEN.findall(text.casefold().replace("ё", "е")))
 
 
 @dataclass(frozen=True)
@@ -62,7 +68,8 @@ class BM25Index:
         if k < 1:
             raise ValueError("k must be positive")
         scores: dict[str, float] = defaultdict(float)
-        for term in dict.fromkeys(tokens(question)):
+        words = _TOKEN.findall(question.casefold().replace("ё", "е"))
+        for term in dict.fromkeys(_stem_words(word for word in words if word not in _QUERY_STOPWORDS)):
             posting = self._postings.get(term)
             if not posting:
                 continue

@@ -39,6 +39,14 @@ def test_bm25_matches_russian_inflection_and_preserves_numbers():
     assert [hit.document.id for hit in index.search("водолазкой 30")] == ["D01"]
 
 
+def test_query_function_words_do_not_promote_unrelated_cards():
+    index = BM25Index([
+        Document("D01", "Водолазка", "В комплекте как теплый слой"),
+        Document("D02", "Шорты", "Разрезы сбоку"),
+    ])
+    assert [hit.document.id for hit in index.search("Как в капсуле найти шорты с разрезами?")] == ["D02"]
+
+
 def test_empty_retrieval_refuses_without_using_model_knowledge():
     index = BM25Index([Document("D01", "Рубашка", "Хлопок")])
     llm = ScriptedAnswer("")
