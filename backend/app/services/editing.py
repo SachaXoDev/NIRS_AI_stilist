@@ -134,7 +134,12 @@ def merge_context(
     current = analyze_query(request.query, request.context, items)
     prior = analyze_query(card.root_request or "")
     for query in card.followups:
-        prior = _merge_weather(prior, analyze_query(query))
+        # Правка («замени обувь») уточняет погоду, но не отменяет повод исходного запроса:
+        # иначе после первой же правки офисный образ редактируется как повседневный.
+        merged = _merge_weather(prior, analyze_query(query))
+        prior = merged if names_occasion(query) else replace(
+            merged, occasion=prior.occasion, occasion_label=prior.occasion_label
+        )
     explicit_occasion = names_occasion(request.query) or bool(request.context and request.context.occasion)
     current = _merge_weather(prior, current)
     return replace(
@@ -166,6 +171,11 @@ _DRESSY_OCCASIONS = frozenset({"business", "evening"})
 def _is_beach_item(item: WardrobeItem) -> bool:
     labels = [normalize(value).strip() for value in (item.title, *item.tags, *item.style)]
     return any("пляж" in label or label == "beach" for label in labels)
+
+
+def _is_sport_only(item: WardrobeItem) -> bool:
+    """Вещь только для спорта. Дождевик со стилями casual и sport к таким не относится."""
+    return bool(item.style) and all(normalize(style).strip() in {"sport", "спорт"} for style in item.style)
 
 
 def quote(item: WardrobeItem) -> str:
@@ -360,8 +370,10 @@ class OutfitEditor:
             text=text, referenced_item_ids=previous.item_ids,
             suggested_outfit=OutfitLook(
                 id=f"outfit-{uuid.uuid4().hex[:12]}", title=f"Образ · {label}", description=text,
-                occasion=label, items=items, stylist_reasoning="", match_score=0, confidence_tips=[],
-            ),  # История передаёт состав, но не оценку поисковой выдачи.
+                occasion=label, items=items, stylist_reasoning="", confidence_tips=[],
+                # История передаёт состав, но не выдачу поиска: вещи считаются выбранными пользователем.
+                match_score=match_score(items, _edited_as_outcome(items, previous.item_ids, ())),
+            ),
             **reply._common("rules", 0, ""),
         )
 
@@ -534,7 +546,9 @@ class OutfitEditor:
                 unsuitable.extend(item.id for item in items if is_shorts(item))
         if analysis.occasion in _DRESSY_OCCASIONS:
             # Пляжные сандалии формально «без каблука», но в офисный или вечерний образ не годятся.
-            unsuitable += [item.id for item in items if _is_beach_item(item) and item.id not in unsuitable]
+            # То же с вещами только для спорта: беговые кроссовки — не ответ на «замени обувь».
+            unsuitable += [item.id for item in items
+                           if (_is_beach_item(item) or _is_sport_only(item)) and item.id not in unsuitable]
         outcome = await self._search_slot(
             request, user_id, base, slot, operation, target, runtime, reply, exclude | set(unsuitable)
         )
@@ -759,7 +773,7 @@ class _Reply:
             occasion=self.analysis.occasion_label,
             items=items,
             stylist_reasoning="",
-            match_score=match_score(items, _edited_as_outcome(items, edit, ranked)),
+            match_score=match_score(items, _edited_as_outcome(items, edit.kept_item_ids, ranked)),
             confidence_tips=[],
         )
         return RecommendResponse(
@@ -911,12 +925,12 @@ def _slot_as_outcome(outcome: SlotOutcome, engine: str) -> RetrievalOutcome:
 
 
 def _edited_as_outcome(
-    items: list[WardrobeItem], edit: OutfitEdit, ranked: tuple[SlotOutcome, ...]
+    items: list[WardrobeItem], kept_ids: list[str], ranked: tuple[SlotOutcome, ...]
 ) -> RetrievalOutcome:
     """Для matchScore: оставленные вещи выбрал пользователь, новая вещь оценивается по её выдаче."""
     by_slot: dict[str, list[SlotCandidate]] = {}
     for item in items:
-        if item.id in edit.kept_item_ids:
+        if item.id in kept_ids:
             by_slot.setdefault(item.category, []).append(SlotCandidate(item=item, score=1.0, anchored=True))
     for outcome in ranked:
         by_slot.setdefault(outcome.slot, []).extend(outcome.candidates)

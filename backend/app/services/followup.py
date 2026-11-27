@@ -70,6 +70,9 @@ _BOUND_RES = (
     (re.compile(_W + r"друг(?:ую|ие|ой|ое|ими|их)\s+"), "replace"),
 )
 
+# Тот же оборот с обратным порядком слов: «а обувь другую можно?».
+_OTHER_AFTER_RE = re.compile(r"\s+друг(?:ую|ие|ой|ое)\b")
+
 # «Без каблука» описывает нужную замену обуви, а не просьбу что-то убрать.
 _HEEL_RE = re.compile(_W + r"каблук\w*")
 
@@ -166,6 +169,10 @@ def _first_operation(text: str) -> tuple[int, str] | None:
             if not _HEEL_RE.match(rest) and any(slot_re.match(rest) for _, slot_re in _SLOT_RES):
                 candidates.append((match.start(), operation))
                 break
+    for start, _, word in _slot_mentions(text):
+        if _OTHER_AFTER_RE.match(text, start + len(word)):
+            candidates.append((start, "replace"))
+            break
     return min(candidates) if candidates else None
 
 

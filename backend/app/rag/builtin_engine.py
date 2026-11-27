@@ -28,6 +28,7 @@ from app.rag.base import (
 )
 from app.schemas import CATEGORY_LABELS_RU, RecommendContext, WardrobeItem
 from app.services.analysis import QueryAnalysis, analyze_query
+from app.services.garment_type import is_type, requested_types
 from app.services.scoring import palette_score
 from app.services.textutils import normalize, tokenize
 from app.storage.app_store import AppStore
@@ -202,6 +203,11 @@ class BuiltinEngine:
 
         excluded = set(query.exclude_item_ids) - {query.anchor_item_id}
         allowed = [item for item in items if item.id not in excluded]
+        if _FLAT_REQUEST_RE.search(normalize(query.query)):
+            # Как в wardrobe_rag и в правке слота: «без каблука» — требование, а не пожелание.
+            allowed = [item for item in allowed if item.category != "shoes"
+                       or item.id == query.anchor_item_id or _is_documented_flat(item)]
+            warnings.append("Flat footwear required; candidates without an explicit flat-sole annotation were excluded")
         raw_scores = lexical_scores(query.query, analysis, allowed)
         top_raw = max(raw_scores.values(), default=0.0)
         ranked = sorted((s for s in raw_scores.values() if s > 0), reverse=True)
@@ -385,6 +391,11 @@ class BuiltinEngine:
         if query.slot == "shoes" and _FLAT_REQUEST_RE.search(text):
             pool = [item for item in pool if _is_documented_flat(item)]
             warnings.append("Flat footwear required; candidates without an explicit flat-sole annotation were excluded")
+
+        wanted = requested_types(query.query, query.slot)
+        if wanted:
+            pool = [item for item in pool if any(is_type(item, word) for word in wanted)]
+            warnings.append("Named garment type required; other items of the slot were excluded")
 
         context = RecommendContext(occasion=query.occasion, weather=query.weather, vibe=query.vibe)
         analysis = analyze_query(query.query, context, [])
