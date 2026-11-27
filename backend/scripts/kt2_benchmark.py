@@ -278,7 +278,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default="http://127.0.0.1:8012", help="Base URL of the running demo API")
     parser.add_argument("--timeout", type=float, default=120.0, help="HTTP timeout in seconds (default: %(default)s)")
-    parser.add_argument("--output", type=Path, default=DATA / "results", help="Directory for summary.json and per_query.json")
+    parser.add_argument("--output", type=Path, default=DATA / "capsule_run",
+                        help="Directory for summary.json and per_query.json")
     args = parser.parse_args()
     if not math.isfinite(args.timeout) or args.timeout <= 0:
         parser.error("--timeout must be finite and positive")
